@@ -1,4 +1,6 @@
 #include "Parsing.h"
+#include <regex>
+#include <cassert>
 
 std::string Parsing::ParseStringFromConsole() 
 {
@@ -64,4 +66,46 @@ std::vector<int> Parsing::ParseLineOfInts(std::string delimiter)
 	}
 
 	return parsedInts;
+}
+
+std::vector<std::vector<std::string>> Parsing::ParseGroupsOfString(std::vector<int> groupSizes, std::string intraGroupDelimiter, std::string interGroupDelimiter)
+{
+	std::string matchString{ "" };
+
+	// Create the match string based on the format of groups and delimiter we expect
+	bool firstGroup = true;
+	for (int groupSize : groupSizes)
+	{
+		if (!firstGroup) { matchString.append(interGroupDelimiter); }
+
+		for (int ii = 0; ii < groupSize; ii++)
+		{
+			if (ii != 0) { matchString.append(intraGroupDelimiter); }
+			matchString.append("([0-9a-zA-Z]+)");
+		}
+		firstGroup = false;
+	}
+
+	std::string inputLine;
+	std::getline(std::cin, inputLine);
+	std::regex regexMatchString{ matchString };
+	std::smatch matches;
+
+	std::vector<std::vector<std::string>> parsedStrings;
+	if (std::regex_search(inputLine, matches, regexMatchString))
+	{
+		int nextCaptureGroupToRead = 1;
+		for (int groupSize : groupSizes)
+		{
+			std::vector<std::string> singleParsedGroup;
+			for (int ii = 0; ii < groupSize; ii++)
+			{
+				singleParsedGroup.push_back(matches[nextCaptureGroupToRead]);
+				nextCaptureGroupToRead++;
+			}
+			parsedStrings.push_back(singleParsedGroup);
+		}
+	}
+
+	return parsedStrings;
 }
