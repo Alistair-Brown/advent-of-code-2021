@@ -68,6 +68,26 @@ std::vector<int> Parsing::ParseLineOfInts(std::string delimiter)
 	return parsedInts;
 }
 
+std::vector<std::vector<int>> Parsing::ParseWhitespacelessGridOfDigits()
+{
+	std::string currentLine;
+	std::vector<std::vector<int>> gridOfInts{};
+	while (true)
+	{
+		std::getline(std::cin, currentLine);
+		if (currentLine.size() == 0) { break; }
+
+		std::vector<int> gridLine{};
+
+		for (char digit : currentLine)
+		{
+			gridLine.push_back(digit - '0');
+		}
+		gridOfInts.push_back(gridLine);
+	}
+	return gridOfInts;
+}
+
 std::vector<std::vector<std::string>> Parsing::ParseGroupsOfString(std::vector<int> groupSizes, std::string intraGroupDelimiter, std::string interGroupDelimiter)
 {
 	std::string matchString{ "" };

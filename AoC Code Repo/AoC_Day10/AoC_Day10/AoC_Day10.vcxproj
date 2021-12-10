@@ -76,6 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,6 +124,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\AoC_Common\Wrangling.h" />
     <ClInclude Include="Bracket_Syntax.h" />
   </ItemGroup>
   <ItemGroup>

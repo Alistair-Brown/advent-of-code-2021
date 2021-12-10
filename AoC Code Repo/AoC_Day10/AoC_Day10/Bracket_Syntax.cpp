@@ -1,34 +1,11 @@
 #include "Bracket_Syntax.h"
+#include "Wrangling.h"
 
 int Syntax::Bracket::DoesCharMatchAsBracket(char potentialBracket)
 {
 	if (potentialBracket == openChar) { return OpenBracket; }
 	else if (potentialBracket == closeChar) { return CloseBracket; }
 	else { return NotMatchingBracket; }
-}
-
-void Syntax::SyntaxChecker::InsertCompletionCostIntoOrder(unsigned long long int cost)
-{
-	if (completionCosts.size() == 0)
-	{
-		completionCosts.push_back(cost);
-	}
-	else
-	{
-		bool inserted{ false };
-		for (std::list<unsigned long long int>::iterator iter = completionCosts.begin();
-			 iter != completionCosts.end();
-			 iter++)
-		{
-			if (cost < *iter)
-			{
-				completionCosts.insert(iter, cost);
-				inserted = true;
-				break;
-			}
-		}
-		if (!inserted) { completionCosts.push_back(cost); }
-	}
 }
 
 void Syntax::SyntaxChecker::TryToInsertLine(std::string line)
@@ -88,7 +65,7 @@ void Syntax::SyntaxChecker::TryToInsertLine(std::string line)
 				}
 			}
 		}
-		InsertCompletionCostIntoOrder(completionCost);
+		Wrangling::InsertIntoOrderedList<unsigned long long int>(completionCosts, completionCost);
 	}
 }
 

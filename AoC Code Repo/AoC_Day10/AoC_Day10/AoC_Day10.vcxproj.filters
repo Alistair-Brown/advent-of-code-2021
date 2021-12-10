@@ -18,6 +18,9 @@
     <ClInclude Include="Bracket_Syntax.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\AoC_Common\Wrangling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bracket_Syntax.cpp">

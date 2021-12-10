@@ -32,7 +32,6 @@ namespace Syntax
 		std::vector<Bracket> bracketTypes;
 		int totalCorruption{ 0 };
 		std::list<unsigned long long int> completionCosts{};
-		void InsertCompletionCostIntoOrder(unsigned long long int cost);
 	public:
 		SyntaxChecker(std::vector<Bracket> bracketTypes) : bracketTypes{ bracketTypes } {};
 		void TryToInsertLine(std::string line);
