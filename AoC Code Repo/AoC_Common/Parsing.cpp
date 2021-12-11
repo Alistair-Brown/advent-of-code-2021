@@ -68,6 +68,10 @@ std::vector<int> Parsing::ParseLineOfInts(std::string delimiter)
 	return parsedInts;
 }
 
+// Grid returns has the top left coordinate as its origin, with a negative y axis.
+// I've not yet come across a puzzle where we can't just use the returned grid as if
+// it has an origin at the bottom left, but that technically means we're inverting
+// the input grid
 std::vector<std::vector<int>> Parsing::ParseWhitespacelessGridOfDigits()
 {
 	std::string currentLine;
