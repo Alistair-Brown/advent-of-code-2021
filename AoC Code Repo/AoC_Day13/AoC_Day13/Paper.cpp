@@ -1,6 +1,8 @@
 #include "Paper.h"
 #include <cassert>
 #include <iterator>
+#include <regex>
+#include "Parsing.h"
 
 void Paper::DottedPaper::MaybeResizeGrid(Coordinate dotThatMustFit)
 {
@@ -23,6 +25,11 @@ void Paper::DottedPaper::ShrinkGridToWidth(int newWidth)
 	{
 		gridOfDots[rowNum].resize(newWidth);
 	}
+}
+
+void Paper::DottedPaper::ShrinkGridToHeight(int newHeight)
+{
+	gridOfDots.resize(newHeight);
 }
 
 void Paper::DottedPaper::InsertDotOnGrid(Coordinate dotCoord)
@@ -48,10 +55,10 @@ void Paper::DottedPaper::MakeFold(Coordinate foldLine)
 	assert((foldLine.xPos == 0) != (foldLine.yPos == 0));
 
 	// I'll just get the x fold working for now, since that's the first puzzle.
+	std::list<Coordinate> newlyFoldedDots{};
 	if (foldLine.xPos > 0)
 	{
-		int xFoldLine = foldLine.xPos;
-		std::list<Coordinate> newlyFoldedDots{};
+		int xFoldLine = foldLine.xPos;		
 		ShrinkGridToWidth(xFoldLine);
 
 		for (std::list<Coordinate>::iterator coordIter = dotLocations.begin();
@@ -75,17 +82,82 @@ void Paper::DottedPaper::MakeFold(Coordinate foldLine)
 				coordIter++;
 			}
 		}
+	}
+	else
+	{
+		int yFoldLine = foldLine.yPos;
+		ShrinkGridToHeight(yFoldLine);
 
-		for (std::list<Coordinate>::iterator coordIter = newlyFoldedDots.begin();
-			coordIter != newlyFoldedDots.end();
-			coordIter++)
+		for (std::list<Coordinate>::iterator coordIter = dotLocations.begin();
+			coordIter != dotLocations.end();)
 		{
-			dotLocations.insert(dotLocations.end(), *coordIter);
+			assert(coordIter->yPos != yFoldLine);
+
+			if (coordIter->yPos > yFoldLine)
+			{
+				Coordinate newDot{ coordIter->xPos, coordIter->yPos - ((coordIter->yPos - yFoldLine) * 2) };
+				if (!gridOfDots[newDot.yPos][newDot.xPos])
+				{
+					newlyFoldedDots.push_back(newDot);
+					gridOfDots[newDot.yPos][newDot.xPos] = true;
+				}
+
+				coordIter = dotLocations.erase(coordIter);
+			}
+			else
+			{
+				coordIter++;
+			}
 		}
+	}
+	for (std::list<Coordinate>::iterator coordIter = newlyFoldedDots.begin();
+		coordIter != newlyFoldedDots.end();
+		coordIter++)
+	{
+		dotLocations.insert(dotLocations.end(), *coordIter);
 	}
 }
 
 unsigned int Paper::DottedPaper::NumberOfDots()
 {
 	return dotLocations.size();
+}
+
+void Paper::DottedPaper::PrintDots()
+{
+	for (std::vector<bool> row : gridOfDots)
+	{
+		for (bool isDot : row)
+		{
+			if (isDot)
+			{
+				std::cout << "X";
+			}
+			else
+			{
+				std::cout << " ";
+			}
+		}
+		std::cout << std::endl;
+	}
+}
+
+Paper::Coordinate Paper::ParseFoldInstruction(std::string instructionLine)
+{
+	std::regex matchString{ "fold along (x|y)=([0-9]+)" };
+	std::smatch matches;
+	Coordinate parsedInstruction;
+
+	std::regex_match(instructionLine, matches, matchString);
+	int foldMagnitude = Parsing::ConvertStringToInt(matches[2]);
+	if (matches[1] == "x")
+	{
+		parsedInstruction = Coordinate(foldMagnitude, 0);
+	}
+	else
+	{
+		assert(matches[1] == "y");
+		parsedInstruction = Coordinate(0, foldMagnitude);
+	}
+	return parsedInstruction;
 }

@@ -8,6 +8,7 @@ namespace Paper
 	{
 		int xPos;
 		int yPos;
+		Coordinate() : Coordinate(0, 0) {};
 		Coordinate(int x, int y) : xPos{ x }, yPos{ y } {};
 	};
 
@@ -18,11 +19,14 @@ namespace Paper
 		std::list<Coordinate> dotLocations{};
 		void MaybeResizeGrid(Coordinate dotThatMustFit);
 		void ShrinkGridToWidth(int newWidth);
-		//void ShrinkGridToHeight(int newHeight);
+		void ShrinkGridToHeight(int newHeight);
 		void InsertDotOnGrid(Coordinate dotCoord);
 	public:
 		void MakeDot(Coordinate dotCoord);
 		void MakeFold(Coordinate foldLine);
 		unsigned int NumberOfDots();
+		void PrintDots();
 	};
+
+	Coordinate ParseFoldInstruction(std::string instructionLine);
 }
