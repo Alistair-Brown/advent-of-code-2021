@@ -26,5 +26,11 @@ int main()
 	}
 
 	polymerisation.MakeInsertionSteps(10);
+	std::cout << "Difference between most and least common is " << polymerisation.DifferenceBetweenMostAndLeastFrequentElement() << std::endl;
 
+	for (int ii = 0; ii < 5; ii++)
+	{
+		polymerisation.MakeInsertionSteps(6);
+		std::cout << "Managed " << 10 + (ii + 1) * 6 << " steps" << std::endl;
+	}
 }
