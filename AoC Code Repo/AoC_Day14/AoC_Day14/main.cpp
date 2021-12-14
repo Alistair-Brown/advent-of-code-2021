@@ -7,30 +7,31 @@ int main()
 	std::string polymerTemplate;
 	std::getline(std::cin, polymerTemplate);
 
-	Polymer::Polymerisation polymerisation{ polymerTemplate };
-
 	// Remove the next blank line
 	std::string emptyLine;
 	std::getline(std::cin, emptyLine);
 
 	std::vector<std::vector<std::string>> rawishInsertionRule;
-	std::pair<std::string, std::string> insertionRule;
+	std::pair<std::string, std::string> singleInsertionRule;
+	std::vector<std::pair<std::string, std::string>> insertionRules;
 	while (true)
 	{
 		rawishInsertionRule = Parsing::ParseGroupsOfString({ 2 }, " -> ", "");
 		if (rawishInsertionRule.size() == 0) { break; }
 
-		insertionRule.first = rawishInsertionRule[0][0];
-		insertionRule.second = rawishInsertionRule[0][1];
-		polymerisation.AddInsertionRule(insertionRule);
+		singleInsertionRule.first = rawishInsertionRule[0][0];
+		singleInsertionRule.second = rawishInsertionRule[0][1];
+
+		insertionRules.push_back(singleInsertionRule);
 	}
+
+	Polymer::Polymerisation polymerisation{ polymerTemplate, insertionRules };
 
 	polymerisation.MakeInsertionSteps(10);
-	std::cout << "Difference between most and least common is " << polymerisation.DifferenceBetweenMostAndLeastFrequentElement() << std::endl;
+	std::cout << "Difference between most and least common after 10 steps is " <<
+		polymerisation.DifferenceBetweenMostAndLeastFrequentElement() << std::endl;
 
-	for (int ii = 0; ii < 5; ii++)
-	{
-		polymerisation.MakeInsertionSteps(6);
-		std::cout << "Managed " << 10 + (ii + 1) * 6 << " steps" << std::endl;
-	}
+	polymerisation.MakeInsertionSteps(30);
+	std::cout << "Difference between most and least common after another 30 is " <<
+		polymerisation.DifferenceBetweenMostAndLeastFrequentElement() << std::endl;
 }

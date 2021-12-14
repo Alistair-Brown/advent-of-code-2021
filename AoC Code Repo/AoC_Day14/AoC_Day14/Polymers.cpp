@@ -2,49 +2,41 @@
 
 void Polymer::Polymerisation::MakeSingleInsertionStep()
 {
-	std::string newString = polymerString;
-	std::string subString;
-	int insertionsMade{ 0 };
+	std::unordered_map<std::string, unsigned long long int> newLetterPairTotals = zeroedLetterPairTotals;
 
-	for (unsigned int ii = 0; ii < polymerString.size() - 1; ii++)
+	for (auto const& letterPair : currentLetterPairTotals)
 	{
-		subString = polymerString.substr(ii, 2);
-		if (insertionRules.find(subString) != insertionRules.end())
-		{
-			newString.insert(ii + 1 + insertionsMade, insertionRules[subString]);
-			// Shameless assumption that the substring only has one element.
-			IncrementElementOccurence(insertionRules[subString][0]);
-			insertionsMade++;
-		}
+		newLetterPairTotals[insertionRules[letterPair.first].first] += letterPair.second;
+		newLetterPairTotals[insertionRules[letterPair.first].second] += letterPair.second;
 	}
-	polymerString = newString;
+
+	currentLetterPairTotals = newLetterPairTotals;
 }
 
-void Polymer::Polymerisation::IncrementElementOccurence(char element)
+Polymer::Polymerisation::Polymerisation(
+	std::string polymerTemplate,
+	std::vector<std::pair<std::string, std::string>> insertionRules)
 {
-	if (elementOccurences.find(element) == elementOccurences.end())
+	for (std::pair<std::string, std::string> rule : insertionRules)
 	{
-		elementOccurences[element] = ElementOccurences{ element };
+		AddInsertionRule(rule);
 	}
-	else
+	
+	currentLetterPairTotals = zeroedLetterPairTotals;
+	for (unsigned int ii = 0; ii < polymerTemplate.size() - 1; ii++)
 	{
-		elementOccurences[element].Increment();
+		std::string elementPair = polymerTemplate.substr(ii, 2);
+		currentLetterPairTotals[elementPair]++;
 	}
-}
 
-Polymer::Polymerisation::Polymerisation(std::string polymerTemplate)
-{
-	polymerString = polymerTemplate;
-
-	for (char element : polymerTemplate)
-	{
-		IncrementElementOccurence(element);
-	}
+	firstAndLast = std::pair<char, char>{ polymerTemplate[0], polymerTemplate[polymerTemplate.size() - 1] };
 }
 
 void Polymer::Polymerisation::AddInsertionRule(std::pair<std::string, std::string> rule)
 {
-	insertionRules[rule.first] = rule.second;
+	insertionRules[rule.first] = std::pair<std::string, std::string>{ 
+		std::string{rule.first[0] + rule.second}, std::string{rule.second + rule.first[1]} };
+	zeroedLetterPairTotals[rule.first] = 0;
 }
 
 void Polymer::Polymerisation::MakeInsertionSteps(int numSteps)
@@ -55,31 +47,61 @@ void Polymer::Polymerisation::MakeInsertionSteps(int numSteps)
 	}
 }
 
-unsigned int Polymer::Polymerisation::DifferenceBetweenMostAndLeastFrequentElement()
+void Polymer::Polymerisation::IncreaseElementOccurences(
+	char element,
+	unsigned long long int numOccurences,
+	std::unordered_map<char, unsigned long long int> &elementOccurences)
 {
-	ElementOccurences leastFrequent;
-	ElementOccurences mostFrequent;
+	if (elementOccurences.find(element) == elementOccurences.end())
+	{
+		elementOccurences[element] = numOccurences;
+	}
+	else
+	{
+		elementOccurences[element] += numOccurences;
+	}
+}
+
+unsigned long long int Polymer::Polymerisation::DifferenceBetweenMostAndLeastFrequentElement()
+{
+	unsigned long long int leastFrequent;
+	unsigned long long int mostFrequent;
+	std::unordered_map<char, unsigned long long int> elementOccurences{};
+
+	for (auto const& letterPair : currentLetterPairTotals)
+	{
+		IncreaseElementOccurences(letterPair.first[0], letterPair.second, elementOccurences);
+		IncreaseElementOccurences(letterPair.first[1], letterPair.second, elementOccurences);
+	}
 
 	bool firstElement{ true };
 	for (auto const& element : elementOccurences)
 	{
+		unsigned long long int elementCount = element.second;
+		// Account for the fact that every element was counted twice, except the 2 on the end
+		if ((element.first == firstAndLast.first) || (element.first == firstAndLast.second))
+		{
+			elementCount += 1;
+		}
+		elementCount /= 2;
+
 		if (firstElement)
 		{
-			leastFrequent = element.second;
-			mostFrequent = element.second;
+			leastFrequent = elementCount;
+			mostFrequent = elementCount;
 			firstElement = false;
 		}
 		else
 		{
-			if (element.second.Occurences() < leastFrequent.Occurences()) 
+			if (elementCount < leastFrequent)
 			{
-				leastFrequent = element.second;
+				leastFrequent = elementCount;
 			}
-			else if (element.second.Occurences() > mostFrequent.Occurences())
+			else if (elementCount > mostFrequent)
 			{
-				mostFrequent = element.second;
+				mostFrequent = elementCount;
 			}
 		}
 	}
-	return mostFrequent.Occurences() - leastFrequent.Occurences();
+	return mostFrequent - leastFrequent;
 }

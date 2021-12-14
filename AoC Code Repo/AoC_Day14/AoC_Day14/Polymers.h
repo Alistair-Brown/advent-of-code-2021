@@ -5,31 +5,22 @@
 
 namespace Polymer
 {
-	class ElementOccurences
-	{
-	private:
-		char letter;
-		unsigned int occurences{ 1 };
-	public:
-		ElementOccurences() : ElementOccurences{ 'A' } {};
-		ElementOccurences(char letter) : letter{ letter } {};
-		void Increment() { occurences++; }
-		unsigned int Occurences() const { return occurences; }
-	};
-
 	class Polymerisation
 	{
 	private:
-		std::unordered_map<std::string, std::string> insertionRules{};
-		std::string polymerString;
+		std::unordered_map<std::string, std::pair<std::string, std::string>> insertionRules{};
+		std::unordered_map<std::string, unsigned long long int> currentLetterPairTotals;
+		std::unordered_map<std::string, unsigned long long int> zeroedLetterPairTotals;
+		std::pair<char, char> firstAndLast;
 		void MakeSingleInsertionStep();
-		void IncrementElementOccurence(char element);
-		std::unordered_map<char, ElementOccurences> elementOccurences{};
+		void IncreaseElementOccurences(
+			char element,
+			unsigned long long int numOccurences,
+			std::unordered_map<char, unsigned long long int> &elementOccurences);
 	public:
-		Polymerisation(std::string polymerTemplate);
+		Polymerisation(std::string polymerTemplate, std::vector<std::pair<std::string, std::string>> insertionRules);
 		void AddInsertionRule(std::pair<std::string, std::string> rule);
 		void MakeInsertionSteps(int numSteps);
-		std::string OutputPolymerString() { return polymerString; }
-		unsigned int DifferenceBetweenMostAndLeastFrequentElement();
+		unsigned long long int DifferenceBetweenMostAndLeastFrequentElement();
 	};
 }
