@@ -42,6 +42,7 @@ namespace Chiton
 		void FindMinimumRiskRoutes();
 	public:
 		ChitonCave(std::vector<std::vector<int>> inputRiskGrid);
+		~ChitonCave();
 		int MinimumRiskToEnd();
 	};
 }

@@ -41,6 +41,11 @@ Chiton::ChitonCave::ChitonCave(std::vector<std::vector<int>> inputRiskGrid)
 	minimumRiskToReachPosition[0][0]->MakeStartingCell();
 }
 
+Chiton::ChitonCave::~ChitonCave()
+{
+	// TODO: Free off all the RiskNodes I allocated
+}
+
 int Chiton::ChitonCave::MinimumRiskToEnd()
 {
 	FindMinimumRiskRoutes();
