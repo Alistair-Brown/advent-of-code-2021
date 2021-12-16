@@ -9,6 +9,20 @@ std::string Parsing::ParseStringFromConsole()
 	return parsedString;
 }
 
+std::string Parsing::ParseStringFromConsoleIgnoringLineBreaks()
+{
+	std::string completeString;
+	std::string nextString;
+
+	while (true)
+	{
+		std::getline(std::cin, nextString);
+		if (nextString.size() == 0) { break; }
+		else { completeString += nextString; }
+	}
+	return completeString;
+}
+
 int Parsing::ParseIntFromConsole()
 {
 	int parsedInt;
@@ -19,6 +33,83 @@ int Parsing::ParseIntFromConsole()
 int Parsing::ConvertStringToInt(std::string stringToConvert)
 {
 	return std::strtol(stringToConvert.c_str(), nullptr, 10);
+}
+
+std::string Parsing::ConvertHexStringToBinary(std::string hexString)
+{
+	std::string binaryString;
+
+	for (char character : hexString)
+	{
+		switch (character)
+		{
+		case '0':
+			binaryString += binaryZero;
+			break;
+		case '1':
+			binaryString += binaryOne;
+			break;
+		case '2':
+			binaryString += binaryTwo;
+			break;
+		case '3':
+			binaryString += binaryThree;
+			break;
+		case '4':
+			binaryString += binaryFour;
+			break;
+		case '5':
+			binaryString += binaryFive;
+			break;
+		case '6':
+			binaryString += binarySix;
+			break;
+		case '7':
+			binaryString += binarySeven;
+			break;
+		case '8':
+			binaryString += binaryEight;
+			break;
+		case '9':
+			binaryString += binaryNine;
+			break;
+		case 'A':
+			binaryString += binaryA;
+			break;
+		case 'B':
+			binaryString += binaryB;
+			break;
+		case 'C':
+			binaryString += binaryC;
+			break;
+		case 'D':
+			binaryString += binaryD;
+			break;
+		case 'E':
+			binaryString += binaryE;
+			break;
+		case 'F':
+			binaryString += binaryF;
+			break;
+		default:
+			assert(false);
+		}
+	}
+
+	return binaryString;
+}
+
+unsigned long long int Parsing::ConvertBinaryToInt(std::string binaryString)
+{
+	unsigned long long int currentBitValue = pow(2, binaryString.size() - 1);
+	unsigned long long int totalValue{ 0 };
+
+	for (char bit : binaryString)
+	{
+		if (bit == '1') { totalValue += currentBitValue; }
+		currentBitValue /= 2;
+	}
+	return totalValue;
 }
 
 std::vector<int> Parsing::ParseLineOfInts(std::string delimiter)
