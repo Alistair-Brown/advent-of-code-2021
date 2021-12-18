@@ -31,7 +31,7 @@ namespace Packet
 	private:
 		int lengthTypeID;
 		int length;
-		std::vector<Packet *> contents;
+		std::vector<Packet *> contents{};
 
 		void ParseNextChildPacket(std::string &packets);
 		void ParsePacket(int versionIn, int typeIDIn, std::string &contents);

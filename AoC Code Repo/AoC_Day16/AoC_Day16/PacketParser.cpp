@@ -70,93 +70,69 @@ void Packet::OperatorPacket::ParseContents(std::string & contents)
 unsigned long long int Packet::OperatorPacket::SumOperation()
 {
 	unsigned long long int value{ 0 };
-	//std::cout << "Sum operation: ";
 	for (Packet * packet : contents)
 	{
-		unsigned long long int packetValue = packet->Value();
-		//std::cout << packetValue << ", ";
-		value += packetValue;
+		value += packet->Value();
 	}
-	//std::cout << "= " << value << std::endl;
 	return value;
 }
 
 unsigned long long int Packet::OperatorPacket::ProductOperation()
 {
-	unsigned long long int value{ 0 };
-	//std::cout << "Product operation: ";
+	unsigned long long int value{ 1 };
 	for (Packet * packet : contents)
 	{
-		unsigned long long int packetValue = packet->Value();
-		//std::cout << packetValue << ", ";
-		if (value == 0) { value = packetValue; } //first packet
-		else { value *= packetValue; }
+		value *= packet->Value();
 	}
-	//std::cout << "= " << value << std::endl;
 	return value;
 }
 
 unsigned long long int Packet::OperatorPacket::MinimumOperation()
 {
 	unsigned long long int value{ UINT64_MAX };
-	//std::cout << "Minimum operation: ";
 	for (Packet * packet : contents)
 	{
 		unsigned long long int packetValue = packet->Value();
-		//std::cout << packetValue << ", ";
 		if (packetValue < value) { value = packetValue; }
 	}
-	//std::cout << "= " << value << std::endl;
 	return value;
 }
 
 unsigned long long int Packet::OperatorPacket::MaximumOperation()
 {
 	unsigned long long int value{ 0 };
-	//std::cout << "Maximum operation: ";
 	for (Packet * packet : contents)
 	{
 		unsigned long long int packetValue = packet->Value();
-		//std::cout << packetValue << ", ";
 		if (packetValue > value) { value = packetValue; }
 	}
-	//std::cout << "= " << value << std::endl;
 	return value;
 }
 
 unsigned long long int Packet::OperatorPacket::GreaterThanOperation()
 {
 	assert(contents.size() == 2);
-	//std::cout << "Greater than operation: ";
 	unsigned long long int packetValue1 = contents[0]->Value();
 	unsigned long long int packetValue2 = contents[1]->Value();
-	//std::cout << packetValue1 << ", " << packetValue2;
 	unsigned long long int rc = packetValue1 > packetValue2 ? 1 : 0;
-	//std::cout << " = " << rc << std::endl;
 	return rc;
 }
 
 unsigned long long int Packet::OperatorPacket::LessThanOperation()
 {
 	assert(contents.size() == 2);
-	//std::cout << "Less than operation: ";
 	unsigned long long int packetValue1 = contents[0]->Value();
 	unsigned long long int packetValue2 = contents[1]->Value();
-	//std::cout << packetValue1 << ", " << packetValue2;
 	unsigned long long int rc = packetValue1 < packetValue2 ? 1 : 0;
-	//std::cout << " = " << rc << std::endl;
 	return rc;
 }
 
 unsigned long long int Packet::OperatorPacket::EqualToOperation()
 {
 	assert(contents.size() == 2);
-	std::cout << "Equal to operation: ";
 	unsigned long long int packetValue1 = contents[0]->Value();
 	unsigned long long int packetValue2 = contents[1]->Value();
-	std::cout << packetValue1 << ", " << packetValue2;
 	unsigned long long int rc = packetValue1 == packetValue2 ? 1 : 0;
-	std::cout << " = " << rc << std::endl;
 	return rc;
 }
 
@@ -171,15 +147,14 @@ Packet::OperatorPacket::OperatorPacket(std::string completePacket)
 	assert(typeIDIn != literalID);
 
 	ParsePacket(versionIn, typeIDIn, completePacket);
-	std::cout << "Remainder of packet is " << completePacket << std::endl;
 }
 
 Packet::OperatorPacket::~OperatorPacket()
 {
-	//for (Packet * packet : contents)
-	//{
-	//	delete packet;
-	//}
+	for (Packet * packet : contents)
+	{
+		delete packet;
+	}
 }
 
 unsigned long long int Packet::OperatorPacket::Value()
@@ -232,14 +207,10 @@ Packet::LiteralPacket::LiteralPacket(int versionIn, int typeIDIn, std::string & 
 	typeID = typeIDIn;
 
 	std::string valueAsBinary;
-	int numberOfElements{ 0 };
-
-	std::cout << "A bunch of preceding binary is " << contents.substr(0, 64) << std::endl;
 
 	bool reachedEnd{ false };
 	while (!reachedEnd)
 	{
-		numberOfElements++;
 		if (Parsing::ConvertBinaryToInt(contents.substr(0, 1)) == 0) { reachedEnd = true; }
 		contents.erase(0, 1);
 
@@ -247,7 +218,5 @@ Packet::LiteralPacket::LiteralPacket(int versionIn, int typeIDIn, std::string & 
 		contents.erase(0, 4);
 	}
 
-	std::cout << "Literal has binary " << valueAsBinary << std::endl;
 	value = Parsing::ConvertBinaryToInt(valueAsBinary);
-	std::cout << "Literal has value " << value << std::endl;
 }

@@ -37,7 +37,7 @@ int Parsing::ConvertStringToInt(std::string stringToConvert)
 
 std::string Parsing::ConvertHexStringToBinary(std::string hexString)
 {
-	std::string binaryString;
+	std::string binaryString{};
 
 	for (char character : hexString)
 	{
@@ -93,6 +93,7 @@ std::string Parsing::ConvertHexStringToBinary(std::string hexString)
 			break;
 		default:
 			assert(false);
+			break;
 		}
 	}
 
