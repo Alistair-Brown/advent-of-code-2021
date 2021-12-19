@@ -160,6 +160,25 @@ std::vector<int> Parsing::ParseLineOfInts(std::string delimiter)
 	return parsedInts;
 }
 
+std::vector<std::vector<int>> Parsing::ParseMultipleLinesOfInts(std::string delimiter)
+{
+	std::vector<std::vector<int>> parsedLines;
+
+	while (true)
+	{
+		std::vector<int> singleLine = ParseLineOfInts(delimiter);
+		if (singleLine.size() > 0)
+		{
+			parsedLines.push_back(singleLine);
+		}
+		else
+		{
+			break;
+		}
+	}
+	return parsedLines;
+}
+
 // Grid returns has the top left coordinate as its origin, with a negative y axis.
 // I've not yet come across a puzzle where we can't just use the returned grid as if
 // it has an origin at the bottom left, but that technically means we're inverting
