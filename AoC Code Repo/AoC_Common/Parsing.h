@@ -7,6 +7,7 @@
 namespace Parsing
 {
 	std::string ParseStringFromConsole();
+	std::string ParseLineFromConsole();
 	std::string ParseStringFromConsoleIgnoringLineBreaks();
 	std::vector<int> ParseLineOfInts(std::string delimiter);
 	std::vector<std::vector<int>> ParseMultipleLinesOfInts(std::string delimiter);

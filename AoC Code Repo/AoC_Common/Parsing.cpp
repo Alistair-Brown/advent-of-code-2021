@@ -9,6 +9,13 @@ std::string Parsing::ParseStringFromConsole()
 	return parsedString;
 }
 
+std::string Parsing::ParseLineFromConsole()
+{
+	std::string parsedLine;
+	std::getline(std::cin, parsedLine);
+	return parsedLine;
+}
+
 std::string Parsing::ParseStringFromConsoleIgnoringLineBreaks()
 {
 	std::string completeString;
