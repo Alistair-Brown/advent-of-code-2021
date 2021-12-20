@@ -48,6 +48,7 @@ namespace Beacon
 		Position() {};
 		Position(Vector3 position) : position{ position } {};
 		Position GetRotatedPosition(int rotationIndex);
+		Vector3 GetPosition() { return position; }
 
 		Position operator *(Position otherVector) {
 			return Position(position * otherVector.position);
@@ -77,6 +78,7 @@ namespace Beacon
 		std::vector<std::set<Position>> rotationalBeaconOffsets{};
 	public:
 		Scanner(std::vector<std::vector<int>> inputBeacons);
+		Vector3 RelativeScannerPosition() { return relativeScannerPosition.GetPosition(); }
 		int CheckForOverlap(Scanner otherScanner, Position &relativePosition);
 		void RotationallyRelativizeBeaconsInRange(int rotationIndex);
 		void FullyRelativizeBeaconsInRange();

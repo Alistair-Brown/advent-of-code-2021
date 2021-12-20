@@ -61,4 +61,22 @@ int main()
 	}
 
 	std::cout << "Total number of beacons is " << normalizedScanners[0].NumberOfTotalBeacons() << std::endl;
+
+	int largestManhattanDistance{ 0 };
+
+	for (int ii = 0; ii < normalizedScanners.size() - 1; ii++)
+	{
+		for (int jj = ii + 1; jj < normalizedScanners.size(); jj++)
+		{
+			Beacon::Vector3 coordOne = normalizedScanners[ii].RelativeScannerPosition();
+			Beacon::Vector3 coordTwo = normalizedScanners[jj].RelativeScannerPosition();
+
+			int manhattanDistance = abs(coordOne.xPos - coordTwo.xPos) +
+				abs(coordOne.yPos - coordTwo.yPos) +
+				abs(coordOne.zPos - coordTwo.zPos);
+			if (manhattanDistance > largestManhattanDistance) { largestManhattanDistance = manhattanDistance; }
+		}
+	}
+
+	std::cout << "Largest Manhattan distance is " << largestManhattanDistance << std::endl;
 }
