@@ -68,13 +68,21 @@ namespace Dirac
 		int maximumPosition;
 		int scoreToWin;
 		DiracDice dice;
+		// The pair used as a key holds the current position, and the required score.
+		// Then the map stored as a value holds the number of ways to achieve each
+		// possible score (i.e. what gets returned by NumberOfWaysToAchieveScore().
+		// This cache means that NumberOfWaysToAchieveScore will only actually
+		// have to do real work less than 200 times in the whole program.
+		std::map<std::pair<int, int>, std::map<int, unsigned long long int>> cachedWaysToAchieveScores;
+		std::map<std::pair<int, int>, std::map<int, unsigned long long int>> cachedExactWaysToAchieveScores;
 
 		void IncreasePossibilitiesForTurn(
 			std::map<int, unsigned long long int> &existingTurnToPossibilityMap,
 			int turnNums,
 			unsigned long long int extraPossibilities);
 		int ScoreFromRoll(int currentPosition, int roll);
-		std::map<int, unsigned long long int> NumberOfWaysToAchieveScore(int currentPosition, int requiredScore);
+		std::map<int, unsigned long long int> NumberOfWaysToAchieveScore(int currentPosition, int requiredScore, bool exact);
+		unsigned long long NumberOfWaysToNotReachScoreInTurns(int currentPosition, int scoreToMiss, int turnLimit);
 	public:
 		DiracGame(int maxPos, int scoreToWin, int diceRolls, int diceMaxVal, int playerOnePos, int playerTwoPos) :
 			maximumPosition{ maxPos },

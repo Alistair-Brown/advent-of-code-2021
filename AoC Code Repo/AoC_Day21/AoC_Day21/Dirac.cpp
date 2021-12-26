@@ -106,40 +106,81 @@ int Dirac::DiracGame::ScoreFromRoll(int currentPosition, int roll)
 // Ways that we reached the score in a single turn are returned as ways to reach the
 // score in one turn. For results we had to call recursively for, just add 1 to
 // represent our own dice roll and return that.
-std::map<int, unsigned long long int> Dirac::DiracGame::NumberOfWaysToAchieveScore(int currentPosition, int requiredScore)
+std::map<int, unsigned long long int> Dirac::DiracGame::NumberOfWaysToAchieveScore(
+	int currentPosition, int requiredScore, bool exact)
 {
 	std::map<int, unsigned long long int> numberOfWaysToAchieveInNumberOfTurns;
 
-	std::vector<int> possibleRolls = dice.PossibleSumsPerTurn();
-	for (int roll : possibleRolls)
+	std::map<std::pair<int,int>,std::map<int, unsigned long long int>>::iterator returnedCachedExactValue =
+		cachedExactWaysToAchieveScores.find({ currentPosition, requiredScore });
+	std::map<std::pair<int, int>, std::map<int, unsigned long long int>>::iterator returnedCachedNonExactValue =
+		cachedWaysToAchieveScores.find({ currentPosition, requiredScore });
+	if (exact && (returnedCachedExactValue != cachedExactWaysToAchieveScores.end()))
 	{
-		int scoreFromRoll = ScoreFromRoll(currentPosition, roll);
-		if (scoreFromRoll >= requiredScore)
+		numberOfWaysToAchieveInNumberOfTurns = returnedCachedExactValue->second;
+	}
+	else if (!exact && (returnedCachedNonExactValue != cachedWaysToAchieveScores.end()))
+	{
+		numberOfWaysToAchieveInNumberOfTurns = returnedCachedNonExactValue->second;
+	}
+	else
+	{
+		std::vector<int> possibleRolls = dice.PossibleSumsPerTurn();
+		for (int roll : possibleRolls)
 		{
-			IncreasePossibilitiesForTurn(numberOfWaysToAchieveInNumberOfTurns, 1, 1);
+			int scoreFromRoll = ScoreFromRoll(currentPosition, roll);
+			if ((scoreFromRoll == requiredScore) ||
+				(!exact && (scoreFromRoll > requiredScore)))
+			{
+				IncreasePossibilitiesForTurn(numberOfWaysToAchieveInNumberOfTurns, 1, 1);
+			}
+			else if (scoreFromRoll < requiredScore)
+			{
+				std::map<int, unsigned long long int> waysToAchieveRemainingScore =
+					NumberOfWaysToAchieveScore(scoreFromRoll, requiredScore - scoreFromRoll, exact);
+				for (auto const &mapping : waysToAchieveRemainingScore)
+				{
+					IncreasePossibilitiesForTurn(numberOfWaysToAchieveInNumberOfTurns, (mapping.first + 1), mapping.second);
+				}
+			}
+		}
+
+		if (exact)
+		{
+			cachedExactWaysToAchieveScores[{ currentPosition, requiredScore }] =
+				numberOfWaysToAchieveInNumberOfTurns;
 		}
 		else
 		{
-			std::map<int, unsigned long long int> waysToAchieveRemainingScore =
-				NumberOfWaysToAchieveScore(scoreFromRoll, requiredScore - scoreFromRoll);
-			for (auto const &mapping : waysToAchieveRemainingScore)
-			{
-				IncreasePossibilitiesForTurn(numberOfWaysToAchieveInNumberOfTurns, (mapping.first + 1), mapping.second);
-			}
+			cachedWaysToAchieveScores[{ currentPosition, requiredScore }] =
+				numberOfWaysToAchieveInNumberOfTurns;
 		}
 	}
 
 	return numberOfWaysToAchieveInNumberOfTurns;
 }
 
-// TODO: Lots of opportunities for caching being missed out on throughtout the stack below
-// this point, which should speed up my program substantially.
+// Number of ways a player can spend a certain number of turns without reaching
+// a particular score.
+// The number of ways they could do this is equal to the number of ways they
+// could achieve a lower score in that number of turns.
+unsigned long long Dirac::DiracGame::NumberOfWaysToNotReachScoreInTurns(int currentPosition, int scoreToMiss, int turnLimit)
+{
+	unsigned long long int numberOfWaysToFail{ 0 };
+	for (int possibleScore = 1; possibleScore < scoreToMiss; possibleScore++)
+	{
+		numberOfWaysToFail +=
+			NumberOfWaysToAchieveScore(currentPosition, possibleScore, true)[turnLimit];
+	}
+	return numberOfWaysToFail;
+}
+
 unsigned long long int Dirac::DiracGame::NumberOfUniversesBestPlayerWinsIn()
 {
 	std::map<int, unsigned long long int> playerOnePlayPossibilities =
-		NumberOfWaysToAchieveScore(playerOneStartPos, scoreToWin);
+		NumberOfWaysToAchieveScore(playerOneStartPos, scoreToWin, false);
 	std::map<int, unsigned long long int> playerTwoPlayPossibilities =
-		NumberOfWaysToAchieveScore(playerTwoStartPos, scoreToWin);
+		NumberOfWaysToAchieveScore(playerTwoStartPos, scoreToWin, false);
 
 	unsigned long long int playerOneWins{ 0 };
 	unsigned long long int playerTwoWins{ 0 };
@@ -147,19 +188,17 @@ unsigned long long int Dirac::DiracGame::NumberOfUniversesBestPlayerWinsIn()
 	{
 		int playerOneTurnsTaken = playerOneTurnPossibilities.first;
 		unsigned long long int playerOneWaysToSpendTurns = playerOneTurnPossibilities.second;
-		for (std::pair<int, unsigned long long int> playerTwoTurnPossibilities : playerOnePlayPossibilities)
-		{
-			int playerTwoTurnsTaken = playerTwoTurnPossibilities.first;
-			unsigned long long int playerTwoWaysToSpendTurns = playerTwoTurnPossibilities.second;
-			if (playerOneTurnsTaken <= playerTwoTurnsTaken)
-			{
-				playerOneWins += playerOneWaysToSpendTurns * playerTwoWaysToSpendTurns;
-			}
-			else
-			{
-				playerTwoWins += playerOneWaysToSpendTurns * playerTwoWaysToSpendTurns;
-			}
-		}
+
+		playerOneWins += playerOneWaysToSpendTurns *
+			NumberOfWaysToNotReachScoreInTurns(playerTwoStartPos, scoreToWin, playerOneTurnsTaken - 1);
+	}
+	for (std::pair<int, unsigned long long int> playerTwoTurnPossibilities : playerTwoPlayPossibilities)
+	{
+		int playerTwoTurnsTaken = playerTwoTurnPossibilities.first;
+		unsigned long long int playerTwoWaysToSpendTurns = playerTwoTurnPossibilities.second;
+
+		playerTwoWins += playerTwoWaysToSpendTurns *
+			NumberOfWaysToNotReachScoreInTurns(playerOneStartPos, scoreToWin, playerTwoTurnsTaken);
 	}
 
 	return ((playerOneWins > playerTwoWins) ? playerOneWins : playerTwoWins);
