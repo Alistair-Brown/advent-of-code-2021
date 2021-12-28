@@ -21,9 +21,20 @@ namespace alu
 
 	class Operation
 	{
+	protected:
+		bool knownMinMax{ false };
+		long long int minPossibleValue{ 0 };
+		long long int maxPossibleValue{ 0 };
 	public:
 		virtual long long int GetValue() = 0;
 		virtual std::string PrintAsString() = 0;
+
+		virtual bool HasConstantValue() { return false; }
+		virtual bool CanBeGreaterThanNine() { return true; }
+		bool HasKnownMinMax() { return knownMinMax; }
+		long long int MinPossibleValue() { return minPossibleValue; }
+		long long int MaxPossibleValue() { return maxPossibleValue; }
+		void SetMinMaxRange(long long int min, long long int max);
 	};
 
 	class InputOperation : Operation
@@ -31,9 +42,16 @@ namespace alu
 	private:
 		char inputDigit; // 'a' for most significant, 'b' for next etc
 	public:
-		InputOperation(char inputDigit) : inputDigit{ inputDigit } {};
+		InputOperation(char inpDigit)
+		{
+			inputDigit = inpDigit;
+			knownMinMax = true;
+			minPossibleValue = 1;
+			maxPossibleValue = 9;
+		};
 
-		long long int GetValue() { return 0; }
+		bool CanBeGreaterThanNine() { return false; }
+		long long int GetValue() { return 1; }
 		std::string PrintAsString() { return std::string(1, inputDigit); }
 	};
 
@@ -42,9 +60,10 @@ namespace alu
 	private:
 		long long int value;
 	public:
-		ValueOperation(long long int value) : value{ value } {};
+		ValueOperation(long long int val);
 
-		long long int GetValue() { return 0; }
+		bool HasConstantValue() { return true; }
+		long long int GetValue() { return value; }
 		std::string PrintAsString() { return std::to_string(value); }
 	};
 
@@ -56,9 +75,9 @@ namespace alu
 	public:
 		AddOperation(Operation *valueOne, Operation *valueTwo) : valueOne{ valueOne }, valueTwo{ valueTwo } {};
 
-		long long int GetValue() { return 0; }
+		long long int GetValue() { return 1; }
 		std::string PrintAsString() { 
-			return "( " + valueOne->PrintAsString() + " + " + valueTwo->PrintAsString() + " )"; }
+			return "(" + valueOne->PrintAsString() + " + " + valueTwo->PrintAsString() + ")"; }
 	};
 
 	class MultiplyOperation : Operation
@@ -69,9 +88,9 @@ namespace alu
 	public:
 		MultiplyOperation(Operation *valueOne, Operation *valueTwo) : valueOne{ valueOne }, valueTwo{ valueTwo } {};
 
-		long long int GetValue() { return 0; }
+		long long int GetValue() { return 1; }
 		std::string PrintAsString() {
-			return "( " + valueOne->PrintAsString() + " * " + valueTwo->PrintAsString() + " )";
+			return "(" + valueOne->PrintAsString() + " * " + valueTwo->PrintAsString() + ")";
 		}
 	};
 
@@ -83,9 +102,9 @@ namespace alu
 	public:
 		DivideOperation(Operation *valueOne, Operation *valueTwo) : valueOne{ valueOne }, valueTwo{ valueTwo } {};
 
-		long long int GetValue() { return 0; }
+		long long int GetValue() { return 1; }
 		std::string PrintAsString() {
-			return "( " + valueOne->PrintAsString() + " / " + valueTwo->PrintAsString() + " )";
+			return "(" + valueOne->PrintAsString() + " / " + valueTwo->PrintAsString() + ")";
 		}
 	};
 
@@ -97,9 +116,9 @@ namespace alu
 	public:
 		ModuloOperation(Operation *valueOne, Operation *valueTwo) : valueOne{ valueOne }, valueTwo{ valueTwo } {};
 
-		long long int GetValue() { return 0; }
+		long long int GetValue() { return 1; }
 		std::string PrintAsString() {
-			return "( " + valueOne->PrintAsString() + " % " + valueTwo->PrintAsString() + " )";
+			return "(" + valueOne->PrintAsString() + " % " + valueTwo->PrintAsString() + ")";
 		}
 	};
 
@@ -109,11 +128,18 @@ namespace alu
 		Operation *valueOne;
 		Operation *valueTwo;
 	public:
-		EqualityOperation(Operation *valueOne, Operation *valueTwo) : valueOne{ valueOne }, valueTwo{ valueTwo } {};
+		EqualityOperation(Operation *valOne, Operation *valTwo) 
+		{
+			valueOne = valOne;
+			valueTwo = valTwo;
+			knownMinMax = true;
+			minPossibleValue = 0;
+			maxPossibleValue = 1;
+		};
 
-		long long int GetValue() { return 0; }
+		long long int GetValue() { return 1; }
 		std::string PrintAsString() {
-			return "( " + valueOne->PrintAsString() + " == " + valueTwo->PrintAsString() + " )";
+			return "(" + valueOne->PrintAsString() + " == " + valueTwo->PrintAsString() + ")";
 		}
 	};
 

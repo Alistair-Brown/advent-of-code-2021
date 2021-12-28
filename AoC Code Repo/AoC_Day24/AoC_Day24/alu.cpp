@@ -5,6 +5,20 @@
 void alu::ALU::ApplyInstruction(Instruction instruction)
 {
 	Operation *&namedVariable = GetVariableReferenceFromString(instruction.inputOne);
+
+	// Change the value of the named variable according to the instruction type we're
+	// applying. Where we can instantly resolve the effect of this instruction (like adding
+	// zero having no effect, or multiplying by zero guaranteeing a zero result), do so
+	// to reduce the final expression complexity.
+	bool namedVariableIsZero = namedVariable->HasConstantValue() && (namedVariable->GetValue() == 0);
+	bool namedVariableIsOne = namedVariable->HasConstantValue() && (namedVariable->GetValue() == 1);
+	bool secondInputIsZero;
+	bool secondInputIsOne;
+	bool namedVariableGreaterThanNine = namedVariable->HasConstantValue() && (namedVariable->GetValue() > 9);
+	bool secondInputGreaterThanNine;
+
+	assert(namedVariable->HasKnownMinMax());
+
 	switch (instruction.type)
 	{
 	case OperationType::Input:		
@@ -27,22 +41,149 @@ void alu::ALU::ApplyInstruction(Instruction instruction)
 		{
 			secondInput = GetVariableReferenceFromString(instruction.inputTwo);
 		}
+		assert(secondInput->HasKnownMinMax());
+		secondInputIsZero = secondInput->HasConstantValue() && (secondInput->GetValue() == 0);
+		secondInputIsOne = secondInput->HasConstantValue() && (secondInput->GetValue() == 1);
 		switch (instruction.type)
 		{
 		case OperationType::Add:
-			namedVariable = (Operation *)new AddOperation(namedVariable, secondInput);
+			if (namedVariableIsZero)
+			{
+				namedVariable = secondInput;
+			}
+			else if (!secondInputIsZero)
+			{
+				bool newKnownMinMax{ false };
+				long long int newMin;
+				long long int newMax;
+				if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax())
+				{
+					newKnownMinMax = true;
+					newMin = namedVariable->MinPossibleValue() + secondInput->MinPossibleValue();
+					newMax = namedVariable->MaxPossibleValue() + secondInput->MaxPossibleValue();
+				}
+
+				namedVariable = (Operation *)new AddOperation(namedVariable, secondInput);
+
+				if (newKnownMinMax)
+				{
+					namedVariable->SetMinMaxRange(newMin, newMax);
+				}
+			}
 			break;
 		case OperationType::Multiply:
-			namedVariable = (Operation *)new MultiplyOperation(namedVariable, secondInput);
+			if (secondInputIsZero)
+			{
+				namedVariable = (Operation *)new ValueOperation(0);
+			}
+			else if (namedVariableIsOne)
+			{
+				namedVariable = secondInput;
+			}
+			else if (!namedVariableIsZero && !secondInputIsOne)
+			{
+				bool newKnownMinMax{ false };
+				long long int newMin;
+				long long int newMax;
+				if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax())
+				{
+					newKnownMinMax = true;
+					newMin = namedVariable->MinPossibleValue() * secondInput->MinPossibleValue();
+					newMax = namedVariable->MaxPossibleValue() * secondInput->MaxPossibleValue();
+				}
+				assert(newMax >= 0);
+				namedVariable = (Operation *)new MultiplyOperation(namedVariable, secondInput);
+
+				if (newKnownMinMax)
+				{
+					namedVariable->SetMinMaxRange(newMin, newMax);
+				}
+			}
 			break;
 		case OperationType::Divide:
-			namedVariable = (Operation *)new DivideOperation(namedVariable, secondInput);
+			if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax() &&
+				(namedVariable->MaxPossibleValue() < secondInput->MinPossibleValue()))
+			{
+				// I haven't taken care with negative numbers here, so assert if a range has
+				// gone negative so I can come and fix that.
+				assert((namedVariable->MaxPossibleValue() >= 0) && (namedVariable->MinPossibleValue() >= 0));
+				namedVariable = (Operation *)new ValueOperation(0);
+			}
+			else if (!namedVariableIsZero && !secondInputIsOne)
+			{
+				bool newKnownMinMax{ false };
+				long long int newMin;
+				long long int newMax;
+				if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax())
+				{
+					// I haven't taken care with negative numbers here, so assert if a range has
+					// gone negative so I can come and fix that.
+					assert((namedVariable->MinPossibleValue() >= 0) && (namedVariable->MinPossibleValue() >= 0));
+
+					newKnownMinMax = true;
+					newMin = namedVariable->MinPossibleValue() / secondInput->MaxPossibleValue();
+					newMax = namedVariable->MaxPossibleValue() / secondInput->MinPossibleValue();
+				}
+
+				namedVariable = (Operation *)new DivideOperation(namedVariable, secondInput);
+
+				if (newKnownMinMax)
+				{
+					namedVariable->SetMinMaxRange(newMin, newMax);
+				}
+			}
 			break;
 		case OperationType::Modulo:
-			namedVariable = (Operation *)new ModuloOperation(namedVariable, secondInput);
+			if (!namedVariableIsZero)
+			{
+				if (secondInputIsOne)
+				{
+					namedVariable = (Operation *)new ValueOperation(0);
+				}
+				else if (!(namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax() &&
+					(namedVariable->MaxPossibleValue() < secondInput->MinPossibleValue())))
+				{
+					bool newKnownMinMax{ false };
+					long long int newMin;
+					long long int newMax;
+					if (secondInput->HasKnownMinMax())
+					{
+						newKnownMinMax = true;
+						newMin = 0;
+						newMax = secondInput->MaxPossibleValue() - 1;
+					}
+
+					namedVariable = (Operation *)new ModuloOperation(namedVariable, secondInput);
+
+					if (newKnownMinMax)
+					{
+						namedVariable->SetMinMaxRange(newMin, newMax);
+					}
+				}
+			}
 			break;
 		case OperationType::Equality:
-			namedVariable = (Operation *)new EqualityOperation(namedVariable, secondInput);
+			secondInputGreaterThanNine = secondInput->HasConstantValue() && (secondInput->GetValue() > 9);
+			if ((namedVariableGreaterThanNine && !secondInput->CanBeGreaterThanNine()) ||
+				(secondInputGreaterThanNine && !namedVariable->CanBeGreaterThanNine()))
+			{
+				namedVariable = (Operation *)new ValueOperation(0);
+			}
+			else if (namedVariable->HasConstantValue() && secondInput->HasConstantValue())
+			{
+				namedVariable = (Operation *)new ValueOperation(
+					(namedVariable->GetValue() == secondInput->GetValue()) ? 1 : 0);
+			}
+			else if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax() &&
+				((namedVariable->MaxPossibleValue() < secondInput->MinPossibleValue()) ||
+				(namedVariable->MinPossibleValue() > secondInput->MaxPossibleValue())))
+			{
+				namedVariable = (Operation *)new ValueOperation(0);
+			}
+			else
+			{
+				namedVariable = (Operation *)new EqualityOperation(namedVariable, secondInput);
+			}
 			break;
 		default:
 			assert(false);
@@ -119,4 +260,19 @@ alu::Instruction alu::CreateInstructionFromStringLine(std::vector<std::string> p
 		createdInstruction = Instruction(OperationType::Equality, parsedStringLine[1], parsedStringLine[2]);
 	}
 	return createdInstruction;
+}
+
+void alu::Operation::SetMinMaxRange(long long int min, long long int max)
+{
+	knownMinMax = true;
+	minPossibleValue = min;
+	maxPossibleValue = max;
+}
+
+alu::ValueOperation::ValueOperation(long long int val)
+{
+	value = val;
+	knownMinMax = true;
+	minPossibleValue = val;
+	maxPossibleValue = val;
 }
