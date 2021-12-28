@@ -210,6 +210,36 @@ std::vector<std::vector<int>> Parsing::ParseWhitespacelessGridOfDigits()
 	return gridOfInts;
 }
 
+std::vector<std::string> Parsing::ParseSpaceSeparatedString()
+{
+	std::string inputLine;
+	std::string nextString;
+	std::vector<std::string> parsedStrings;
+	std::getline(std::cin, inputLine);
+
+	for (char character : inputLine)
+	{
+		if (character == ' ')
+		{
+			if (nextString.size() > 0)
+			{
+				parsedStrings.push_back(nextString);
+			}
+			nextString.clear();
+		}
+		else
+		{
+			nextString += character;
+		}
+	}
+	if (nextString.size() > 0)
+	{
+		parsedStrings.push_back(nextString);
+	}
+
+	return parsedStrings;
+}
+
 std::vector<std::vector<std::string>> Parsing::ParseGroupsOfString(
 	std::vector<int> groupSizes,
 	std::string intraGroupDelimiter,

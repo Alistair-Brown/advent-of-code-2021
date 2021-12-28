@@ -12,6 +12,7 @@ namespace Parsing
 	std::vector<int> ParseLineOfInts(std::string delimiter);
 	std::vector<std::vector<int>> ParseMultipleLinesOfInts(std::string delimiter);
 	std::vector<std::vector<int>> ParseWhitespacelessGridOfDigits();
+	std::vector<std::string> ParseSpaceSeparatedString();
 	std::vector<std::vector<std::string>> ParseGroupsOfString(
 		std::vector<int> groupSizes,
 		std::string intraGroupDelimiter,
