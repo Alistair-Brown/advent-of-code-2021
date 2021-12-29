@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <utility>
 
 namespace alu
 {
@@ -155,13 +156,19 @@ namespace alu
 		Operation *wValue;
 		Operation *zValue;
 		Operation *invalid{ nullptr };
+		std::string knownDigitString;
+		unsigned int nextDigitOfString{ 0 };
 		char nextInputDigit{ 'a' };
+		std::vector<Operation *> allocatedOperations;
+		void NewlyAllocatedOperation(Operation *newOperation);
 
 		void ApplyInstruction(Instruction instruction);
 		Operation *&GetVariableReferenceFromString(std::string variableName);
 		char GetNextInputDigit();
 	public:
-		ALU(std::vector<Instruction> instructions);
+		ALU(std::vector<Instruction> instructions, std::string knownDigits);
+		~ALU();
 		std::string GetVariableExpressionAsString(char variable);
+		std::pair<long long int, long long int> PossibleZRange();
 	};
 }

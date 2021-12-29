@@ -2,6 +2,11 @@
 #include <cassert>
 #include "Parsing.h"
 
+void alu::ALU::NewlyAllocatedOperation(Operation *newOperation)
+{
+	allocatedOperations.push_back(newOperation);
+}
+
 void alu::ALU::ApplyInstruction(Instruction instruction)
 {
 	Operation *&namedVariable = GetVariableReferenceFromString(instruction.inputOne);
@@ -19,13 +24,25 @@ void alu::ALU::ApplyInstruction(Instruction instruction)
 
 	assert(namedVariable->HasKnownMinMax());
 
+	char nextDigit;
 	switch (instruction.type)
 	{
-	case OperationType::Input:		
-		namedVariable = (Operation *)new InputOperation(GetNextInputDigit());
+	case OperationType::Input:
+		nextDigit = GetNextInputDigit();
+		if ((nextDigit <= '9') && (nextDigit >= '1'))
+		{
+			namedVariable = (Operation *)new ValueOperation(nextDigit - '0');
+			NewlyAllocatedOperation(namedVariable);
+		}
+		else
+		{
+			namedVariable = (Operation *)new InputOperation(nextDigit);
+			NewlyAllocatedOperation(namedVariable);
+		}
 		break;
 	case OperationType::Value:
 		namedVariable = (Operation *)new ValueOperation(Parsing::ConvertStringToInt(instruction.inputTwo));
+		NewlyAllocatedOperation(namedVariable);
 		break;
 	case OperationType::Add:
 	case OperationType::Multiply:
@@ -36,6 +53,7 @@ void alu::ALU::ApplyInstruction(Instruction instruction)
 		if (GetVariableReferenceFromString(instruction.inputTwo) == nullptr)
 		{
 			secondInput = (Operation *)new ValueOperation(Parsing::ConvertStringToInt(instruction.inputTwo));
+			NewlyAllocatedOperation(secondInput);
 		}
 		else
 		{
@@ -53,21 +71,30 @@ void alu::ALU::ApplyInstruction(Instruction instruction)
 			}
 			else if (!secondInputIsZero)
 			{
-				bool newKnownMinMax{ false };
-				long long int newMin;
-				long long int newMax;
-				if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax())
+				if (namedVariable->HasConstantValue() && secondInput->HasConstantValue())
 				{
-					newKnownMinMax = true;
-					newMin = namedVariable->MinPossibleValue() + secondInput->MinPossibleValue();
-					newMax = namedVariable->MaxPossibleValue() + secondInput->MaxPossibleValue();
+					namedVariable = (Operation *)new ValueOperation(namedVariable->GetValue() + secondInput->GetValue());
+					NewlyAllocatedOperation(namedVariable);
 				}
-
-				namedVariable = (Operation *)new AddOperation(namedVariable, secondInput);
-
-				if (newKnownMinMax)
+				else
 				{
-					namedVariable->SetMinMaxRange(newMin, newMax);
+					bool newKnownMinMax{ false };
+					long long int newMin;
+					long long int newMax;
+					if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax())
+					{
+						newKnownMinMax = true;
+						newMin = namedVariable->MinPossibleValue() + secondInput->MinPossibleValue();
+						newMax = namedVariable->MaxPossibleValue() + secondInput->MaxPossibleValue();
+					}
+
+					namedVariable = (Operation *)new AddOperation(namedVariable, secondInput);
+					NewlyAllocatedOperation(namedVariable);
+
+					if (newKnownMinMax)
+					{
+						namedVariable->SetMinMaxRange(newMin, newMax);
+					}
 				}
 			}
 			break;
@@ -75,6 +102,7 @@ void alu::ALU::ApplyInstruction(Instruction instruction)
 			if (secondInputIsZero)
 			{
 				namedVariable = (Operation *)new ValueOperation(0);
+				NewlyAllocatedOperation(namedVariable);
 			}
 			else if (namedVariableIsOne)
 			{
@@ -82,21 +110,30 @@ void alu::ALU::ApplyInstruction(Instruction instruction)
 			}
 			else if (!namedVariableIsZero && !secondInputIsOne)
 			{
-				bool newKnownMinMax{ false };
-				long long int newMin;
-				long long int newMax;
-				if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax())
+				if (namedVariable->HasConstantValue() && secondInput->HasConstantValue())
 				{
-					newKnownMinMax = true;
-					newMin = namedVariable->MinPossibleValue() * secondInput->MinPossibleValue();
-					newMax = namedVariable->MaxPossibleValue() * secondInput->MaxPossibleValue();
+					namedVariable = (Operation *)new ValueOperation(namedVariable->GetValue() * secondInput->GetValue());
+					NewlyAllocatedOperation(namedVariable);
 				}
-				assert(newMax >= 0);
-				namedVariable = (Operation *)new MultiplyOperation(namedVariable, secondInput);
-
-				if (newKnownMinMax)
+				else
 				{
-					namedVariable->SetMinMaxRange(newMin, newMax);
+					bool newKnownMinMax{ false };
+					long long int newMin;
+					long long int newMax;
+					if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax())
+					{
+						newKnownMinMax = true;
+						newMin = namedVariable->MinPossibleValue() * secondInput->MinPossibleValue();
+						newMax = namedVariable->MaxPossibleValue() * secondInput->MaxPossibleValue();
+					}
+					assert(newMax >= 0);
+					namedVariable = (Operation *)new MultiplyOperation(namedVariable, secondInput);
+					NewlyAllocatedOperation(namedVariable);
+
+					if (newKnownMinMax)
+					{
+						namedVariable->SetMinMaxRange(newMin, newMax);
+					}
 				}
 			}
 			break;
@@ -108,28 +145,38 @@ void alu::ALU::ApplyInstruction(Instruction instruction)
 				// gone negative so I can come and fix that.
 				assert((namedVariable->MaxPossibleValue() >= 0) && (namedVariable->MinPossibleValue() >= 0));
 				namedVariable = (Operation *)new ValueOperation(0);
+				NewlyAllocatedOperation(namedVariable);
 			}
 			else if (!namedVariableIsZero && !secondInputIsOne)
 			{
-				bool newKnownMinMax{ false };
-				long long int newMin;
-				long long int newMax;
-				if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax())
+				if (namedVariable->HasConstantValue() && secondInput->HasConstantValue())
 				{
-					// I haven't taken care with negative numbers here, so assert if a range has
-					// gone negative so I can come and fix that.
-					assert((namedVariable->MinPossibleValue() >= 0) && (namedVariable->MinPossibleValue() >= 0));
-
-					newKnownMinMax = true;
-					newMin = namedVariable->MinPossibleValue() / secondInput->MaxPossibleValue();
-					newMax = namedVariable->MaxPossibleValue() / secondInput->MinPossibleValue();
+					namedVariable = (Operation *)new ValueOperation(namedVariable->GetValue() / secondInput->GetValue());
+					NewlyAllocatedOperation(namedVariable);
 				}
-
-				namedVariable = (Operation *)new DivideOperation(namedVariable, secondInput);
-
-				if (newKnownMinMax)
+				else
 				{
-					namedVariable->SetMinMaxRange(newMin, newMax);
+					bool newKnownMinMax{ false };
+					long long int newMin;
+					long long int newMax;
+					if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax())
+					{
+						// I haven't taken care with negative numbers here, so assert if a range has
+						// gone negative so I can come and fix that.
+						assert((namedVariable->MinPossibleValue() >= 0) && (namedVariable->MinPossibleValue() >= 0));
+
+						newKnownMinMax = true;
+						newMin = namedVariable->MinPossibleValue() / secondInput->MaxPossibleValue();
+						newMax = namedVariable->MaxPossibleValue() / secondInput->MinPossibleValue();
+					}
+
+					namedVariable = (Operation *)new DivideOperation(namedVariable, secondInput);
+					NewlyAllocatedOperation(namedVariable);
+
+					if (newKnownMinMax)
+					{
+						namedVariable->SetMinMaxRange(newMin, newMax);
+					}
 				}
 			}
 			break;
@@ -139,25 +186,35 @@ void alu::ALU::ApplyInstruction(Instruction instruction)
 				if (secondInputIsOne)
 				{
 					namedVariable = (Operation *)new ValueOperation(0);
+					NewlyAllocatedOperation(namedVariable);
 				}
 				else if (!(namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax() &&
 					(namedVariable->MaxPossibleValue() < secondInput->MinPossibleValue())))
 				{
-					bool newKnownMinMax{ false };
-					long long int newMin;
-					long long int newMax;
-					if (secondInput->HasKnownMinMax())
+					if (namedVariable->HasConstantValue() && secondInput->HasConstantValue())
 					{
-						newKnownMinMax = true;
-						newMin = 0;
-						newMax = secondInput->MaxPossibleValue() - 1;
+						namedVariable = (Operation *)new ValueOperation(namedVariable->GetValue() % secondInput->GetValue());
+						NewlyAllocatedOperation(namedVariable);
 					}
-
-					namedVariable = (Operation *)new ModuloOperation(namedVariable, secondInput);
-
-					if (newKnownMinMax)
+					else
 					{
-						namedVariable->SetMinMaxRange(newMin, newMax);
+						bool newKnownMinMax{ false };
+						long long int newMin;
+						long long int newMax;
+						if (secondInput->HasKnownMinMax())
+						{
+							newKnownMinMax = true;
+							newMin = 0;
+							newMax = secondInput->MaxPossibleValue() - 1;
+						}
+
+						namedVariable = (Operation *)new ModuloOperation(namedVariable, secondInput);
+						NewlyAllocatedOperation(namedVariable);
+
+						if (newKnownMinMax)
+						{
+							namedVariable->SetMinMaxRange(newMin, newMax);
+						}
 					}
 				}
 			}
@@ -168,21 +225,25 @@ void alu::ALU::ApplyInstruction(Instruction instruction)
 				(secondInputGreaterThanNine && !namedVariable->CanBeGreaterThanNine()))
 			{
 				namedVariable = (Operation *)new ValueOperation(0);
+				NewlyAllocatedOperation(namedVariable);
 			}
 			else if (namedVariable->HasConstantValue() && secondInput->HasConstantValue())
 			{
 				namedVariable = (Operation *)new ValueOperation(
 					(namedVariable->GetValue() == secondInput->GetValue()) ? 1 : 0);
+				NewlyAllocatedOperation(namedVariable);
 			}
 			else if (namedVariable->HasKnownMinMax() && secondInput->HasKnownMinMax() &&
 				((namedVariable->MaxPossibleValue() < secondInput->MinPossibleValue()) ||
 				(namedVariable->MinPossibleValue() > secondInput->MaxPossibleValue())))
 			{
 				namedVariable = (Operation *)new ValueOperation(0);
+				NewlyAllocatedOperation(namedVariable);
 			}
 			else
 			{
 				namedVariable = (Operation *)new EqualityOperation(namedVariable, secondInput);
+				NewlyAllocatedOperation(namedVariable);
 			}
 			break;
 		default:
@@ -207,21 +268,43 @@ alu::Operation *& alu::ALU::GetVariableReferenceFromString(std::string variableN
 
 char alu::ALU::GetNextInputDigit()
 {
-	char digitToReturn = nextInputDigit;
-	nextInputDigit++;
+	char digitToReturn;
+	if (nextDigitOfString < knownDigitString.size())
+	{
+		digitToReturn = knownDigitString[nextDigitOfString];
+		nextDigitOfString++;
+	}
+	else
+	{
+		digitToReturn = nextInputDigit;
+		nextInputDigit++;
+	}
 	return digitToReturn;
 }
 
-alu::ALU::ALU(std::vector<Instruction> instructions)
+alu::ALU::ALU(std::vector<Instruction> instructions, std::string knownDigits)
 {
+	knownDigitString = knownDigits;
 	xValue = (Operation *)new ValueOperation(0);
 	yValue = (Operation *)new ValueOperation(0);
 	wValue = (Operation *)new ValueOperation(0);
 	zValue = (Operation *)new ValueOperation(0);
+	NewlyAllocatedOperation(xValue);
+	NewlyAllocatedOperation(yValue);
+	NewlyAllocatedOperation(wValue);
+	NewlyAllocatedOperation(zValue);
 
 	for (Instruction instruction : instructions)
 	{
 		ApplyInstruction(instruction);
+	}
+}
+
+alu::ALU::~ALU()
+{
+	for (Operation *operation : allocatedOperations)
+	{
+		delete operation;
 	}
 }
 
@@ -230,6 +313,12 @@ std::string alu::ALU::GetVariableExpressionAsString(char variable)
 	Operation *namedVariable = GetVariableReferenceFromString(std::string(1, variable));
 	assert(namedVariable != nullptr);
 	return namedVariable->PrintAsString();
+}
+
+std::pair<long long int, long long int> alu::ALU::PossibleZRange()
+{
+	assert(zValue->HasKnownMinMax());
+	return { zValue->MinPossibleValue(), zValue->MaxPossibleValue() };
 }
 
 alu::Instruction alu::CreateInstructionFromStringLine(std::vector<std::string> parsedStringLine)
