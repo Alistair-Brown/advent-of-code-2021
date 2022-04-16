@@ -9,6 +9,6 @@ int main()
 	// 1 and print the output for manual comparison with the known answer.
 	std::ifstream myIfStream = InputRetrieval::GetInputStreamForPuzzleInput(1);
 	PuzzleAnswerPair dayOneAnswers = PuzzleSolvers::puzzleSolvers[0](myIfStream);
-	std::cout << dayOneAnswers.first << std::endl;
+	std::cout << dayOneAnswers.first << ", " << dayOneAnswers.second << std::endl;
 	return 0;
 }

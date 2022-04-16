@@ -125,12 +125,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\AoC_Common\Parsing.cpp" />
     <ClCompile Include="..\AoC_Day01\aoc_day_01.cpp" />
     <ClCompile Include="AoC_2021_main.cpp" />
     <ClCompile Include="input_retrieval\input_retrieval.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h" />
+    <ClInclude Include="..\AoC_Common\Parsing.h" />
     <ClInclude Include="..\AoC_Day01\aoc_day_01.h" />
     <ClInclude Include="input_retrieval\input_retrieval.h" />
     <ClInclude Include="puzzle_solvers\puzzle_solvers.h" />
