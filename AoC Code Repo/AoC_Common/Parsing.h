@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <type_traits>
+#include <fstream>
 
 namespace Parsing
 {
@@ -41,4 +43,35 @@ namespace Parsing
 	const std::string binaryD{ "1101" };
 	const std::string binaryE{ "1110" };
 	const std::string binaryF{ "1111" };
+
+	// Most of the parsing functions in this header only expect to parse input files
+	// into ints and strings. This function allows that to be statically asserted.
+	template <typename T>
+	constexpr bool ValidParsingType()
+	{
+		bool isValid = (
+			std::is_same<int, T>::value ||
+			std::is_same<std::string, T>::value);
+		return isValid;
+	}
+
+	// Parses an input file of values separated by whitespace into a vector of
+	// the desired type (only int and string currently supported by this template).
+	// This function will begin parsing from the current location of the get pointer,
+	// and will not reset the get pointer when parsing is complete.
+	template<typename T>
+	std::vector<T> SeparateOnWhitespace(std::ifstream &inputFile)
+	{
+		static_assert(ValidParsingType<T>());
+
+		std::vector<T> parsedValues{};
+		T singleValue;
+		while (!inputFile.eof())
+		{
+			inputFile >> singleValue;
+			parsedValues.push_back(singleValue);
+		}
+
+		return parsedValues;
+	}
 }
