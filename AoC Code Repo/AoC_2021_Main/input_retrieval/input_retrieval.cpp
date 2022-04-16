@@ -1,11 +1,12 @@
 #include "input_retrieval.h"
 #include <assert.h>
 #include <iostream>
+#include <filesystem>
 
 // Returns an input file stream to the file containing the puzzle input for
 // a given day. It is the responsibility of the caller to close the filestream
 // when finished with it.
-std::ifstream InputRetrieval::GetOutputStreamForPuzzleInput(unsigned int day)
+std::ifstream InputRetrieval::GetInputStreamForPuzzleInput(unsigned int day)
 {
 	// All possible day numbers for advent code are either 1 or 2 digits e.g. 6 or 21.
 	// Single digit day numbers are all prepended with a leading 0 to keep them ordered
@@ -23,7 +24,15 @@ std::ifstream InputRetrieval::GetOutputStreamForPuzzleInput(unsigned int day)
 		puzzleInputFileExtension
 	};
 	std::ifstream puzzleInputFile{ fullRelativePathToInput };
-	assert(puzzleInputFile);
+
+	if (!puzzleInputFile)
+	{
+		std::cout <<
+			"Failed to find puzzle input file: " <<
+			std::filesystem::absolute(std::filesystem::path(fullRelativePathToInput)) <<
+			std::endl;
+		assert(false);
+	}
 
 	return puzzleInputFile;
 }

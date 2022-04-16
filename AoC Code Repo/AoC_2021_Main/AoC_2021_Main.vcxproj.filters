@@ -21,15 +21,21 @@
     <ClCompile Include="input_retrieval\input_retrieval.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day01\aoc_day_01.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="puzzle_solvers.h">
+    <ClInclude Include="input_retrieval\input_retrieval.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="input_retrieval\input_retrieval.h">
+    <ClInclude Include="..\AoC_Day01\aoc_day_01.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="puzzle_solvers\puzzle_solvers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
