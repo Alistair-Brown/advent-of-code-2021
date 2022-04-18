@@ -1,11 +1,11 @@
 #include <iostream>
 #include <cassert>
 #include "Parsing.h"
-#include "aoc_day_01.h"
+#include "puzzle_solvers.h"
 
 // Day 1 was a simple case of comparing the relative size of subsequent elements in a list
 // of ints, with part 2 instead comparing the relative size of subsequent groups of ints.
-PuzzleAnswerPair AocDayOne::aocDayOneSolver(std::ifstream &puzzleInputFile)
+PuzzleAnswerPair PuzzleSolvers::AocDayOneSolver(std::ifstream &puzzleInputFile)
 {
 	PuzzleAnswerPair puzzleAnswerPair{};
 	int totalGreaterThans{ 0 };

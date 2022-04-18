@@ -2,7 +2,6 @@
 #include <string>
 #include <fstream>
 #include <utility>
-#include "aoc_day_01.h"
 #include "aoc_common_types.h"
 
 // Provides the means to access the puzzle solver functions for each day.
@@ -10,6 +9,8 @@
 // to a specific day's solver.
 namespace PuzzleSolvers
 {
+	PuzzleAnswerPair AocDayOneSolver(std::ifstream &puzzleInputFile);
+
 	constexpr unsigned int numberOfPuzzleSolvers = 1;
-	constexpr PuzzleFunc puzzleSolvers[numberOfPuzzleSolvers] = { AocDayOne::aocDayOneSolver };
+	constexpr PuzzleFunc puzzleSolvers[numberOfPuzzleSolvers] = { AocDayOneSolver };
 }

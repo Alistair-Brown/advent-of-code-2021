@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Day 01">
+      <UniqueIdentifier>{343dbf10-8f9a-4924-9e2e-afee0ec3bf4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Day 02">
+      <UniqueIdentifier>{bf5b1712-6728-45d4-82e4-7629b0c25661}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -21,11 +27,11 @@
     <ClCompile Include="input_retrieval\input_retrieval.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\AoC_Day01\aoc_day_01.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\AoC_Common\Parsing.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day01\aoc_day_01.cpp">
+      <Filter>Day 01</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -33,9 +39,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="input_retrieval\input_retrieval.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\AoC_Day01\aoc_day_01.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="puzzle_solvers\puzzle_solvers.h">
