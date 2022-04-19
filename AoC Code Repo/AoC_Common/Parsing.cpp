@@ -1,6 +1,4 @@
 #include "Parsing.h"
-#include <regex>
-#include <cassert>
 
 std::string Parsing::ParseStringFromConsole() 
 {
@@ -283,4 +281,19 @@ std::vector<std::vector<std::string>> Parsing::ParseGroupsOfString(
 	}
 
 	return parsedStrings;
+}
+
+// Parse an input file stream into a vector of strings, one per line.
+std::vector<std::string> Parsing::SeparateInputIntoLines(std::ifstream & inputFile)
+{
+	std::vector<std::string> parsedLines{};
+	unsigned int linesParsed = 0;
+
+	while (!inputFile.eof())
+	{
+		parsedLines.push_back("");
+		std::getline(inputFile, parsedLines[linesParsed++]);
+	}
+
+	return parsedLines;
 }
