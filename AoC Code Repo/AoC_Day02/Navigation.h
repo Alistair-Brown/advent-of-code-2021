@@ -3,17 +3,17 @@
 
 namespace Navigation {
 
-	enum Direction { Up, Down, Forwards, Backwards };
+	enum Direction { Up, Down, Forwards };
 	Direction GetDirectionFromString(std::string directionString);
 
-	// A command to move something according to this scheme takes a direction and a magnitude.
+	// A command to move something according today's puzzle input scheme takes a direction and a magnitude.
 	struct MovementCommand {
-	public:
-		Direction direction;
-		int magnitude;
-
-		MovementCommand(Direction direction, int magnitude) :
-			direction(direction), magnitude(magnitude) {}
+		public:
+			Direction direction;
+			int magnitude;
+			
+			MovementCommand(Direction direction, int magnitude) :
+				direction(direction), magnitude(magnitude) {}
 	};
 
 	// Holds the position of an object which has both a horizontal and vertical component.
