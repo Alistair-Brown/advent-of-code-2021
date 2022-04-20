@@ -82,58 +82,67 @@ namespace Parsing
 		return parsedValues;
 	}
 
+	// Return a value of any type (with heavy restrictions, read on) with a value
+	// set from a string (e.g. for a string type, the value is just the same
+	// as the input, but for an int type we get the value using stoi).
+	// 
+	// We need to be quite careful with what types we will attempt to deduce a
+	// value for from a string, so this template is currently explicitly specialized
+	// for only int and string as types for which it makes sense to assign to value
+	// to from a string and for which we've written code to do so correctly.
+	template <typename T>
+	T SetValueFromString(const std::string &stringIn)
+	{
+		static_assert(false);
+	}
+	template <>
+	inline std::string SetValueFromString(const std::string &stringIn)
+	{
+		return std::string{ stringIn };
+	}
+	template <>
+	inline int SetValueFromString(const std::string &stringIn)
+	{
+		// If the input string is one which could be validly converted into an int,
+		// stoi will use it in its entirety, which we can verify by checking the value
+		// of pos once stoi is finished parsing the string into an int.
+		unsigned int pos;
+		int returnValue = std::stoi(stringIn, &pos);
+		assert(pos == stringIn.size());
+
+		return std::stoi(stringIn);
+	}
+
 	// This overload of AssignMatchesToElements handles the final case of this
 	// variadic template, with a single input string and single variable reference
-	// left to stream it into.
+	// left to assign a value to.
 	template <typename T>
-	void StreamStringsToVars(std::deque<std::string> inputStrings,
+	void AssignStringsToVars(std::deque<std::string> inputStrings,
 		T &finalVar)
 	{
-		static_assert(ValidParsingType<T>());
-
 		// All overloads of this function must be called with an equal number of input
 		// strings and variable references to parse into. Since the other overload recurses
 		// into this one, we can enforce that here by making sure we only have one
-		// input string remaining to stream into this final variable.
+		// input string remaining to assign as the value of this final variable.
 		assert(inputStrings.size() == 1);
 
-		std::istringstream streamToInsert{ inputStrings[0] };
-		while (!streamToInsert.eof())
-		{
-			streamToInsert >> finalVar;
-
-			// If we're trying to extract an integer value, it shouldn't take multiple
-			// extraction operations to retrieve the value from the stringstream.
-			if (std::is_integral<T>::value) { assert(streamToInsert.eof()); }
-		}
+		finalVar = SetValueFromString<T>(inputStrings[0]);
 	}
 
 	// Given an arbitrary number of strings (as a vector), and an equal number of variable
-	// references, stream the value of each string into the corresponding variable.
-	// Currently the only types that this function will support streaming into
-	// are int and string.
+	// references, assign the value of each variable according to the corresponding string.
+	// Currently the only types that this function will support assigning values to
+	// are int and string (most types can't have their value deduced from a string,
+	// so we need to be careful to only perform this operation on types for which
+	// it makes sense).
 	template <typename T, typename... Args>
-	void StreamStringsToVars(std::deque<std::string> inputStrings,
+	void AssignStringsToVars(std::deque<std::string> inputStrings,
 		T &firstVariable,
 		Args & ... remainingVariables)
 	{
-		static_assert(ValidParsingType<T>());
-
-		std::istringstream streamToInsert{ inputStrings[0] };
-		while (!streamToInsert.eof())
-		{
-			streamToInsert >> firstVariable;
-
-			// If we're trying to extract an integer value, it shouldn't take multiple
-			// extraction operations to retrieve the value from the stringstream.
-			if (std::is_integral<T>::value) { assert(streamToInsert.eof()); }
-		}
-
-		// To continue streaming the remaining strings into the remaining variables,
-		// we just remove the front element from the string deque, and recurse with
-		// the remaining variables.
+		firstVariable = SetValueFromString<T>(inputStrings[0]);
 		inputStrings.pop_front();
-		StreamStringsToVars(inputStrings, remainingVariables...);
+		AssignStringsToVars(inputStrings, remainingVariables...);
 	}
 
 	// Given a string and a regex pattern of matches, extract the match groups
@@ -164,6 +173,6 @@ namespace Parsing
 
 		// With the input string correctly split into the desired portions,
 		// assign those values to our variable references.
-		StreamStringsToVars(matchesAsStrings, elemsToParseInto...);
+		AssignStringsToVars(matchesAsStrings, elemsToParseInto...);
 	}
 }
