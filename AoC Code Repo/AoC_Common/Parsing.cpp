@@ -284,6 +284,9 @@ std::vector<std::vector<std::string>> Parsing::ParseGroupsOfString(
 }
 
 // Parse an input file stream into a vector of strings, one per line.
+// This function will assume the get pointer for the input file stream
+// is already in the correct position, and will not close the file once
+// done parsing, that's all up to the caller.
 std::vector<std::string> Parsing::SeparateInputIntoLines(std::ifstream & inputFile)
 {
 	std::vector<std::string> parsedLines{};
@@ -297,3 +300,12 @@ std::vector<std::string> Parsing::SeparateInputIntoLines(std::ifstream & inputFi
 
 	return parsedLines;
 }
+
+// Moves the get pointer for an input file stream to the start of the next line.
+// Primary use case is to skip blank lines in input files.
+void Parsing::SeekNextLine(std::ifstream & inputFile)
+{
+	std::string dummyString;
+	std::getline(inputFile, dummyString);
+}
+

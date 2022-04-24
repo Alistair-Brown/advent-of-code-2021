@@ -50,6 +50,7 @@ namespace Parsing
 	const std::string binaryF{ "1111" };
 
 	std::vector<std::string> SeparateInputIntoLines(std::ifstream &inputFile);
+	void SeekNextLine(std::ifstream &inputFile);
 
 	// Most of the parsing functions in this header only expect to parse input files
 	// into ints and strings. This function allows that to be statically asserted.
@@ -174,5 +175,90 @@ namespace Parsing
 		// With the input string correctly split into the desired portions,
 		// assign those values to our variable references.
 		AssignStringsToVars(matchesAsStrings, elemsToParseInto...);
+	}
+
+	// Parses a line of the input file consisting of values separated by a known delimiter,
+	// into a vector of the desired type (only int and string currently supported by this template).
+	// The line to be parsed will be taken from the current position of the get pointer,
+	// and the get pointer will be left pointing at the subsequent line.
+	template <typename T>
+	std::vector<T> ParseLineOnDelimiters(std::ifstream &inputFile, std::string delimiter)
+	{
+		static_assert(ValidParsingType<T>());
+
+		std::vector<T> parsedValues{};
+		T singleValue;
+
+		std::string inputLine;
+		std::getline(inputFile, inputLine);
+
+		// An empty input line will result in an empty vector being returned.
+		if (inputLine.length() == 0)
+		{
+			return parsedValues;
+		}
+
+		// Remove any leading whitespace
+		while (inputLine.substr(0, 1) == space)
+		{
+			inputLine.erase(0, 1);
+		}
+
+		// Now work along the line parsing value based on where the next delimiter is, erasing parsed
+		// values and delimiters as we go.
+		while (true)
+		{
+			singleValue = SetValueFromString<T>(inputLine.substr(0, inputLine.find(delimiter)));
+			parsedValues.push_back(singleValue);
+
+			// Jump forward past the delimiter to get the next value, also removing any extra
+			// whitespace following the delimiter.
+			inputLine.erase(0, inputLine.find(delimiter) + delimiter.size());
+			while (inputLine.substr(0, 1) == space)
+			{
+				inputLine.erase(0, 1);
+			}
+
+			// If this is the last value, we won't have a final delimiter after it. So if there
+			// are no delimiters remaining we just parse out the rest of the line.
+			if (inputLine.find(delimiter) == std::string::npos)
+			{
+				singleValue = SetValueFromString<T>(inputLine);
+				parsedValues.push_back(singleValue);
+				break;
+			}
+		}
+
+		return parsedValues;
+	}
+
+	// Parse multiple lines of an input file where each line consists of a series
+	// of values separated by a known delimiter. Values will be parsed into a 2D vector
+	// where each input line forms a single vector of values of the desired type (only int
+	// and string currently supported by this template), within the 'outer' vector.
+	// Parsing will continue until we reach a blank line or the end of the file.
+	// Parsing will begin from the current position of the get pointer,
+	// and the get pointer will be left pointing at either the end of the file, or the
+	// line after the blank line in the case that a blank line is encountered.
+	template <typename T>
+	std::vector<std::vector<T>> ParseMultipleLinesWithDelimiters(
+		std::ifstream &inputFile,
+		std::string delimiter)
+	{
+		std::vector<std::vector<T>> parsedLines{};
+
+		while (!inputFile.eof())
+		{
+			std::vector<T> singleLine = ParseLineOnDelimiters<T>(inputFile, delimiter);
+			if (singleLine.size() > 0)
+			{
+				parsedLines.push_back(singleLine);
+			}
+			else
+			{
+				break;
+			}
+		}
+		return parsedLines;
 	}
 }
