@@ -4,33 +4,37 @@
 
 namespace Binary
 {
-	// Hold a numerical value and allow operations to be performed on/with it based
-	// on the bits that make up that number in binary.
+	// Hold an unsigned integer value and allows operations to be performed on/with it based
+	// on the binary representation of that number.
 	class BinaryNumber
 	{
 	private:
-		int decimalValue;
-		static int IntegerValueOfBit(int bit);
+		unsigned int decimalValue;
+
+		unsigned int operator &(unsigned int otherNumber);
+		static inline unsigned int maxNumberOfBits{ 16 };
+		static unsigned int DecimalValueOfBitPosition(unsigned int bitPosition);
 	public:
-		BinaryNumber(int decimalValue) : decimalValue(decimalValue) {};
+		BinaryNumber(unsigned int decimalValue) : decimalValue(decimalValue) {};
 		BinaryNumber(std::string binaryNumberAsString);
-		bool IsBitSet(int bit);
-		void InvertBits(int numBits);
+
+		void InvertBits(unsigned int numBits);
 		int DecimalValue() { return decimalValue; }
 
-		static BinaryNumber MostCommonBitSettings(std::vector<BinaryNumber> numbersToAverageOver, int tieBreakValue, int numBits = 16);
-		static BinaryNumber LeastCommonBitSettings(std::vector<BinaryNumber> numbersToAverageOver, int tieBreakValue, int numBits = 16);
-		static std::vector<BinaryNumber> FilterOnBitSetting(std::vector<BinaryNumber> inputList, bool bitIsSet, int bitPosition);
-		// Defines a function capable of returning a single BinaryNumber by applying some rule to a list of
-		// BinaryNumbers or width numBits, using the tieBreakSetting to decide the bit in the case of any
-		// ties in the rule.
-		typedef BinaryNumber(*bitMaskCreator)(std::vector<BinaryNumber> inputList, int tieBreakSetting, int numBits);
-		static BinaryNumber FindSingleNumber(
-			bitMaskCreator bitMask,
+		// The bitMaskCreator function type represents a function capable of returning a single
+		// BinaryNumber based on an inputList of existing BinaryNumbers. setOnTieBreak
+		// will determine the value of any bits in this BinaryNumber which cannot be determined
+		// by whatever rule the bitMaskCreator is applying to deduce the new number.
+		typedef BinaryNumber(*BitMaskCreator)(std::vector<BinaryNumber> inputList, bool setOnTie, unsigned int numBits);
+
+		static BinaryNumber MostCommonBitSettings(std::vector<BinaryNumber> numbersToAverageOver, bool setOnTie, unsigned int numBits);
+		static BinaryNumber LeastCommonBitSettings(std::vector<BinaryNumber> numbersToAverageOver, bool setOnTie, unsigned int numBits);
+		static std::vector<BinaryNumber> FilterOnBitMask(std::vector<BinaryNumber> inputList, bool bitIsSet, unsigned int bitMask);
+
+		static BinaryNumber IterativeFilterToSingleNumber(
+			BitMaskCreator bitMask,
 			std::vector<Binary::BinaryNumber> inputLines,
-			int tieBreak,
-			int lineLength);
+			bool setOnTie,
+			unsigned int lineLength);
 	};
-
-
 }
