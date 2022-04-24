@@ -22,6 +22,9 @@
     <Filter Include="Day 03">
       <UniqueIdentifier>{29df68d1-8e10-4db9-b704-5bb02eef9388}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 04">
+      <UniqueIdentifier>{6ed16a9c-d287-48e1-b5c5-42ca7c70010e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -48,6 +51,12 @@
     <ClCompile Include="..\AoC_Day03\Binary.cpp">
       <Filter>Day 03</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day04\Bingo.cpp">
+      <Filter>Day 04</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day04\aoc_day_04.cpp">
+      <Filter>Day 04</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -67,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day03\Binary.h">
       <Filter>Day 03</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day04\Bingo.h">
+      <Filter>Day 04</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

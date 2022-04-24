@@ -7,7 +7,7 @@ namespace Bingo
 	class BingoGrid
 	{
 	private:
-		static const int numbersOfRows{ 5 }, numbersOfColumns{ 5 }; // TODO, extract this from input
+		static const int numbersOfRows{ 5 }, numbersOfColumns{ 5 };
 		int rows[numbersOfRows]{ 0 }, columns[numbersOfColumns]{ 0 };
 		int valueOfUnmarkedNumbers;
 		bool hasWon{ false };
