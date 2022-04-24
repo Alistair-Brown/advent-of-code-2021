@@ -17,6 +17,7 @@ namespace Binary
 		bool IsBitSet(int bit);
 		void InvertBits(int numBits);
 		int DecimalValue() { return decimalValue; }
+
 		static BinaryNumber MostCommonBitSettings(std::vector<BinaryNumber> numbersToAverageOver, int tieBreakValue, int numBits = 16);
 		static BinaryNumber LeastCommonBitSettings(std::vector<BinaryNumber> numbersToAverageOver, int tieBreakValue, int numBits = 16);
 		static std::vector<BinaryNumber> FilterOnBitSetting(std::vector<BinaryNumber> inputList, bool bitIsSet, int bitPosition);
@@ -29,7 +30,6 @@ namespace Binary
 			std::vector<Binary::BinaryNumber> inputLines,
 			int tieBreak,
 			int lineLength);
-
 	};
 
 
