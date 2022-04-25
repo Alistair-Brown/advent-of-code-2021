@@ -133,6 +133,8 @@
     <ClCompile Include="..\AoC_Day03\Binary.cpp" />
     <ClCompile Include="..\AoC_Day04\Bingo.cpp" />
     <ClCompile Include="..\AoC_Day04\aoc_day_04.cpp" />
+    <ClCompile Include="..\AoC_Day05\aoc_day_05.cpp" />
+    <ClCompile Include="..\AoC_Day05\SteamVents.cpp" />
     <ClCompile Include="AoC_2021_main.cpp" />
     <ClCompile Include="input_retrieval\input_retrieval.cpp" />
   </ItemGroup>
@@ -142,6 +144,7 @@
     <ClInclude Include="..\AoC_Day02\Navigation.h" />
     <ClInclude Include="..\AoC_Day03\Binary.h" />
     <ClInclude Include="..\AoC_Day04\Bingo.h" />
+    <ClInclude Include="..\AoC_Day05\SteamVents.h" />
     <ClInclude Include="input_retrieval\input_retrieval.h" />
     <ClInclude Include="puzzle_solvers\puzzle_solvers.h" />
   </ItemGroup>
