@@ -28,6 +28,9 @@
     <Filter Include="Day 05">
       <UniqueIdentifier>{fac0cf22-353e-4993-9578-13772d00bdc8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 06">
+      <UniqueIdentifier>{74ec16e8-2158-458a-bdac-5f1151d31295}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -66,6 +69,12 @@
     <ClCompile Include="..\AoC_Day05\SteamVents.cpp">
       <Filter>Day 05</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day06\aoc_day_06.cpp">
+      <Filter>Day 06</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day06\LanternFish.cpp">
+      <Filter>Day 06</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -91,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day05\SteamVents.h">
       <Filter>Day 05</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day06\LanternFish.h">
+      <Filter>Day 06</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
