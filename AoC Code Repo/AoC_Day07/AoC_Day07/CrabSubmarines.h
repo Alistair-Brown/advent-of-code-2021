@@ -10,6 +10,7 @@ namespace CrabSubmarines
 		int totalCrabSubmarines{ 0 };
 		void MaybeResizeArmada(int newMaxPosition);
 		int ArmadaMedianPosition();
+		int ComplexArmadaMedianPosition();
 		int ComplexCostToMoveArmadaToPosition(int positionToMoveTo);
 	public:
 		void AddCrabSumbarine(int position);
