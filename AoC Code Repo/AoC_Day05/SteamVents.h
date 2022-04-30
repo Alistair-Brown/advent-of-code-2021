@@ -4,43 +4,35 @@
 
 namespace Steam
 {
-	class WarningPath
+	// The coordinate path just bundles up the coordinates describing a line between
+	// two points, with a couple of helper function.
+	struct CoordinatePath
 	{
-	public:
-		struct CoordinatePath
-		{
-			int xStart;
-			int yStart;
-			int xFinish;
-			int yFinish;
-			CoordinatePath(int xStart, int yStart, int xFinish, int yFinish) :
-				xStart{ xStart }, yStart{ yStart }, xFinish{ xFinish }, yFinish{ yFinish } {};
-			bool IsHorizontalLine() { return (yStart == yFinish); }
-			bool IsVerticalLine() { return (xStart == xFinish); }
-			bool IsStraightLine() { return (IsHorizontalLine() || IsVerticalLine()); }
-		};
-		WarningPath(int xStart, int yStart, int xFinish, int yFinish) :
-			path{ xStart, yStart, xFinish, yFinish } {};
-		WarningPath(std::string pathAsString); // e.g. "1,7 -> 3,7"
-		bool IsHorizontalLine() { return path.IsHorizontalLine(); }
-		bool IsVerticalLine() { return path.IsVerticalLine(); }
-		bool IsStraightLine() { return path.IsStraightLine(); }
-		CoordinatePath GetCoordinatePath() { return path; }
+		int xStart{ 0 };
+		int yStart{ 0 };
+		int xFinish{ 0 };
+		int yFinish{ 0 };
 
-	private:
-		WarningPath::CoordinatePath path { 0,0,0,0 };
+		void OrientPath();
+		bool IsHorizontalLine() { return (yStart == yFinish); }
+		bool IsVerticalLine() { return (xStart == xFinish); }
+		bool IsDiagonalLine() { return !(IsHorizontalLine() || IsVerticalLine()); }
 	};
 
+	// The warning map is a growable map of coordinates, into which lines between given
+	// coordinates can be inserted. The map will keep track of the number of coordinates
+	// which have at least 2 lines overlapping on them, which can be queried.
 	class WarningMap
 	{
 	private:
 		std::vector<std::vector<int>> map;
-		int mapWidth();
-		int mapHeight();
+		unsigned int mapWidth();
+		unsigned int mapHeight();
+		unsigned int numberOfOverlaps{ 0 };
 	public:
-		void InsertWarningPath(WarningPath path);
-		void InsertDiagonalWarningPath(WarningPath path);
-		int NumberOfOverlapCells();
-		void MaybeExtendMapSize(int width, int height);
+		void InsertWarningPath(CoordinatePath path);
+		void InsertDiagonalWarningPath(CoordinatePath path);
+		unsigned int NumberOfOverlapCells() { return numberOfOverlaps; }
+		void MaybeExtendMapSize(unsigned int width, unsigned int height);
 	};
 }
