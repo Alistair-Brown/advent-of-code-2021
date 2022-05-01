@@ -146,6 +146,12 @@ namespace Parsing
 		AssignStringsToVars(inputStrings, remainingVariables...);
 	}
 
+	// TODO: While this function is a pretty flexible way of handling arbitrary
+	// parsing requirements, the use of a regex is pretty slow, and so it ends
+	// up significantly impacting the overall computation time for a given puzzle.
+	// (order of a couple of seconds). If I want my output to be really lightning fast
+	// for all puzzles, I'll need to switch this out for something less regex-y.
+	//
 	// Given a string and a regex pattern of matches, extract the match groups
 	// into an arbitrary number of different variables, provided to this function
 	// by reference. Currently the only supported types that we will parse the
