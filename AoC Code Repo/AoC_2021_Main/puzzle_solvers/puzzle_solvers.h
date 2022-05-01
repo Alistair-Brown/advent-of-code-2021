@@ -15,14 +15,16 @@ namespace PuzzleSolvers
 	PuzzleAnswerPair AocDayFourSolver(std::ifstream &puzzleInputFile);
 	PuzzleAnswerPair AocDayFiveSolver(std::ifstream &puzzleInputFile);
 	PuzzleAnswerPair AocDaySixSolver(std::ifstream &puzzleInputFile);
+	PuzzleAnswerPair AocDaySevenSolver(std::ifstream &puzzleInputFile);
 
-	constexpr unsigned int numberOfPuzzleSolvers = 6;
+	constexpr unsigned int numberOfPuzzleSolvers = 7;
 	constexpr PuzzleFunc puzzleSolvers[numberOfPuzzleSolvers] = { 
 		AocDayOneSolver,
 		AocDayTwoSolver,
 		AocDayThreeSolver,
 		AocDayFourSolver,
 		AocDayFiveSolver,
-		AocDaySixSolver
+		AocDaySixSolver,
+		AocDaySevenSolver
 	};
 }

@@ -25,7 +25,6 @@ int CrabSubmarines::CrabArmada::ArmadaMedianPosition()
 		}
 		currentPosition++;
 	}
-	std::cout << "Median position is " << currentPosition << std::endl;
 	return currentPosition;
 }
 
@@ -99,19 +98,5 @@ int CrabSubmarines::CrabArmada::MinimalConvergence()
 
 int CrabSubmarines::CrabArmada::MoreComplicatedMinimumConvergence()
 {
-	//int minimumConvergence{ 0 };
-	//int position{ 0 };
-	//for (int ii = 0; ii < crabsByPosition.size(); ii++)
-	//{
-	//	int convergence = ComplexCostToMoveArmadaToPosition(ii);
-	//	if ((minimumConvergence == 0) || (convergence < minimumConvergence))
-	//	{
-	//		position = ii;
-	//		minimumConvergence = convergence;
-	//	}
-	//}
-	//std::cout << "Optimum complex position is " << position << std::endl;
-	//std::cout << "My wrong position is " << ComplexArmadaMedianPosition() << std::endl;
-	//return minimumConvergence;
 	return ComplexCostToMoveArmadaToPosition(ComplexArmadaMedianPosition());
 }
