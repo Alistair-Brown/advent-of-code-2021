@@ -34,6 +34,9 @@
     <Filter Include="Day 07">
       <UniqueIdentifier>{c919ddb7-f158-4e79-a4ca-1a5fe7e52280}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 08">
+      <UniqueIdentifier>{6a5a69e5-1bb8-4578-8d95-c15482bfbcbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -84,6 +87,12 @@
     <ClCompile Include="..\AoC_Day07\CrabSubmarines.cpp">
       <Filter>Day 07</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day08\aoc_day_08.cpp">
+      <Filter>Day 08</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day08\SevenSegment.cpp">
+      <Filter>Day 08</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -115,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day07\CrabSubmarines.h">
       <Filter>Day 07</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day08\SevenSegment.h">
+      <Filter>Day 08</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
