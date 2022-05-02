@@ -141,6 +141,8 @@
     <ClCompile Include="..\AoC_Day07\CrabSubmarines.cpp" />
     <ClCompile Include="..\AoC_Day08\aoc_day_08.cpp" />
     <ClCompile Include="..\AoC_Day08\SevenSegment.cpp" />
+    <ClCompile Include="..\AoC_Day09\aoc_day_09.cpp" />
+    <ClCompile Include="..\AoC_Day09\Heightmap.cpp" />
     <ClCompile Include="AoC_2021_main.cpp" />
     <ClCompile Include="input_retrieval\input_retrieval.cpp" />
   </ItemGroup>
@@ -154,6 +156,7 @@
     <ClInclude Include="..\AoC_Day06\LanternFish.h" />
     <ClInclude Include="..\AoC_Day07\CrabSubmarines.h" />
     <ClInclude Include="..\AoC_Day08\SevenSegment.h" />
+    <ClInclude Include="..\AoC_Day09\Heightmap.h" />
     <ClInclude Include="input_retrieval\input_retrieval.h" />
     <ClInclude Include="puzzle_solvers\puzzle_solvers.h" />
   </ItemGroup>

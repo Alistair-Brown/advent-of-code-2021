@@ -309,3 +309,27 @@ void Parsing::SeekNextLine(std::ifstream & inputFile)
 	std::getline(inputFile, dummyString);
 }
 
+// Parse an input file stream consisting of a grid of digits with no whitespace
+// other than the newline between each line of the grid. Return a 2D vector representing
+// this grid, where the 0th row of that 2D vector is the first line from the file.
+// This function will assume the get pointer for the input file stream
+// is already in the correct position, and will not close the file once
+// done parsing, that's all up to the caller.
+std::vector<std::vector<int>> Parsing::ParseWhitespacelessGridOfDigits(std::ifstream & inputFile)
+{
+	std::string currentLine;
+	std::vector<std::vector<int>> gridOfInts{};
+	while (!inputFile.eof())
+	{
+		inputFile >> currentLine;
+
+		std::vector<int> gridLine{};
+		for (char digit : currentLine)
+		{
+			gridLine.push_back(digit - '0');
+		}
+		gridOfInts.push_back(gridLine);
+	}
+	return gridOfInts;
+}
+

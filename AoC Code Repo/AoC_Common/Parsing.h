@@ -51,6 +51,7 @@ namespace Parsing
 
 	std::vector<std::string> SeparateInputIntoLines(std::ifstream &inputFile);
 	void SeekNextLine(std::ifstream &inputFile);
+	std::vector<std::vector<int>> ParseWhitespacelessGridOfDigits(std::ifstream &inputFile);
 
 	// Most of the parsing functions in this header only expect to parse input files
 	// into ints and strings. This function allows that to be statically asserted.
