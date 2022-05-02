@@ -122,7 +122,7 @@ SevenSeg::SevenSegDisplay::SevenSegDisplay(
 // its constructor, work out which number is being represented by these series
 // of digits in segment format.
 unsigned int SevenSeg::SevenSegDisplay::GetValueOfSegments(
-	std::vector<std::string> digitsAsSegments)
+	std::vector<std::string> digitsAsSegments) const
 {
 	// The digits are given in order of significance from most to least, so we
 	// start off multiplying the first deduced digit by the corresponding power of

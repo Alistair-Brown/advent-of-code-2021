@@ -63,12 +63,12 @@ void Navigation::Position::ApplyMovementWithAim(MovementCommand movement)
 	}
 }
 
-int Navigation::Position::GetProductOfPositions()
+int Navigation::Position::GetProductOfPositions() const
 {
 	return horizontalPosition * verticalPosition;
 }
 
-int Navigation::Position::GetProductOfPositionsInvertingDepth()
+int Navigation::Position::GetProductOfPositionsInvertingDepth() const
 {
 	return horizontalPosition * depth();
 }

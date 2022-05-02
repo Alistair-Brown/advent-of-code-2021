@@ -22,7 +22,7 @@ void CrabSubmarines::CrabArmada::MaybeResizeArmada(unsigned int requiredPosition
 // cost all the crabs to the left of the current position 1 point of movement, but save
 // all of the crabs to the right of that position 1 point of movement. And so the optimum
 // position to move to under these rules is just the median position.
-unsigned int CrabSubmarines::CrabArmada::PartOneOptimalConvergencePosition()
+unsigned int CrabSubmarines::CrabArmada::PartOneOptimalConvergencePosition() const
 {
 	unsigned int currentPosition{ 0 };
 	int numberOfCrabs{ 0 };
@@ -53,7 +53,7 @@ unsigned int CrabSubmarines::CrabArmada::PartOneOptimalConvergencePosition()
 //    reach this current position. The optimum position is the first position at which the
 //    differential cost of moving the left hand submarines further right is greater than
 //    the cost of bringing all of the righthand submarines one step further left.
-unsigned int CrabSubmarines::CrabArmada::PartTwoOptimalConvergencePosition()
+unsigned int CrabSubmarines::CrabArmada::PartTwoOptimalConvergencePosition() const
 {
 	std::vector<ULLINT> costOfNextMoveFromLeft;
 	std::deque<ULLINT> costOfNextMoveFromRight;
@@ -119,7 +119,7 @@ void CrabSubmarines::CrabArmada::AddCrabSumbarine(unsigned int position)
 // In part one, the cost for each crab submarine to move to a position is simply the difference
 // between its current position and the convergence position. 
 // Find the minimum cost for all submarines to converge on a single point under these rules.
-unsigned int CrabSubmarines::CrabArmada::PartOneMinimalConvergenceCost()
+unsigned int CrabSubmarines::CrabArmada::PartOneMinimalConvergenceCost() const
 {
 	// First find the optimal convergence position, which will require the least fuel
 	// for all crabs to move there under the part one fuel consumption rules.
@@ -140,7 +140,7 @@ unsigned int CrabSubmarines::CrabArmada::PartOneMinimalConvergenceCost()
 // first step taken costs 1, the next step costs 2 etc.
 // Find the minimum cost to converge all submarines to a single position under
 // these rules.
-unsigned int CrabSubmarines::CrabArmada::PartTwoMinimalConvergenceCost()
+unsigned int CrabSubmarines::CrabArmada::PartTwoMinimalConvergenceCost() const
 {
 	// First find the optimal convergence position, which will require the least fuel
 	// for all crabs to move there under the part two fuel consumption rules.

@@ -51,7 +51,7 @@ void LanternFish::LanternFishTracker::DaysHavePassed(int numberOfDays)
 
 // Total number of lanterfish can be retrieved just by summing over the array
 // of lanternfish by days left to reproduce.
-ULLINT LanternFish::LanternFishTracker::TotalNumberOfLanterFish()
+ULLINT LanternFish::LanternFishTracker::TotalNumberOfLanterFish() const
 {
 	ULLINT totalFish{ 0 };
 	for (ULLINT numberOfFish : lanternFishByDaysToReproduce)

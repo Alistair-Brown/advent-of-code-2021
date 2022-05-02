@@ -19,7 +19,7 @@ namespace Binary
 		BinaryNumber(std::string binaryNumberAsString);
 
 		void InvertBits(unsigned int numBits);
-		int DecimalValue() { return decimalValue; }
+		int DecimalValue() const { return decimalValue; }
 
 		// The bitMaskCreator function type represents a function capable of returning a single
 		// BinaryNumber based on an inputList of existing BinaryNumbers. setOnTieBreak

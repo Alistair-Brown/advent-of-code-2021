@@ -27,11 +27,11 @@ namespace Navigation {
 		int horizontalPosition{ 0 };
 		int verticalPosition{ 0 };
 		int aim{ 0 };
-		int depth() { return verticalPosition * -1; }
+		int depth() const { return verticalPosition * -1; }
 	public:
 		void ApplyMovement(MovementCommand movement);
 		void ApplyMovementWithAim(MovementCommand movement);
-		int GetProductOfPositions();
-		int GetProductOfPositionsInvertingDepth();
+		int GetProductOfPositions() const;
+		int GetProductOfPositionsInvertingDepth() const;
 	};
 }

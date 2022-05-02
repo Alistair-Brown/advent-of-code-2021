@@ -18,7 +18,7 @@ namespace Bingo
 		int valueOfUnmarkedNumbers;
 		bool hasWon{ false };
 	public:
-		int ValueOfUnmarkedNumbers() { return valueOfUnmarkedNumbers; }
+		int ValueOfUnmarkedNumbers() const { return valueOfUnmarkedNumbers; }
 		void GridContainsNumber(int numberValue);
 		int CrossNumberOutFromGrid(int numberValue, int rowNumber, int columnNumber);
 	};
@@ -45,7 +45,7 @@ namespace Bingo
 		};
 		// If crossing this number our resulted in the parent grid being completed, this function
 		// will return the remaining value of unmarked numbers in that grid.
-		int CrossSelfOutInParentGrid() {
+		int CrossSelfOutInParentGrid() const {
 			auto parentGridShd = parentGrid.lock();
 			assert(parentGridShd);
 			return parentGridShd->CrossNumberOutFromGrid(numberValue, rowNumber, columnNumber); }

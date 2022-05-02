@@ -47,6 +47,6 @@ namespace SevenSeg
 		std::array<unsigned int, numberOfPossibleDigits> digitToSegmentBitsMapping;
 	public:
 		SevenSegDisplay(std::array<std::string, numLeftHandElements> unorderedDigitsAsSegments);
-		unsigned int GetValueOfSegments(std::vector<std::string> digitsAsSegments);
+		unsigned int GetValueOfSegments(std::vector<std::string> digitsAsSegments) const;
 	};
 }

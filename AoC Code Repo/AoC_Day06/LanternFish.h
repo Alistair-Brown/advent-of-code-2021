@@ -25,6 +25,6 @@ namespace LanternFish
 	public:
 		void AddALanternFish(int daysToReproduce);
 		void DaysHavePassed(int numberOfDays);
-		ULLINT TotalNumberOfLanterFish();
+		ULLINT TotalNumberOfLanterFish() const;
 	};
 }

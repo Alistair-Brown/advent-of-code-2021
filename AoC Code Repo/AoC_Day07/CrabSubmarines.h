@@ -20,11 +20,11 @@ namespace CrabSubmarines
 		unsigned int totalCrabSubmarines{ 0 };
 		void MaybeResizeArmada(unsigned int requiredPosition);
 
-		unsigned int PartOneOptimalConvergencePosition();
-		unsigned int PartTwoOptimalConvergencePosition();
+		unsigned int PartOneOptimalConvergencePosition() const;
+		unsigned int PartTwoOptimalConvergencePosition() const;
 	public:
 		void AddCrabSumbarine(unsigned int position);
-		unsigned int PartOneMinimalConvergenceCost();
-		unsigned int PartTwoMinimalConvergenceCost();
+		unsigned int PartOneMinimalConvergenceCost() const;
+		unsigned int PartTwoMinimalConvergenceCost() const;
 	};
 }

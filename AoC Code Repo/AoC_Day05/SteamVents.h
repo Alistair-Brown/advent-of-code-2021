@@ -14,9 +14,9 @@ namespace Steam
 		int yFinish{ 0 };
 
 		void OrientPath();
-		bool IsHorizontalLine() { return (yStart == yFinish); }
-		bool IsVerticalLine() { return (xStart == xFinish); }
-		bool IsDiagonalLine() { return !(IsHorizontalLine() || IsVerticalLine()); }
+		bool IsHorizontalLine() const { return (yStart == yFinish); }
+		bool IsVerticalLine() const { return (xStart == xFinish); }
+		bool IsDiagonalLine() const { return !(IsHorizontalLine() || IsVerticalLine()); }
 	};
 
 	// The warning map is a growable map of coordinates, into which lines between given
@@ -32,7 +32,7 @@ namespace Steam
 	public:
 		void InsertWarningPath(CoordinatePath path);
 		void InsertDiagonalWarningPath(CoordinatePath path);
-		unsigned int NumberOfOverlapCells() { return numberOfOverlaps; }
+		unsigned int NumberOfOverlapCells() const { return numberOfOverlaps; }
 		void MaybeExtendMapSize(unsigned int width, unsigned int height);
 	};
 }
