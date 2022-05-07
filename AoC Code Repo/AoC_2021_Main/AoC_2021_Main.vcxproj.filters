@@ -140,5 +140,8 @@
     <ClInclude Include="..\AoC_Day09\Heightmap.h">
       <Filter>Day 09</Filter>
     </ClInclude>
+    <ClInclude Include="..\AoC_Common\grid_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

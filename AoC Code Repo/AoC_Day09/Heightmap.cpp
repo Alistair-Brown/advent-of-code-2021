@@ -2,18 +2,19 @@
 #include "Wrangling.h"
 #include <unordered_set>
 
-bool HeightMap::HeightMap::LocationIsLowPoint(unsigned int xPos, unsigned int yPos)
+bool HeightMap::HeightMap::LocationIsLowPoint(GridUtils::Coordinate const& location) const
 {
 	bool northHigher, southHigher, eastHigher, westHigher;
-	int currentHeight = heightMap[yPos][xPos];
-	northHigher = (yPos == (heightMap.size() - 1)) ?
-		true : heightMap[yPos + 1][xPos] > currentHeight;
-	southHigher = (yPos == 0) ?
-		true : heightMap[yPos - 1][xPos] > currentHeight;
-	eastHigher = (xPos == (heightMap[0].size() - 1)) ?
-		true : heightMap[yPos][xPos + 1] > currentHeight;
-	westHigher = (xPos == 0) ?
-		true : heightMap[yPos][xPos - 1] > currentHeight;
+	GridUtils::Grid<int>::GridCell locationCell = heightMap[location];
+	int currentHeight = locationCell.value;
+	northHigher = locationCell.IsTopRow() ?
+		true : locationCell.Up().value > currentHeight;
+	southHigher = (locationCell.IsBottomRow()) ?
+		true : locationCell.Down().value > currentHeight;
+	eastHigher = locationCell.IsRightColumn() ?
+		true : locationCell.Right().value > currentHeight;
+	westHigher = locationCell.IsLeftColumn() ?
+		true : locationCell.Left().value > currentHeight;
 
 	if (northHigher && southHigher && eastHigher && westHigher)
 	{
@@ -28,9 +29,10 @@ bool HeightMap::HeightMap::LocationIsLowPoint(unsigned int xPos, unsigned int yP
 // Could really do with some refactoring, but this function is effectively doing a
 // breadth-first-search-esque expansion in every direction, finding how many tiles
 // it comes across before being totally walled in by edges or 9-value tiles.
-int HeightMap::HeightMap::GetBasinSize(Coordinate coordinate)
+int HeightMap::HeightMap::GetBasinSize(Coordinate coordinate) const
 {
-	std::unordered_set<Coordinate, Coordinate::CoordinateHash> exploredPositions{};
+	auto coordHash = [](Coordinate const & coord) -> size_t { return coord.xPos; };
+	std::unordered_set<Coordinate, decltype(coordHash)> exploredPositions{ 0, coordHash };
 	std::vector<Coordinate> positionsToExploreFrom{ coordinate };
 	
 	while (positionsToExploreFrom.size() > 0)
@@ -38,8 +40,8 @@ int HeightMap::HeightMap::GetBasinSize(Coordinate coordinate)
 		Coordinate positionToExploreFrom = positionsToExploreFrom.back();
 		positionsToExploreFrom.pop_back();
 
-		if (!((positionToExploreFrom.xPos == (heightMap[0].size() - 1)) ||
-			(heightMap[positionToExploreFrom.yPos][positionToExploreFrom.xPos + 1] == 9)))
+		if (!((positionToExploreFrom.xPos == (heightMap.Width() - 1)) ||
+			(heightMap[GridUtils::Coordinate{ positionToExploreFrom.xPos + 1, positionToExploreFrom.yPos }].value == 9)))
 		{
 			if (exploredPositions.find({ positionToExploreFrom.xPos + 1, positionToExploreFrom.yPos }) == exploredPositions.end())
 			{
@@ -47,15 +49,15 @@ int HeightMap::HeightMap::GetBasinSize(Coordinate coordinate)
 			}
 		}
 		if (!((positionToExploreFrom.xPos == 0) ||
-			(heightMap[positionToExploreFrom.yPos][positionToExploreFrom.xPos - 1] == 9)))
+			(heightMap[GridUtils::Coordinate{ positionToExploreFrom.xPos - 1, positionToExploreFrom.yPos }].value == 9)))
 		{
 			if (exploredPositions.find({ positionToExploreFrom.xPos - 1, positionToExploreFrom.yPos }) == exploredPositions.end())
 			{
 				positionsToExploreFrom.push_back({ positionToExploreFrom.xPos - 1, positionToExploreFrom.yPos });
 			}
 		}
-		if (!((positionToExploreFrom.yPos == (heightMap.size() - 1)) ||
-			(heightMap[positionToExploreFrom.yPos + 1][positionToExploreFrom.xPos] == 9)))
+		if (!((positionToExploreFrom.yPos == (heightMap.Height() -1)) ||
+			(heightMap[GridUtils::Coordinate{ positionToExploreFrom.xPos, positionToExploreFrom.yPos + 1 }].value == 9)))
 		{
 			if (exploredPositions.find({ positionToExploreFrom.xPos, positionToExploreFrom.yPos + 1 }) == exploredPositions.end())
 			{
@@ -63,7 +65,7 @@ int HeightMap::HeightMap::GetBasinSize(Coordinate coordinate)
 			}
 		}
 		if (!((positionToExploreFrom.yPos == 0) ||
-			(heightMap[positionToExploreFrom.yPos - 1][positionToExploreFrom.xPos] == 9)))
+			(heightMap[GridUtils::Coordinate{ positionToExploreFrom.xPos, positionToExploreFrom.yPos - 1 }].value == 9)))
 		{
 			if (exploredPositions.find({ positionToExploreFrom.xPos, positionToExploreFrom.yPos - 1 }) == exploredPositions.end())
 			{
@@ -80,13 +82,13 @@ int HeightMap::HeightMap::SumRiskLevels()
 {
 	int sumOfRiskLevels{ 0 };
 	
-	for (unsigned int yy = 0; yy < heightMap.size(); yy++)
+	for (unsigned int yy = 0; yy < heightMap.Height(); yy++)
 	{
-		for (unsigned int xx = 0; xx < heightMap[0].size(); xx++)
+		for (unsigned int xx = 0; xx < heightMap.Width(); xx++)
 		{
-			if (LocationIsLowPoint(xx, yy))
+			if (LocationIsLowPoint(GridUtils::Coordinate{ xx, yy }))
 			{
-				sumOfRiskLevels += heightMap[yy][xx] + 1;
+				sumOfRiskLevels += heightMap[GridUtils::Coordinate{ xx,yy }].value + 1;
 				lowPoints.push_back({ xx, yy });
 			}
 		}
@@ -94,7 +96,7 @@ int HeightMap::HeightMap::SumRiskLevels()
 	return sumOfRiskLevels;
 }
 
-int HeightMap::HeightMap::ProductOfLargestBasins()
+int HeightMap::HeightMap::ProductOfLargestBasins() const
 {
 	std::list<int> basinSizes{};
 	for (Coordinate lowPoint : lowPoints)

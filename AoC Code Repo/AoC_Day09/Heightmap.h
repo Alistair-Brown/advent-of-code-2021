@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "grid_utils.h"
 
 namespace HeightMap
 {
@@ -15,22 +16,15 @@ namespace HeightMap
 				if ((otherCoord.xPos == xPos) && (otherCoord.yPos == yPos)) { return true; }
 				else { return false; }
 			}
-			class CoordinateHash
-			{
-			public:
-				size_t operator()(const Coordinate &coord) const
-				{
-					return coord.xPos;
-				}
-			};
 		};
-		std::vector<std::vector<int>> heightMap;
+
+		GridUtils::Grid<int> heightMap;
 		std::vector<Coordinate> lowPoints{};
-		bool LocationIsLowPoint(unsigned int xPos, unsigned int yPos);
-		int GetBasinSize(Coordinate coordinate);
+		bool LocationIsLowPoint(GridUtils::Coordinate const& location) const;
+		int GetBasinSize(Coordinate coordinate) const;
 	public:
 		HeightMap(std::vector<std::vector<int>> heightMap) : heightMap{ heightMap } {};
 		int SumRiskLevels();
-		int ProductOfLargestBasins();
+		int ProductOfLargestBasins() const;
 	};
 }
