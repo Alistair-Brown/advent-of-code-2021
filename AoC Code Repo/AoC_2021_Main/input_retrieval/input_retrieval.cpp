@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <iostream>
 #include <filesystem>
+#include <string>
 
 // Returns an input file stream to the file containing the puzzle input for
 // a given day. It is the responsibility of the caller to close the filestream

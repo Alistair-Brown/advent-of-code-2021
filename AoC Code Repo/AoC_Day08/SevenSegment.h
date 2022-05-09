@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <vector>
+#include <string>
 
 // The cornerstone of my solution here is the representation of each segement as a bit.
 // e.g. segement 'a' uses the 1-bit, segment 'b' uses the 2-bit etc. This allows me to

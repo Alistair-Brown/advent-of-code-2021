@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <cassert>
+#include <memory>
 
 // A fair few of the advent of code problems involve working with a grid of values.
 // This namespace provides utilities for working with such grids, including a grid
@@ -14,9 +15,15 @@ namespace GridUtils
 	// access operators when reading the grid.
 	struct Coordinate
 	{
-		unsigned int x;
-		unsigned int y;
-		Coordinate(unsigned int xIn, unsigned int yIn) : x{ xIn }, y{ yIn }{};
+		unsigned int xPos;
+		unsigned int yPos;
+		Coordinate(unsigned int xIn, unsigned int yIn) : xPos{ xIn }, yPos{ yIn }{};
+
+		bool operator==(Coordinate const& otherCoord) const
+		{
+			if ((otherCoord.xPos == xPos) && (otherCoord.yPos == yPos)) { return true; }
+			else { return false; }
+		}
 
 		/*
 		TODO: Delete these commented out lines once I've refactored all the old puzzles
@@ -55,24 +62,32 @@ namespace GridUtils
 	// A 2D-vector of any required type. This grid does not hold those types directly, but
 	// instead holds a 2D-vector of 'grid cells', from the underlying value can be accessed,
 	// but which also provide methods for navigating the grid more easily than using
-	// increments/decrements on coordinates.
+	// increments/decrements on raw coordinates.
 	template<typename T>
 	class Grid
 	{
 	public:
-		class GridCell;
+		class GridCell;		
 
 	private:
 		std::vector<std::vector<GridCell>> grid;
 
 	public:
+		// We declare the Grid constructor here but have to hold off on the definition until
+		// the GridCell nested class has been defined so that we can construct GridCells.
 		Grid(std::vector<std::vector<T>> gridIn);
-
-		GridCell operator[] (Coordinate const &coord) const { return grid[coord.y][coord.x]; }
-		GridCell &operator[] (Coordinate const &coord) { return grid[coord.y][coord.x]; }
-
 		unsigned int Height() const { return grid.size(); }
 		unsigned int Width() const { return grid[0].size(); }
+
+		// Cells within the grid can be accessed by read-only value, or read/write reference.
+		GridCell operator[] (Coordinate const &coord) const { return grid[coord.yPos][coord.xPos]; }
+		GridCell &operator[] (Coordinate const &coord) { return grid[coord.yPos][coord.xPos]; }
+
+		// The Grid provides begin() and end() functions that can be used to easily iterate
+		// over every value in it.
+		class Iterator;
+		Iterator begin();
+		Iterator end();
 	};
 
 	// A single cells within a grid of type T. Provides utility functions for accessing
@@ -80,17 +95,17 @@ namespace GridUtils
 	template <typename T>
 	class Grid<T>::GridCell
 	{
-	public:
-		T value;
-
 	private:
 		const Grid<T> &parentGrid;
 		const unsigned int x;
 		const unsigned int y;
 
 	public:
+		T value;
+
 		Grid<T>::GridCell(unsigned int xIn, unsigned int yIn, Grid<T> const& grid, T valueIn) :
 			x{ xIn }, y{ yIn }, parentGrid{ grid }, value{ valueIn }{};
+		Coordinate GetCoordinate() const { return Coordinate{ x, y }; }
 
 		// Functions for determining whether a cell lies on one of the edges of the
 		// grid. Assume a grid with an origin of 0,0.
@@ -133,6 +148,15 @@ namespace GridUtils
 			assert(!IsBottomRow() && !IsLeftColumn());
 			return  parentGrid[Coordinate(x - 1, y - 1)];
 		}
+
+		friend bool operator==(const GridCell& cell1, const GridCell& cell2)
+		{
+			return cell1.GetCoordinate() == cell2.GetCoordinate();
+		}
+		friend bool operator!=(const GridCell& cell1, const GridCell& cell2)
+		{
+			return cell1.GetCoordinate() != cell2.GetCoordinate();
+		}
 	};
 
 	// We need to define the constructor for a Grid down here, since it requires knowledge
@@ -152,5 +176,103 @@ namespace GridUtils
 			}
 			grid.push_back(newLine);
 		}
+	}
+
+	// Iterator for the Grid class. Holds a pointer to a GridCell. Incrementing
+	// the iterator will either:
+	//  - Move it to the next element on the same row of the grid if we're not
+	//    the end of a row already.
+	//  - Otherwise, move it to the first element in the next row, if we're not
+	//    also on the last row of the grid.
+	//  - Otherwise, set the GridCell pointer to nullptr, since we have been
+	//    iterated off the end of the Grid and should no longer be accessed.
+	template <typename T>
+	class Grid<T>::Iterator
+	{
+	private:
+		Grid &grid;
+		GridCell *cellPtr;
+
+		// Move to point to the next element in the grid, whether that be the
+		// next element in the current row, the first element in the next row,
+		// or just nullptr if we're out of grid to iterate over.
+		void IncrementCell()
+		{
+			assert(cellPtr != nullptr);
+			Coordinate newCoord = cellPtr->GetCoordinate();
+			if (cellPtr->IsRightColumn())
+			{
+				if (cellPtr->IsTopRow())
+				{
+					cellPtr = nullptr;
+					return;
+				}
+				else
+				{
+					newCoord.xPos = 0;
+					newCoord.yPos++;
+				}
+			}
+			else
+			{
+				newCoord.xPos++;
+			}
+			cellPtr = &grid[newCoord];
+		}
+	public:
+		// An Iterator can be constructed from a Grid reference to point to
+		// the cells within, and coordinate to start the iteration from.
+		// Constructing without a coordinate will create an Iterator with a
+		// nullptr, which should be used to create the end iterator.
+		Iterator(Grid &gridIn, Coordinate coord) : grid { gridIn }
+		{
+			cellPtr = &grid[coord];
+		}
+		Iterator(Grid& gridIn) : grid{ gridIn }
+		{
+			cellPtr = nullptr;
+		}
+
+		GridCell& operator*() { return *cellPtr; }
+		GridCell* operator->() { return cellPtr; }
+
+		// Pre- and post-fix increments.
+		Iterator& operator++() { 
+			IncrementCell();
+			return *this;
+		}
+		Iterator operator++(int)
+		{
+			Iterator tempItr = *this;
+			IncrementCell();
+			return tempItr;
+		}
+
+		friend bool operator==(const Iterator &itr1, const Iterator &itr2)
+		{
+			return (itr1.cellPtr == itr2.cellPtr);
+		}
+		friend bool operator!=(const Iterator &itr1, const Iterator &itr2)
+		{
+			return (itr1.cellPtr != itr2.cellPtr);
+		}
+	};
+
+	// Begin and End iterators for iterating over a grid.
+	// The Begin iterator starts at the origin of the grid. The End iterator
+	// is constructed without passing in a coordinate, which causes the Iterator
+	// class to construct itself to have a null pointer rather than pointer to
+	// a valid GridCell, in the same way that it will set its pointer to
+	// nullptr when it detects that it is being iterated out of the bounds
+	// of the Grid.
+	template <typename T>
+	typename Grid<T>::Iterator Grid<T>::begin()
+	{
+		return Iterator{ *this, Coordinate{ 0, 0 } };
+	}
+	template <typename T>
+	typename Grid<T>::Iterator Grid<T>::end()
+	{
+		return Iterator{ *this };
 	}
 }

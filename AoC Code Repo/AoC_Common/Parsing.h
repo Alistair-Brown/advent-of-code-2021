@@ -53,6 +53,12 @@ namespace Parsing
 	void SeekNextLine(std::ifstream &inputFile);
 	std::vector<std::vector<int>> ParseWhitespacelessGridOfDigits(std::ifstream &inputFile);
 
+	// Some of the templates in this function should only ever have their explicit specializations
+	// compiled, and need to static_assert(false) in the base case. To get around the fact that
+	// the compiler trips on a static_assert(false), we'll define a new variable which always
+	// returns false, but with just enough abstraction to pull the wool over the compiler's eyes.
+	template <typename T> constexpr bool always_false = false;
+
 	// Most of the parsing functions in this header only expect to parse input files
 	// into ints and strings. This function allows that to be statically asserted.
 	template <typename T>
@@ -95,7 +101,7 @@ namespace Parsing
 	template <typename T>
 	T SetValueFromString(const std::string &stringIn)
 	{
-		static_assert(false);
+		static_assert(always_false<T>);
 	}
 	template <>
 	inline std::string SetValueFromString(const std::string &stringIn)

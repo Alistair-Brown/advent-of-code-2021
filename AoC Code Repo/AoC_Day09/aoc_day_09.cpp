@@ -13,6 +13,6 @@ PuzzleAnswerPair PuzzleSolvers::AocDayNineSolver(std::ifstream &puzzleInputFile)
 
 	HeightMap::HeightMap heightMap{ gridOfDigits };
 	return PuzzleAnswerPair{
-		std::to_string(heightMap.SumRiskLevels()),
+		std::to_string(heightMap.SumLowPointRiskLevels()),
 		std::to_string(heightMap.ProductOfLargestBasins()) };
 }
