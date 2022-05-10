@@ -107,7 +107,7 @@ int HeightMap::HeightMap::ProductOfLargestBasins() const
 	// low point, so we can simply find the basin that each of our low points resides
 	// in, and be sure that we will neither miss or double count any basin.
 	std::list<int> basinSizes{};
-	for (auto lowPoint : lowPoints)
+	for (auto const &lowPoint : lowPoints)
 	{
 		int basinSize = GetBasinSize(lowPoint);
 		Wrangling::InsertIntoOrderedList(basinSizes, basinSize);

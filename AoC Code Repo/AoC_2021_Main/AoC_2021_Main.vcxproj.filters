@@ -40,6 +40,9 @@
     <Filter Include="Day 09">
       <UniqueIdentifier>{dc8edc72-a281-4418-9a5d-75501c586a63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 10">
+      <UniqueIdentifier>{3a45bdfa-c7e6-4312-82ec-8b49c3ae2349}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -102,6 +105,12 @@
     <ClCompile Include="..\AoC_Day09\Heightmap.cpp">
       <Filter>Day 09</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day10\aoc_day_10.cpp">
+      <Filter>Day 10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day10\Bracket_Syntax.cpp">
+      <Filter>Day 10</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -142,6 +151,12 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Common\grid_utils.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Common\Wrangling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day10\Bracket_Syntax.h">
+      <Filter>Day 10</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
