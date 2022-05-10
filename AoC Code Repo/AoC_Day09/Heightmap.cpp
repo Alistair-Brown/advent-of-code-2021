@@ -1,6 +1,6 @@
 #include "Heightmap.h"
-#include "Wrangling.h"
 #include <unordered_set>
+#include <set>
 
 // A location is a low point if the height of the adjacent cells in every cardinal direction
 // is greater than itself.
@@ -106,17 +106,17 @@ int HeightMap::HeightMap::ProductOfLargestBasins() const
 	// Start by finding the size of every basin. Every basin contains exactly one
 	// low point, so we can simply find the basin that each of our low points resides
 	// in, and be sure that we will neither miss or double count any basin.
-	std::list<int> basinSizes{};
+	std::set<unsigned int> basinSizes{};
 	for (auto const &lowPoint : lowPoints)
 	{
 		int basinSize = GetBasinSize(lowPoint);
-		Wrangling::InsertIntoOrderedList(basinSizes, basinSize);
+		basinSizes.insert(basinSize);
 	}
 
 	// Our basin sizes were listed in order by the previous step, so just take
 	// the back 3 elements of the list.
 	int productOfTopThree{ 1 };
-	std::list<int>::reverse_iterator iter = basinSizes.rbegin();
+	auto iter = basinSizes.rbegin();
 	for (int ii = 0; ii < 3; ii++)
 	{
 		productOfTopThree *= *iter;

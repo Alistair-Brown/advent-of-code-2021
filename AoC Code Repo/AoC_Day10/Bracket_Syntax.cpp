@@ -1,5 +1,4 @@
 #include "Bracket_Syntax.h"
-#include "Wrangling.h"
 #include <cassert>
 
 // Compare a single character with the open and close characters for this bracket
