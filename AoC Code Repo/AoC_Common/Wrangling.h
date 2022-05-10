@@ -1,6 +1,8 @@
 #pragma once
 #include <list>
 
+// TODO: Delete once I've got rid of everything referencing this, a set already provides
+// this functionality.
 namespace Wrangling
 {
 	template <typename T>
