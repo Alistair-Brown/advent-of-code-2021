@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "GridUtils.h"
+#include "grid_utils.h"
 
 namespace Dumbo
 {
@@ -8,15 +8,15 @@ namespace Dumbo
 	{
 	private:
 		static const int levelRequiredToFlash{ 10 };
-		std::vector<std::vector<int>> octopusEnergyLevels;
+		GridUtils::Grid<int> octopusEnergyLevels;
 		unsigned int flashesOccuredSoFar{ 0 };
 		unsigned int stepsTakenSoFar{ 0 };
 		unsigned int firstSimultaneousFlash{ 0 };
 		void AdvanceSingleStep();
-		bool AdjacentFlashTriggersOctopus(GridUtils::Coordinate coord);
+		bool AdjacentFlashTriggersOctopus(GridUtils::Grid<int>::GridCell& octopus);
 	public:
 		OctopusGrid(std::vector<std::vector<int>> startingEnergyLevels) : octopusEnergyLevels{ startingEnergyLevels } {};
-		void AdvanceSteps(int numSteps);
+		void AdvanceSteps(unsigned int numSteps);
 		unsigned int NumberOfFlashesOccured() { return flashesOccuredSoFar; }
 		unsigned int AdvanceUntilFirstSimultaneousFlash();
 	};

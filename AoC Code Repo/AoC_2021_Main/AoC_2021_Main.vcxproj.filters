@@ -43,6 +43,9 @@
     <Filter Include="Day 10">
       <UniqueIdentifier>{3a45bdfa-c7e6-4312-82ec-8b49c3ae2349}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 11">
+      <UniqueIdentifier>{90269a92-3716-4ce2-9704-66f483885421}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -111,6 +114,12 @@
     <ClCompile Include="..\AoC_Day10\Bracket_Syntax.cpp">
       <Filter>Day 10</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day11\aoc_day_11.cpp">
+      <Filter>Day 11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day11\Dumbo_Octopus.cpp">
+      <Filter>Day 11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -157,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day10\Bracket_Syntax.h">
       <Filter>Day 10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day11\Dumbo_Octopus.h">
+      <Filter>Day 11</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
