@@ -24,6 +24,10 @@ namespace GridUtils
 			if ((otherCoord.xPos == xPos) && (otherCoord.yPos == yPos)) { return true; }
 			else { return false; }
 		}
+		bool operator!=(Coordinate const& otherCoord) const
+		{
+			return !(*this == otherCoord);
+		}
 
 		/*
 		TODO: Delete these commented out lines once I've refactored all the old puzzles
@@ -96,14 +100,14 @@ namespace GridUtils
 	class Grid<T>::GridCell
 	{
 	private:
-		const Grid<T> &parentGrid;
+		Grid<T> &parentGrid;
 		const unsigned int x;
 		const unsigned int y;
 
 	public:
 		T value;
 
-		Grid<T>::GridCell(unsigned int xIn, unsigned int yIn, Grid<T> const& grid, T valueIn) :
+		Grid<T>::GridCell(unsigned int xIn, unsigned int yIn, Grid<T> & grid, T valueIn) :
 			x{ xIn }, y{ yIn }, parentGrid{ grid }, value{ valueIn }{};
 		Coordinate GetCoordinate() const { return Coordinate{ x, y }; }
 
@@ -116,11 +120,21 @@ namespace GridUtils
 
 		// Functions for returning the adjacent cell in a given direction.
 		// Requires that there is actually a cell in that direction.
+		// Can either return the adjacent cell as read-only value (const version
+		// of the function) or read-write reference (non-const version of function);
 		GridCell Up() const {
 			assert(!IsTopRow());
 			return parentGrid[Coordinate(x, y + 1)]; 
 		}
+		GridCell &Up() {
+			assert(!IsTopRow());
+			return parentGrid[Coordinate(x, y + 1)];
+		}
 		GridCell Down() const { 
+			assert(!IsBottomRow());
+			return parentGrid[Coordinate(x, y - 1)];
+		}
+		GridCell &Down() {
 			assert(!IsBottomRow());
 			return parentGrid[Coordinate(x, y - 1)];
 		}
@@ -128,7 +142,15 @@ namespace GridUtils
 			assert(!IsRightColumn());
 			return  parentGrid[Coordinate(x + 1, y)];
 		}
+		GridCell &Right() {
+			assert(!IsRightColumn());
+			return  parentGrid[Coordinate(x + 1, y)];
+		}
 		GridCell Left() const {
+			assert(!IsLeftColumn());
+			return  parentGrid[Coordinate(x - 1, y)];
+		}
+		GridCell &Left() {
 			assert(!IsLeftColumn());
 			return  parentGrid[Coordinate(x - 1, y)];
 		}
@@ -136,7 +158,15 @@ namespace GridUtils
 			assert(!IsTopRow() && !IsRightColumn());
 			return  parentGrid[Coordinate(x + 1, y + 1)];
 		}
+		GridCell &UpRight() {
+			assert(!IsTopRow() && !IsRightColumn());
+			return  parentGrid[Coordinate(x + 1, y + 1)];
+		}
 		GridCell DownRight() const {
+			assert(!IsBottomRow() && !IsRightColumn());
+			return  parentGrid[Coordinate(x + 1, y - 1)];
+		}
+		GridCell &DownRight() {
 			assert(!IsBottomRow() && !IsRightColumn());
 			return  parentGrid[Coordinate(x + 1, y - 1)];
 		}
@@ -144,7 +174,15 @@ namespace GridUtils
 			assert(!IsTopRow() && !IsLeftColumn());
 			return  parentGrid[Coordinate(x - 1, y + 1)];
 		}
+		GridCell &UpLeft() {
+			assert(!IsTopRow() && !IsLeftColumn());
+			return  parentGrid[Coordinate(x - 1, y + 1)];
+		}
 		GridCell DownLeft() const {
+			assert(!IsBottomRow() && !IsLeftColumn());
+			return  parentGrid[Coordinate(x - 1, y - 1)];
+		}
+		GridCell &DownLeft() {
 			assert(!IsBottomRow() && !IsLeftColumn());
 			return  parentGrid[Coordinate(x - 1, y - 1)];
 		}
