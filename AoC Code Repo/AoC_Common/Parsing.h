@@ -10,6 +10,7 @@
 #include <cassert>
 #include <regex>
 #include <deque>
+#include <chrono>
 
 namespace Parsing
 {

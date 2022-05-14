@@ -283,6 +283,12 @@ std::vector<std::vector<std::string>> Parsing::ParseGroupsOfString(
 	return parsedStrings;
 }
 
+//
+//
+// Functions below here read input files rather than command line.
+//
+//
+
 // Parse an input file stream into a vector of strings, one per line.
 // This function will assume the get pointer for the input file stream
 // is already in the correct position, and will not close the file once

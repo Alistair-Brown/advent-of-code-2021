@@ -46,6 +46,9 @@
     <Filter Include="Day 11">
       <UniqueIdentifier>{90269a92-3716-4ce2-9704-66f483885421}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 12">
+      <UniqueIdentifier>{29510a81-3612-490b-8bd1-383d51d537e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -120,6 +123,12 @@
     <ClCompile Include="..\AoC_Day11\Dumbo_Octopus.cpp">
       <Filter>Day 11</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day12\aoc_day_12.cpp">
+      <Filter>Day 12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day12\Cave_System.cpp">
+      <Filter>Day 12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -169,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day11\Dumbo_Octopus.h">
       <Filter>Day 11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day12\Cave_System.h">
+      <Filter>Day 12</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
