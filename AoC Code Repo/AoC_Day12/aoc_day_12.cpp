@@ -1,13 +1,12 @@
-#include "Cave_System.h"
 #include "Parsing.h"
 #include <iostream>
 #include "puzzle_solvers.h"
 #include <utility>
+#include "cave_routing.h"
 
-// TODO: This code does the second step extrememly slowly, I should find out why
 PuzzleAnswerPair PuzzleSolvers::AocDayTwelveSolver(std::ifstream& puzzleInputFile)
 {
-	Caves::CaveSystem caveSystem{};
+	CaveRouting::CaveSystem caveSystem{};
 
 	std::vector<std::string> inputLines = Parsing::SeparateInputIntoLines(puzzleInputFile);
 	std::regex matchString{ "([a-zA-Z]+)-([a-zA-Z]+)" };
@@ -25,7 +24,7 @@ PuzzleAnswerPair PuzzleSolvers::AocDayTwelveSolver(std::ifstream& puzzleInputFil
 	}
 
 	return PuzzleAnswerPair{
-		std::to_string(Caves::NumberOfRoutes(caveSystem, 1)),
-		std::to_string(Caves::NumberOfRoutes(caveSystem, 2))
+		std::to_string(caveSystem.NumberOfRoutes(false)),
+		std::to_string(caveSystem.NumberOfRoutes(true))
 	};
 }

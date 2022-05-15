@@ -77,7 +77,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_2021_Main\input_retrieval;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_2021_Main\puzzle_solvers;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day25;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day24;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day22;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day21;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day20;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day19;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day18;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day17;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day16;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day15;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day14;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day13;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day12;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day11;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day10;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day09;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day08;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day07;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day06;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day05;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day04;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day03;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day02;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Day01;D:\Alistair\Documents\C++ Projects\Advent of Code 2021\AoC Code Repo\AoC_Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,7 +148,7 @@
     <ClCompile Include="..\AoC_Day11\aoc_day_11.cpp" />
     <ClCompile Include="..\AoC_Day11\Dumbo_Octopus.cpp" />
     <ClCompile Include="..\AoC_Day12\aoc_day_12.cpp" />
-    <ClCompile Include="..\AoC_Day12\Cave_System.cpp" />
+    <ClCompile Include="..\AoC_Day12\cave_routing.cpp" />
     <ClCompile Include="AoC_2021_main.cpp" />
     <ClCompile Include="input_retrieval\input_retrieval.cpp" />
   </ItemGroup>
@@ -167,7 +167,7 @@
     <ClInclude Include="..\AoC_Day09\Heightmap.h" />
     <ClInclude Include="..\AoC_Day10\Bracket_Syntax.h" />
     <ClInclude Include="..\AoC_Day11\Dumbo_Octopus.h" />
-    <ClInclude Include="..\AoC_Day12\Cave_System.h" />
+    <ClInclude Include="..\AoC_Day12\cave_routing.h" />
     <ClInclude Include="input_retrieval\input_retrieval.h" />
     <ClInclude Include="puzzle_solvers\puzzle_solvers.h" />
   </ItemGroup>

@@ -126,7 +126,7 @@
     <ClCompile Include="..\AoC_Day12\aoc_day_12.cpp">
       <Filter>Day 12</Filter>
     </ClCompile>
-    <ClCompile Include="..\AoC_Day12\Cave_System.cpp">
+    <ClCompile Include="..\AoC_Day12\cave_routing.cpp">
       <Filter>Day 12</Filter>
     </ClCompile>
   </ItemGroup>
@@ -179,7 +179,7 @@
     <ClInclude Include="..\AoC_Day11\Dumbo_Octopus.h">
       <Filter>Day 11</Filter>
     </ClInclude>
-    <ClInclude Include="..\AoC_Day12\Cave_System.h">
+    <ClInclude Include="..\AoC_Day12\cave_routing.h">
       <Filter>Day 12</Filter>
     </ClInclude>
   </ItemGroup>
