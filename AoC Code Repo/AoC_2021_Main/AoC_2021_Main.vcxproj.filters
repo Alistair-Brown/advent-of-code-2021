@@ -49,6 +49,9 @@
     <Filter Include="Day 12">
       <UniqueIdentifier>{29510a81-3612-490b-8bd1-383d51d537e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 13">
+      <UniqueIdentifier>{0286b2f4-d909-4f22-b5c6-be8a12f3725b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -129,6 +132,12 @@
     <ClCompile Include="..\AoC_Day12\cave_routing.cpp">
       <Filter>Day 12</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day13\aoc_day_13.cpp">
+      <Filter>Day 13</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day13\Paper.cpp">
+      <Filter>Day 13</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -181,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day12\cave_routing.h">
       <Filter>Day 12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day13\Paper.h">
+      <Filter>Day 13</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

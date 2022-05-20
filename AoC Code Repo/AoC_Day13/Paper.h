@@ -1,15 +1,16 @@
 #pragma once
 #include <vector>
 #include <list>
+#include <string>
 
 namespace Paper
 {
 	struct Coordinate
 	{
-		int xPos;
-		int yPos;
+		unsigned int xPos;
+		unsigned int yPos;
 		Coordinate() : Coordinate(0, 0) {};
-		Coordinate(int x, int y) : xPos{ x }, yPos{ y } {};
+		Coordinate(unsigned int x, unsigned int y) : xPos{ x }, yPos{ y } {};
 	};
 
 	class DottedPaper
@@ -25,7 +26,7 @@ namespace Paper
 		void MakeDot(Coordinate dotCoord);
 		void MakeFold(Coordinate foldLine);
 		unsigned int NumberOfDots();
-		void PrintDots();
+		std::string FoldedPaper();
 	};
 
 	Coordinate ParseFoldInstruction(std::string instructionLine);

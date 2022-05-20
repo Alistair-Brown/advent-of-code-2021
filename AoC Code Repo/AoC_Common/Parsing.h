@@ -61,13 +61,14 @@ namespace Parsing
 	template <typename T> constexpr bool always_false = false;
 
 	// Most of the parsing functions in this header only expect to parse input files
-	// into ints and strings. This function allows that to be statically asserted.
+	// into ints, unsigned ints, and strings. This function allows that to be statically asserted.
 	template <typename T>
 	constexpr bool ValidParsingType()
 	{
 		bool isValid = (
 			std::is_same<int, T>::value ||
-			std::is_same<std::string, T>::value);
+			std::is_same<std::string, T>::value ||
+			std::is_same<unsigned int, T>::value);
 		return isValid;
 	}
 
@@ -117,6 +118,18 @@ namespace Parsing
 		// of pos once stoi is finished parsing the string into an int.
 		unsigned int pos;
 		int returnValue = std::stoi(stringIn, &pos);
+		assert(pos == stringIn.size());
+
+		return std::stoi(stringIn);
+	}
+	template <>
+	inline unsigned int SetValueFromString(const std::string& stringIn)
+	{
+		// If the input string is one which could be validly converted into an int,
+		// stoi will use it in its entirety, which we can verify by checking the value
+		// of pos once stoi is finished parsing the string into an int.
+		unsigned int pos;
+		unsigned int returnValue = std::stoi(stringIn, &pos);
 		assert(pos == stringIn.size());
 
 		return std::stoi(stringIn);

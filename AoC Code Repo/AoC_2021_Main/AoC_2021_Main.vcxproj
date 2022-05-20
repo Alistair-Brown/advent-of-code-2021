@@ -149,6 +149,8 @@
     <ClCompile Include="..\AoC_Day11\Dumbo_Octopus.cpp" />
     <ClCompile Include="..\AoC_Day12\aoc_day_12.cpp" />
     <ClCompile Include="..\AoC_Day12\cave_routing.cpp" />
+    <ClCompile Include="..\AoC_Day13\aoc_day_13.cpp" />
+    <ClCompile Include="..\AoC_Day13\Paper.cpp" />
     <ClCompile Include="AoC_2021_main.cpp" />
     <ClCompile Include="input_retrieval\input_retrieval.cpp" />
   </ItemGroup>
@@ -168,6 +170,7 @@
     <ClInclude Include="..\AoC_Day10\Bracket_Syntax.h" />
     <ClInclude Include="..\AoC_Day11\Dumbo_Octopus.h" />
     <ClInclude Include="..\AoC_Day12\cave_routing.h" />
+    <ClInclude Include="..\AoC_Day13\Paper.h" />
     <ClInclude Include="input_retrieval\input_retrieval.h" />
     <ClInclude Include="puzzle_solvers\puzzle_solvers.h" />
   </ItemGroup>

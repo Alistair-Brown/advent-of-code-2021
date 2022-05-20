@@ -13,7 +13,7 @@ void Paper::DottedPaper::MaybeResizeGrid(Coordinate dotThatMustFit)
 
 	int newWidth = (gridOfDots[0].size() <= (dotThatMustFit.xPos + 1)) ?
 		(dotThatMustFit.xPos + 1) : gridOfDots[0].size();
-	for (int rowNum = 0; rowNum < gridOfDots.size(); rowNum++)
+	for (unsigned int rowNum = 0; rowNum < gridOfDots.size(); rowNum++)
 	{
 		gridOfDots[rowNum].resize(newWidth);
 	}
@@ -21,7 +21,7 @@ void Paper::DottedPaper::MaybeResizeGrid(Coordinate dotThatMustFit)
 
 void Paper::DottedPaper::ShrinkGridToWidth(int newWidth)
 {
-	for (int rowNum = 0; rowNum < gridOfDots.size(); rowNum++)
+	for (unsigned int rowNum = 0; rowNum < gridOfDots.size(); rowNum++)
 	{
 		gridOfDots[rowNum].resize(newWidth);
 	}
@@ -58,7 +58,7 @@ void Paper::DottedPaper::MakeFold(Coordinate foldLine)
 	std::list<Coordinate> newlyFoldedDots{};
 	if (foldLine.xPos > 0)
 	{
-		int xFoldLine = foldLine.xPos;		
+		unsigned int xFoldLine = foldLine.xPos;		
 		ShrinkGridToWidth(xFoldLine);
 
 		for (std::list<Coordinate>::iterator coordIter = dotLocations.begin();
@@ -85,7 +85,7 @@ void Paper::DottedPaper::MakeFold(Coordinate foldLine)
 	}
 	else
 	{
-		int yFoldLine = foldLine.yPos;
+		unsigned int yFoldLine = foldLine.yPos;
 		ShrinkGridToHeight(yFoldLine);
 
 		for (std::list<Coordinate>::iterator coordIter = dotLocations.begin();
@@ -123,23 +123,25 @@ unsigned int Paper::DottedPaper::NumberOfDots()
 	return dotLocations.size();
 }
 
-void Paper::DottedPaper::PrintDots()
+std::string Paper::DottedPaper::FoldedPaper()
 {
+	std::string output{};
 	for (std::vector<bool> row : gridOfDots)
 	{
+		output += '\n';
 		for (bool isDot : row)
 		{
 			if (isDot)
 			{
-				std::cout << "X";
+				output += "#";
 			}
 			else
 			{
-				std::cout << " ";
+				output += " ";
 			}
 		}
-		std::cout << std::endl;
 	}
+	return output;
 }
 
 Paper::Coordinate Paper::ParseFoldInstruction(std::string instructionLine)
