@@ -18,6 +18,7 @@ namespace GridUtils
 		unsigned int xPos;
 		unsigned int yPos;
 		Coordinate(unsigned int xIn, unsigned int yIn) : xPos{ xIn }, yPos{ yIn }{};
+		Coordinate() : Coordinate(0, 0) {};
 
 		bool operator==(Coordinate const& otherCoord) const
 		{

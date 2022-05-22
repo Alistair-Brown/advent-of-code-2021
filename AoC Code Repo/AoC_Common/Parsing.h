@@ -60,20 +60,22 @@ namespace Parsing
 	// returns false, but with just enough abstraction to pull the wool over the compiler's eyes.
 	template <typename T> constexpr bool always_false = false;
 
-	// Most of the parsing functions in this header only expect to parse input files
-	// into ints, unsigned ints, and strings. This function allows that to be statically asserted.
+	// Most of the parsing functions in this header only expect to parse input files into a
+	// certain subset of types. This allows us to statically assert this.
 	template <typename T>
 	constexpr bool ValidParsingType()
 	{
 		bool isValid = (
 			std::is_same<int, T>::value ||
 			std::is_same<std::string, T>::value ||
-			std::is_same<unsigned int, T>::value);
+			std::is_same<unsigned int, T>::value ||
+			std::is_same<char, T>::value);
 		return isValid;
 	}
 
 	// Parses an input file of values separated by whitespace into a vector of
-	// the desired type (only int and string currently supported by this template).
+	// the desired type (only certain sensible types like ints and strings supported
+	// by this template).
 	// This function will begin parsing from the current location of the get pointer,
 	// and will not reset the get pointer when parsing is complete.
 	template <typename T>
@@ -98,7 +100,7 @@ namespace Parsing
 	// 
 	// We need to be quite careful with what types we will attempt to deduce a
 	// value for from a string, so this template is currently explicitly specialized
-	// for only int and string as types for which it makes sense to assign to value
+	// for only certain types for which it makes sense to assign to value
 	// to from a string and for which we've written code to do so correctly.
 	template <typename T>
 	T SetValueFromString(const std::string &stringIn)
@@ -133,6 +135,12 @@ namespace Parsing
 		assert(pos == stringIn.size());
 
 		return std::stoi(stringIn);
+	}
+	template <>
+	inline char SetValueFromString(const std::string& stringIn)
+	{
+		assert(stringIn.size() == 1);
+		return stringIn[0];
 	}
 
 	// This overload of AssignMatchesToElements handles the final case of this
