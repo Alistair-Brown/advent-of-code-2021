@@ -23,7 +23,7 @@ PuzzleAnswerPair PuzzleSolvers::AocDayTenSolver(std::ifstream& puzzleInputFile)
 	// to return the two 'scores' requested by this puzzle, the first being
 	// a 'corruption' score for syntax errors, the second being the median
 	// of all of the completion costs for completing incomplete lines.
-	std::vector<std::string> inputLines = Parsing::SeparateInputIntoLines(puzzleInputFile);
+	std::vector<std::string> inputLines = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
 	for (std::string inputLine : inputLines)
 	{
 		syntaxChecker.ParseLine(inputLine);

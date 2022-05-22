@@ -13,7 +13,7 @@ PuzzleAnswerPair PuzzleSolvers::AocDaySixSolver(std::ifstream &puzzleInputFile)
 	// Puzzle input is a comma separated list of how many days each current lanternfish
 	// will take to produce a new one.
 	std::vector<int> lanternFishInput =
-		Parsing::ParseLineOnDelimiters<int>(puzzleInputFile, Parsing::comma);
+		Parsing::SplitNextLineOnDelimiter<int>(puzzleInputFile, Parsing::comma);
 
 	// Feed this initial collection of lanternfish tracker ready to start incrementing
 	// days.

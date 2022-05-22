@@ -12,7 +12,7 @@ PuzzleAnswerPair PuzzleSolvers::AocDayFourSolver(std::ifstream &puzzleInputFile)
 	// The first line of input consists of all the bingo numbers which will be called, in
 	// order. Queue these up on our bingo caller and then skip the following blank line
 	// ready to parse the bingo grids themselves.
-	std::vector<int> numbersToCall = Parsing::ParseLineOnDelimiters<int>(puzzleInputFile, Parsing::comma);
+	std::vector<int> numbersToCall = Parsing::SplitNextLineOnDelimiter<int>(puzzleInputFile, Parsing::comma);
 	Bingo::BingoCaller bingoCaller{ numbersToCall };
 	Parsing::SeekNextLine(puzzleInputFile);
 	

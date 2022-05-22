@@ -17,7 +17,7 @@ PuzzleAnswerPair PuzzleSolvers::AocDayEightSolver(std::ifstream &puzzleInputFile
 	// followed by 4 elements representing a 4 digit number e.g 3602 or 0359. From the representation
 	// of the numbers 0-9, we can work out which of the letters a-g represent each segment
 	// and then use this to parse the 4-digit number on the right hand side of the input.
-	std::vector<std::string> inputLines = Parsing::SeparateInputIntoLines(puzzleInputFile);
+	std::vector<std::string> inputLines = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
 	std::regex matchString{
 		"([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+) \\| "
 		"([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+)" };

@@ -13,7 +13,7 @@ PuzzleAnswerPair PuzzleSolvers::AocDayTwoSolver(std::ifstream &puzzleInputFile)
 	Navigation::Position simpleSubmarinePosition;
 	Navigation::Position moreComplexSubmarinePosition;
 
-	std::vector<std::string> commandList = Parsing::SeparateInputIntoLines(puzzleInputFile);
+	std::vector<std::string> commandList = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
 
 	// For each command in the list, parse it into the constituent direction and magnitude
 	// components, using these to create a MovementCommand we can apply to each of our submarines.

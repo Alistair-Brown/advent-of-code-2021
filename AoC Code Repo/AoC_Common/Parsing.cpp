@@ -293,7 +293,7 @@ std::vector<std::vector<std::string>> Parsing::ParseGroupsOfString(
 // This function will assume the get pointer for the input file stream
 // is already in the correct position, and will not close the file once
 // done parsing, that's all up to the caller.
-std::vector<std::string> Parsing::SeparateInputIntoLines(std::ifstream & inputFile)
+std::vector<std::string> Parsing::SeparateRemainingInputIntoLines(std::ifstream & inputFile)
 {
 	std::vector<std::string> parsedLines{};
 	unsigned int linesParsed = 0;

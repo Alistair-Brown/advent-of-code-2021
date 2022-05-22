@@ -11,7 +11,7 @@
 // numbers.
 PuzzleAnswerPair PuzzleSolvers::AocDayThreeSolver(std::ifstream &puzzleInputFile)
 {
-	std::vector<std::string> rawInputLines = Parsing::SeparateInputIntoLines(puzzleInputFile);
+	std::vector<std::string> rawInputLines = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
 	unsigned int binaryNumberLength = rawInputLines[0].size();
 	std::vector<Binary::BinaryNumber> binaryInputLines{};
 	for (std::string singleLine : rawInputLines)

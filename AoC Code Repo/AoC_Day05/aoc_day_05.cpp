@@ -18,7 +18,7 @@ PuzzleAnswerPair PuzzleSolvers::AocDayFiveSolver(std::ifstream &puzzleInputFile)
 	// overall 'map' of lines (map in the sense that it holds a 2D grid of coordinates,
 	// not a map in the STL sense) as we go. Put diagonal lines to the side to add to
 	// the map during part 2.
-	std::vector<std::string> inputLines = Parsing::SeparateInputIntoLines(puzzleInputFile);
+	std::vector<std::string> inputLines = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
 	std::regex matchString{ "([0-9]+),([0-9]+) -> ([0-9]+),([0-9]+)" };
 	for (std::string inputLine : inputLines)
 	{

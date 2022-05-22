@@ -12,7 +12,7 @@ PuzzleAnswerPair PuzzleSolvers::AocDaySevenSolver(std::ifstream &puzzleInputFile
 {
 	// Puzzle input is a comma separated list of initial crab submarine positions.
 	std::vector<int> crabPositionList =
-		Parsing::ParseLineOnDelimiters<int>(puzzleInputFile, Parsing::comma);
+		Parsing::SplitNextLineOnDelimiter<int>(puzzleInputFile, Parsing::comma);
 
 	// Create our armada of crab submarines, inserting a submarine at each position
 	// specified by the puzzle input.

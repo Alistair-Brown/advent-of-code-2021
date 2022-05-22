@@ -50,7 +50,7 @@ namespace Parsing
 	const std::string binaryE{ "1110" };
 	const std::string binaryF{ "1111" };
 
-	std::vector<std::string> SeparateInputIntoLines(std::ifstream &inputFile);
+	std::vector<std::string> SeparateRemainingInputIntoLines(std::ifstream &inputFile);
 	void SeekNextLine(std::ifstream &inputFile);
 	std::vector<std::vector<int>> ParseWhitespacelessGridOfDigits(std::ifstream &inputFile);
 
@@ -217,7 +217,7 @@ namespace Parsing
 	// The line to be parsed will be taken from the current position of the get pointer,
 	// and the get pointer will be left pointing at the subsequent line.
 	template <typename T>
-	std::vector<T> ParseLineOnDelimiters(std::ifstream &inputFile, std::string delimiter)
+	std::vector<T> SplitNextLineOnDelimiter(std::ifstream &inputFile, std::string delimiter)
 	{
 		static_assert(ValidParsingType<T>());
 
@@ -284,7 +284,7 @@ namespace Parsing
 
 		while (!inputFile.eof())
 		{
-			std::vector<T> singleLine = ParseLineOnDelimiters<T>(inputFile, delimiter);
+			std::vector<T> singleLine = SplitNextLineOnDelimiter<T>(inputFile, delimiter);
 			if (singleLine.size() > 0)
 			{
 				parsedLines.push_back(singleLine);

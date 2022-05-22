@@ -11,7 +11,7 @@
 // to visit one (and only one) of the small caves twice.
 PuzzleAnswerPair PuzzleSolvers::AocDayTwelveSolver(std::ifstream& puzzleInputFile)
 {
-	std::vector<std::string> inputLines = Parsing::SeparateInputIntoLines(puzzleInputFile);
+	std::vector<std::string> inputLines = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
 	std::regex matchString{ "([a-zA-Z]+)-([a-zA-Z]+)" };
 
 	// Piece together our cave system from the individual links between caves given

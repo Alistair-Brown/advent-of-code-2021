@@ -13,43 +13,33 @@ PuzzleAnswerPair PuzzleSolvers::AocDayThirteenSolver(std::ifstream& puzzleInputF
 
 	// Up until the first blank line, our puzzle input consists of coordinates to mark as
 	// dots on the tracing paper.
-	std::vector<std::string> inputLines = Parsing::SeparateInputIntoLines(puzzleInputFile);
-	unsigned int linesRead = 0;
 	while (true)
 	{
-		if (inputLines[linesRead].size() == 0)
+		std::vector<unsigned int> coord = 
+			Parsing::SplitNextLineOnDelimiter<unsigned int>(puzzleInputFile, Parsing::comma);
+		if (coord.size() == 0)
 		{
-			linesRead++;
 			break;
 		}
-
-		GridUtils::Coordinate latestCoord{};
-		Parsing::ParseStringIntoElements(
-			inputLines[linesRead],
-			std::regex{ "([0-9]+),([0-9]+)" },
-			latestCoord.xPos,
-			latestCoord.yPos
-		);
-		dottedPaper.MakeDot(latestCoord);
-		linesRead++;
+		dottedPaper.MakeDot({ coord[0], coord[1] });
 	}
 
 	// The remaining lines of input will be fold instructions for us to apply to the
 	// paper. After the first of these, part one of the puzzle wants to know how many
 	// dots are now visible.
+	std::vector<std::string> instructions = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
 	Paper::DottedPaper::FoldLine foldLine;
 	bool firstFoldMade = false;
 	unsigned int dotsAfterFirstFold{};
-	while (linesRead < inputLines.size())
+	for (const std::string &instruction : instructions)
 	{
 		Parsing::ParseStringIntoElements(
-			inputLines[linesRead],
+			instruction,
 			std::regex{ "fold along (x|y)=([0-9]+)" },
 			foldLine.axis,
 			foldLine.position
 		);
 		dottedPaper.MakeFold(foldLine);
-		linesRead++;
 
 		if (!firstFoldMade)
 		{
