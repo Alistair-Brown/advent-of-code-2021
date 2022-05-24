@@ -1,22 +1,23 @@
 #include "Parsing.h"
 #include "Chiton.h"
 #include <iostream>
+#include "puzzle_solvers.h"
 
 std::vector<std::vector<int>> EnlargeGridBy5(std::vector<std::vector<int>> originalGrid);
 
-int main()
+PuzzleAnswerPair PuzzleSolvers::AocDayFifteenSolver(std::ifstream& puzzleInputFile)
 {
-	std::cout << "Enter risk grid" << std::endl;
-
-	std::vector<std::vector<int>> originalGrid = Parsing::ParseWhitespacelessGridOfDigits();
+	std::vector<std::vector<int>> originalGrid = Parsing::ParseWhitespacelessGridOfDigits(puzzleInputFile);
 	Chiton::ChitonCave chitonCave{ originalGrid };
 
-	std::cout << "Minimum risk route to end is " << chitonCave.MinimumRiskToEnd() << std::endl;
+	int partOne = chitonCave.MinimumRiskToEnd();
 
 	std::vector<std::vector<int>> enlargedGrid = EnlargeGridBy5(originalGrid);
 	Chiton::ChitonCave bigChitonCave{ enlargedGrid };
 
-	std::cout << "Minimum risk route to end on bigger grid is " << bigChitonCave.MinimumRiskToEnd() << std::endl;
+	int partTwo = bigChitonCave.MinimumRiskToEnd();
+
+	return PuzzleAnswerPair{ std::to_string(partOne), std::to_string(partTwo) };
 }
 
 std::vector<std::vector<int>> EnlargeGridBy5(std::vector<std::vector<int>> originalGrid)

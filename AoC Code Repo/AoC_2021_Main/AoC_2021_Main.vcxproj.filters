@@ -55,6 +55,9 @@
     <Filter Include="Day 14">
       <UniqueIdentifier>{afeede0a-ba63-4778-82af-f92cb1be6d20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 15">
+      <UniqueIdentifier>{388f9e00-6457-4920-beee-4fad1a9c5496}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -147,6 +150,12 @@
     <ClCompile Include="..\AoC_Day14\Polymers.cpp">
       <Filter>Day 14</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day15\aoc_day_15.cpp">
+      <Filter>Day 15</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day15\Chiton.cpp">
+      <Filter>Day 15</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -205,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day14\Polymers.h">
       <Filter>Day 14</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day15\Chiton.h">
+      <Filter>Day 15</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
