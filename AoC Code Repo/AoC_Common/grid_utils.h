@@ -29,39 +29,6 @@ namespace GridUtils
 		{
 			return !(*this == otherCoord);
 		}
-
-		/*
-		TODO: Delete these commented out lines once I've refactored all the old puzzles
-		that used to use them.
-		unsigned int gridWidth;
-		unsigned int gridHeight;
-		Coordinate(unsigned int xIn, unsigned int yIn, unsigned int width, unsigned int height) :
-			x{ xIn }, y{ yIn }, gridWidth{ width }, gridHeight{ height }{};
-
-		bool operator==(Coordinate const& otherCoord) const
-		{
-			if ((otherCoord.x == x) && (otherCoord.y == y)) { return true; }
-			else { return false; }
-		}
-
-		// These functions assume they are being used to return a valid coordinate
-		// i.e. you must check that a coordinate is not on the top row before
-		// trying to get the coordinate above it.
-		Coordinate Up() const { return Coordinate(x, y + 1, gridWidth, gridHeight); }
-		Coordinate Down() const { return Coordinate(x, y - 1, gridWidth, gridHeight); }
-		Coordinate Right() const { return Coordinate(x + 1, y, gridWidth, gridHeight); }
-		Coordinate Left() const { return Coordinate(x - 1, y, gridWidth, gridHeight); }
-		Coordinate UpRight() const { return Coordinate(x + 1, y + 1, gridWidth, gridHeight); }
-		Coordinate DownRight() const { return Coordinate(x + 1, y - 1, gridWidth, gridHeight); }
-		Coordinate UpLeft() const { return Coordinate(x - 1, y + 1, gridWidth, gridHeight); }
-		Coordinate DownLeft() const { return Coordinate(x - 1, y - 1, gridWidth, gridHeight); }
-
-		// These functions assume a grid with origin of 0,0.
-		bool IsTopRow() const { return (y == (gridHeight - 1)); }
-		bool IsBottomRow() const { return (y == 0); }
-		bool IsRightColumn() const { return (x == (gridWidth - 1)); }
-		bool IsLeftColumn() const { return (x == 0); }
-		*/
 	};
 
 	// A 2D-vector of any required type. This grid does not hold those types directly, but
@@ -81,6 +48,14 @@ namespace GridUtils
 		// We declare the Grid constructor here but have to hold off on the definition until
 		// the GridCell nested class has been defined so that we can construct GridCells.
 		Grid(std::vector<std::vector<T>> gridIn);
+
+		// Turn a 2D-vector of one type into a Grid of another, by applying a function to each
+		// element in the input grid. Useful for puzzles where we might have a grid of integers
+		// as input, but want to use a user-defined class to actually represent each element
+		// in that Grid.
+		template <typename TypeIn>
+		static Grid GridFactory(std::vector<std::vector<TypeIn>> gridIn, T(*cellConstructor)(TypeIn));
+
 		unsigned int Height() const { return grid.size(); }
 		unsigned int Width() const { return grid[0].size(); }
 
@@ -215,6 +190,30 @@ namespace GridUtils
 			}
 			grid.push_back(newLine);
 		}
+	}
+
+	// Turn a 2D-vector of one type into a Grid of another, by applying a function to each
+	// element in the input grid. Useful for puzzles where we might have a grid of integers
+	// as input, but want to use a user-defined class to actually represent each element
+	// in that Grid.
+	// We accomplish this by creating a new 2D-vector by calling the cell constructor function
+	// on each element of the original 2D-vector, and then pass this 2D-vector into the
+	// regular Grid constructor to wrap it up as a Grid like usual.
+	template <typename T>
+	template <typename TypeIn>
+	Grid<T> Grid<T>::GridFactory(std::vector<std::vector<TypeIn>> gridIn, T(* cellConstructor)(TypeIn))
+	{
+		std::vector<std::vector<T>> transformedGrid;
+		for (std::vector<TypeIn> rowIn : gridIn)
+		{
+			std::vector<T> newLine{};
+			for (TypeIn cellIn : rowIn)
+			{
+				newLine.push_back(cellConstructor(cellIn));
+			}
+			transformedGrid.push_back(newLine);
+		}
+		return Grid{transformedGrid};
 	}
 
 	// Iterator for the Grid class. Holds a pointer to a GridCell. Incrementing
