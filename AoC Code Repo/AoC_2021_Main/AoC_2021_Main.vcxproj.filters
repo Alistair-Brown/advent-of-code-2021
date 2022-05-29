@@ -150,10 +150,16 @@
     <ClCompile Include="..\AoC_Day14\Polymers.cpp">
       <Filter>Day 14</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day15\aoc_day_15_old.cpp">
+      <Filter>Day 15</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day15\Chiton_old.cpp">
+      <Filter>Day 15</Filter>
+    </ClCompile>
     <ClCompile Include="..\AoC_Day15\aoc_day_15.cpp">
       <Filter>Day 15</Filter>
     </ClCompile>
-    <ClCompile Include="..\AoC_Day15\Chiton.cpp">
+    <ClCompile Include="..\AoC_Day15\chiton.cpp">
       <Filter>Day 15</Filter>
     </ClCompile>
   </ItemGroup>
@@ -215,7 +221,10 @@
     <ClInclude Include="..\AoC_Day14\Polymers.h">
       <Filter>Day 14</Filter>
     </ClInclude>
-    <ClInclude Include="..\AoC_Day15\Chiton.h">
+    <ClInclude Include="..\AoC_Day15\Chiton_old.h">
+      <Filter>Day 15</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day15\chiton.h">
       <Filter>Day 15</Filter>
     </ClInclude>
   </ItemGroup>

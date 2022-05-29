@@ -29,6 +29,11 @@ namespace GridUtils
 		{
 			return !(*this == otherCoord);
 		}
+		bool operator<(Coordinate const& otherCoord) const
+		{
+			return (otherCoord.xPos == xPos) ?
+				(yPos < otherCoord.yPos) : (xPos < otherCoord.xPos);
+		}
 	};
 
 	// A 2D-vector of any required type. This grid does not hold those types directly, but

@@ -2,25 +2,21 @@
 #include "Chiton.h"
 #include <iostream>
 #include "puzzle_solvers.h"
+#include "grid_utils.h"
 
-std::vector<std::vector<int>> EnlargeGridBy5(std::vector<std::vector<int>> originalGrid);
+std::vector<std::vector<int>> EnlargeGridBy5(std::vector<std::vector<int>> const &originalGrid);
 
 PuzzleAnswerPair PuzzleSolvers::AocDayFifteenSolver(std::ifstream& puzzleInputFile)
 {
 	std::vector<std::vector<int>> originalGrid = Parsing::ParseWhitespacelessGridOfDigits(puzzleInputFile);
-	Chiton::ChitonCave chitonCave{ originalGrid };
 
-	int partOne = chitonCave.MinimumRiskToEnd();
+	ULLINT valOne = Chiton::LowestRiskPath(originalGrid);
+	ULLINT valTwo = Chiton::LowestRiskPath(EnlargeGridBy5(originalGrid));
 
-	std::vector<std::vector<int>> enlargedGrid = EnlargeGridBy5(originalGrid);
-	Chiton::ChitonCave bigChitonCave{ enlargedGrid };
-
-	int partTwo = bigChitonCave.MinimumRiskToEnd();
-
-	return PuzzleAnswerPair{ std::to_string(partOne), std::to_string(partTwo) };
+	return PuzzleAnswerPair{ std::to_string(valOne), std::to_string(valTwo) };
 }
 
-std::vector<std::vector<int>> EnlargeGridBy5(std::vector<std::vector<int>> originalGrid)
+std::vector<std::vector<int>> EnlargeGridBy5(std::vector<std::vector<int>> const &originalGrid)
 {
 	std::vector<std::vector<int>> newGrid = originalGrid;
 	for (unsigned int ii = 0; ii < originalGrid.size(); ii++)
@@ -42,9 +38,9 @@ std::vector<std::vector<int>> EnlargeGridBy5(std::vector<std::vector<int>> origi
 
 	for (int ii = 0; ii < 4; ii++)
 	{
-		for (std::vector<int> &row : middleGrid)
+		for (std::vector<int>& row : middleGrid)
 		{
-			for (int &elem : row)
+			for (int& elem : row)
 			{
 				if (elem < 9) { elem++; }
 				else { elem = 1; }
