@@ -289,6 +289,16 @@ std::vector<std::vector<std::string>> Parsing::ParseGroupsOfString(
 //
 //
 
+// Stream the next portion of the input file into a string, and return that string.
+// Makes no assumptions about the position of the read pointer, and will leave the
+// read pointer at the end of the read string.
+std::string Parsing::ReadSingleStringFromInputFile(std::ifstream& inputFile)
+{
+	std::string stringFromFile{};
+	inputFile >> stringFromFile;
+	return stringFromFile;
+}
+
 // Parse an input file stream into a vector of strings, one per line.
 // This function will assume the get pointer for the input file stream
 // is already in the correct position, and will not close the file once

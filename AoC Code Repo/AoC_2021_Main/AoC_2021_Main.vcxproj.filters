@@ -58,6 +58,9 @@
     <Filter Include="Day 15">
       <UniqueIdentifier>{388f9e00-6457-4920-beee-4fad1a9c5496}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 16">
+      <UniqueIdentifier>{c31a9535-48e8-4fbb-ba17-babd5aeee558}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -150,17 +153,17 @@
     <ClCompile Include="..\AoC_Day14\Polymers.cpp">
       <Filter>Day 14</Filter>
     </ClCompile>
-    <ClCompile Include="..\AoC_Day15\aoc_day_15_old.cpp">
-      <Filter>Day 15</Filter>
-    </ClCompile>
-    <ClCompile Include="..\AoC_Day15\Chiton_old.cpp">
-      <Filter>Day 15</Filter>
-    </ClCompile>
     <ClCompile Include="..\AoC_Day15\aoc_day_15.cpp">
       <Filter>Day 15</Filter>
     </ClCompile>
     <ClCompile Include="..\AoC_Day15\chiton.cpp">
       <Filter>Day 15</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day16\aoc_day_16.cpp">
+      <Filter>Day 16</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day16\packet_parser.cpp">
+      <Filter>Day 16</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,11 +224,11 @@
     <ClInclude Include="..\AoC_Day14\Polymers.h">
       <Filter>Day 14</Filter>
     </ClInclude>
-    <ClInclude Include="..\AoC_Day15\Chiton_old.h">
-      <Filter>Day 15</Filter>
-    </ClInclude>
     <ClInclude Include="..\AoC_Day15\chiton.h">
       <Filter>Day 15</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day16\packet_parser.h">
+      <Filter>Day 16</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

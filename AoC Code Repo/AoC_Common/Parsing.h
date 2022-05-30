@@ -50,6 +50,7 @@ namespace Parsing
 	const std::string binaryE{ "1110" };
 	const std::string binaryF{ "1111" };
 
+	std::string ReadSingleStringFromInputFile(std::ifstream& inputFile);
 	std::vector<std::string> SeparateRemainingInputIntoLines(std::ifstream &inputFile);
 	void SeekNextLine(std::ifstream &inputFile);
 	std::vector<std::vector<int>> ParseWhitespacelessGridOfDigits(std::ifstream &inputFile);
