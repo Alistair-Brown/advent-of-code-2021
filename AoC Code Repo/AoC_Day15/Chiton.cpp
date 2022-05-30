@@ -1,141 +1,102 @@
 #include "chiton.h"
 #include <cassert>
-#include <time.h>
-#include <chrono>
 
+// Use Djikstra's algorithm to find the cheapest path from the top left to the bottom
+// right of a grid of integers, where each integer represents the cost of moving to
+// that point (or the 'risk' of moving to that point in the chiton cave, to use the
+// puzzle flavour).
 ULLINT Chiton::LowestRiskPath(std::vector<std::vector<int>> const &riskMap)
 {
-    auto t1 = std::chrono::high_resolution_clock::now();
     GridUtils::Grid<RiskCell> chitonCave =
         GridUtils::Grid<RiskCell>::GridFactory<int>(
             riskMap,
             [](int risk)->RiskCell { return RiskCell(risk); }
     );
-    MarkEndCell(chitonCave);
     chitonCave[{0, 0}].value.MakeStartCell();
 
-
-    std::set < GridUtils::Grid<RiskCell>::GridCell,
-        bool(*)(GridUtils::Grid<RiskCell>::GridCell, GridUtils::Grid<RiskCell>::GridCell) > riskToReachPosition(CompareRisks);
-    riskToReachPosition.insert(chitonCave[{0, 0}]);
-
-    auto t2 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> msSpent1{ t2 - t1 };
-
-    auto t3 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> msSpent3 {0};
-    std::chrono::duration<double, std::milli> msSpent4{ 0 };
-    std::chrono::duration<double, std::milli> msSpent5{ 0 };
-    ULLINT routingSteps{ 0 };
-    bool done{ false };
-    while (!done)
+    // Djikstra's algorithm requires us to explore the next cheapest unvisited node, starting
+    // from the starting node (which has a cost of 0 to reach itself).
+    // With each step of the algorithm we take the next cheapest unvisited cell and find the
+    // cost of visiting each node adjacent to that one.
+    // Once we've routed to the end cell for the first time, we are guaranteed to have found
+    // the cheapest route to that cell, since routing from unvisited cells in cost order means
+    // that any subseqent routes to that cell will be more expensive.
+    OrderedRiskCells orderedUnvisitedNodes{ CompareRisks };
+    orderedUnvisitedNodes.insert(chitonCave[{0, 0}]);
+    while (!ReadEndCell(chitonCave).HasBeenRoutedTo())
     {
-        auto t7 = std::chrono::high_resolution_clock::now();
-        routingSteps++;
-        GridUtils::Grid<RiskCell>::GridCell routingFromCell = *riskToReachPosition.begin();
-        riskToReachPosition.erase(routingFromCell);
-        auto t8 = std::chrono::high_resolution_clock::now();
-        msSpent4 += t8 - t7;
-
-        auto t5 = std::chrono::high_resolution_clock::now();
-        AttemptRouteToAdjacentCells(chitonCave, riskToReachPosition, routingFromCell);
-        auto t6 = std::chrono::high_resolution_clock::now();
-        msSpent3 += t6 - t5;
-
-        auto t9 = std::chrono::high_resolution_clock::now();
-        done = ReadEndCell(chitonCave).HasBeenRoutedTo();
-        auto t10 = std::chrono::high_resolution_clock::now();
-        msSpent5 += t10 - t9;
+        RouteFromNextCheapestCell(chitonCave, orderedUnvisitedNodes);
     }
-    auto t4 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> msSpent2{ t4 - t3 };
 
-    return ReadEndCell(chitonCave).CurrentLowestRiskToReach();
+    return ReadEndCell(chitonCave).LowestRiskToReach();
 }
 
-void Chiton::AttemptRouteToAdjacentCells(
+// As per Djikstra's algorithm, take the next cheapest un-routed-from cell and route
+// from it. Routing from a cell requires us to look at all adjacent cells and potentially
+// update them with a new cheapest cost to reach them. Given that we route from cells
+// in order of cheapest route, the only way that the route via our current cell could
+// be the new cheapest route to a given adjacent cell is if no other route has ever
+// reached that cell before, which can save us some computation of looking at unecessary
+// adjacent cells.
+void Chiton::RouteFromNextCheapestCell(
     GridUtils::Grid<RiskCell> &chitonCave,
-    std::set < GridUtils::Grid<RiskCell>::GridCell,
-        bool(*)(GridUtils::Grid<RiskCell>::GridCell, GridUtils::Grid<RiskCell>::GridCell) > &orderedCells,
-    GridUtils::Grid<RiskCell>::GridCell &riskCell)
+    OrderedRiskCells &orderedCells)
 {
+    auto routingFromCellItr = orderedCells.begin();
+    GridUtils::Grid<RiskCell>::GridCell riskCell = *routingFromCellItr;
+    orderedCells.erase(routingFromCellItr);
+
     assert(!chitonCave[riskCell.GetCoordinate()].value.hasBeenRoutedFrom);
     chitonCave[riskCell.GetCoordinate()].value.hasBeenRoutedFrom = true;
-    auto t1 = std::chrono::high_resolution_clock::now();
-    static std::chrono::duration<double, std::milli> msSpent{ 0 };
-    if (!riskCell.IsTopRow() && !riskCell.Up().value.hasBeenRoutedFrom)
+
+    // For each adjacent cell which has not previously been routed to, the cheapest
+    // route to that cell is the one via the cell we're currently routing from, so
+    // update accordingly.
+    if (!riskCell.IsTopRow() && !riskCell.Up().value.HasBeenRoutedTo())
     { 
-        MaybeRouteToThisCell(orderedCells, riskCell.Up(), riskCell.value.CurrentLowestRiskToReach()); 
+        UpdateCellWithCheapestRoute(orderedCells, riskCell.Up(), riskCell.value.LowestRiskToReach()); 
     }
-    if (!riskCell.IsBottomRow() && !riskCell.Down().value.hasBeenRoutedFrom)
+    if (!riskCell.IsBottomRow() && !riskCell.Down().value.HasBeenRoutedTo())
     {
-        MaybeRouteToThisCell(orderedCells, riskCell.Down(), riskCell.value.CurrentLowestRiskToReach());
+        UpdateCellWithCheapestRoute(orderedCells, riskCell.Down(), riskCell.value.LowestRiskToReach());
     }
-    if (!riskCell.IsRightColumn() && !riskCell.Right().value.hasBeenRoutedFrom)
+    if (!riskCell.IsRightColumn() && !riskCell.Right().value.HasBeenRoutedTo())
     {
-        MaybeRouteToThisCell(orderedCells, riskCell.Right(), riskCell.value.CurrentLowestRiskToReach());
+        UpdateCellWithCheapestRoute(orderedCells, riskCell.Right(), riskCell.value.LowestRiskToReach());
     }
-    if (!riskCell.IsLeftColumn() && !riskCell.Left().value.hasBeenRoutedFrom)
+    if (!riskCell.IsLeftColumn() && !riskCell.Left().value.HasBeenRoutedTo())
     {
-        MaybeRouteToThisCell(orderedCells, riskCell.Left(), riskCell.value.CurrentLowestRiskToReach());
+        UpdateCellWithCheapestRoute(orderedCells, riskCell.Left(), riskCell.value.LowestRiskToReach());
     }
-    auto t2 = std::chrono::high_resolution_clock::now();
-    msSpent += t2 - t1;
 }
 
-void Chiton::MaybeRouteToThisCell(
-    std::set < GridUtils::Grid<RiskCell>::GridCell,
-        bool(*)(GridUtils::Grid<RiskCell>::GridCell, GridUtils::Grid<RiskCell>::GridCell) > &orderedCells,
+// Update a cell to have its new cheapest route (or 'risk') to be that with the given
+// incoming risk. This is guaranteed to be the cheapest route we have ever found to
+// this cell, since we will only ever attempt to route to each cell once, as a
+// computational optimisation.
+void Chiton::UpdateCellWithCheapestRoute(
+    OrderedRiskCells &orderedCells,
     GridUtils::Grid<RiskCell>::GridCell& riskCell,
     ULLINT incomingRisk)
 {
-    static ULLINT timesCalled{ 0 };
-    static std::chrono::duration<double, std::milli> msSpent{ 0 };
-    timesCalled++;
-    auto t1 = std::chrono::high_resolution_clock::now();
     GridUtils::Grid<RiskCell>::GridCell incomingCell = riskCell;
-    if (riskCell.value.IsNewLowestRisk(incomingRisk))
-    {
-        if (orderedCells.contains(incomingCell))
-        {
-            orderedCells.erase(incomingCell);
-        }
-        orderedCells.insert(riskCell);
-    }
-    auto t2 = std::chrono::high_resolution_clock::now();
-    msSpent += t2 - t1;
+
+    riskCell.value.IsNewLowestRisk(incomingRisk);
+    orderedCells.insert(riskCell);
 }
 
-void Chiton::MarkEndCell(GridUtils::Grid<RiskCell> riskGrid)
+// Sum up the incoming risk with the local risk of a cell, to give a total risk
+// of reaching that cell with that incoming risk. This is the new lowest risk
+// of reaching this cell (this is guaranteed by the rest of the code for this
+// puzzle, so we save ourself some CPU cycles by not actually checking this.
+void Chiton::RiskCell::IsNewLowestRisk(ULLINT incomingRisk)
 {
-    GridUtils::Coordinate endCoord{ riskGrid.Width() - 1, riskGrid.Height() - 1 };
-    riskGrid[endCoord].value.MakeEndCell();
+        lowestRiskToReach = incomingRisk + localRisk;;
 }
 
-Chiton::RiskCell Chiton::ReadEndCell(GridUtils::Grid<RiskCell> &riskGrid)
+// Just a helper function to simplify syntax for reading the value of the end cell.
+Chiton::RiskCell Chiton::ReadEndCell(GridUtils::Grid<RiskCell> const &riskGrid)
 {
-    auto t1 = std::chrono::high_resolution_clock::now();
-    static std::chrono::duration<double, std::milli> msSpent{ 0 };
-
     GridUtils::Coordinate endCoord{ riskGrid.Width() - 1, riskGrid.Height() - 1 };
     return riskGrid[endCoord].value;
-
-    auto t2 = std::chrono::high_resolution_clock::now();
-    msSpent += t2 - t1;
-}
-
-bool Chiton::RiskCell::IsNewLowestRisk(ULLINT incomingRisk)
-{
-    ULLINT newRisk = incomingRisk + localRisk;
-    if (newRisk < lowestRiskToReach)
-    {
-        lowestRiskToReach = newRisk;
-        timesRoutedTo++;
-
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
