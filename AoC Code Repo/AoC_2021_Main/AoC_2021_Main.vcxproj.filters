@@ -61,6 +61,9 @@
     <Filter Include="Day 16">
       <UniqueIdentifier>{c31a9535-48e8-4fbb-ba17-babd5aeee558}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 17">
+      <UniqueIdentifier>{b9541dab-ba3f-42f9-8c6a-6e0aacd336a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -165,6 +168,12 @@
     <ClCompile Include="..\AoC_Day16\packet_parser.cpp">
       <Filter>Day 16</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day17\aoc_day_17.cpp">
+      <Filter>Day 17</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day17\ProbeLauncher.cpp">
+      <Filter>Day 17</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -229,6 +238,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day16\packet_parser.h">
       <Filter>Day 16</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day17\ProbeLauncher.h">
+      <Filter>Day 17</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
