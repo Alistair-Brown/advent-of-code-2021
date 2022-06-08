@@ -1,49 +1,65 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "aoc_common_types.h"
+#include <memory>
 
 namespace Packet
 {
+	// Abstract class representing those features common to all packet types, specifically:
+	//  - A version number
+	//  - A type ID
+	//  - A value
 	class Packet
 	{
 	protected:
-		int version;
-		int typeID;
+		int version{};
+		int typeID{};
 	public:
-		virtual int SumOfVersions() = 0;
-		virtual unsigned long long int Value() = 0;
-		int Version() { return version; }
-		int TypeID() { return typeID; }
+		virtual int SumOfVersions() const = 0;
+		virtual ULLINT Value() const = 0;
+		int Version() const { return version; }
+		int TypeID() const { return typeID; }
+
+		virtual ~Packet() = default;
 	};
 
-	class LiteralPacket : Packet
+	// A literal packet contains no futher nested packets, and just has its own
+	// value. Therefore the sum of all versions of this packet and its children
+	// is just this packet's version, and there's no complex computation
+	// required to calculate a value based on child packets.
+	class LiteralPacket : public Packet
 	{
 	private:
-		unsigned long long int value;
+		ULLINT value;
 	public:
 		LiteralPacket(int versionIn, int typeIDIn, std::string &contents);
-		int SumOfVersions() { return version; }
-		unsigned long long int Value() { return value; }
+		~LiteralPacket() override = default;
+
+		int SumOfVersions() const override { return version; }
+		ULLINT Value() const override { return value; }
 	};
 
-	class OperatorPacket : Packet
+	// An operator packet contains child packets, and has a value which is determined
+	// by some operation performed on the values of its child packets. The exact operation
+	// to be performed depends on the typeID of this operator packet.
+	class OperatorPacket : public Packet
 	{
 	private:
 		int lengthTypeID;
-		int length;
-		std::vector<Packet *> contents{};
+		unsigned int lengthDescriptor;
+		std::vector<std::unique_ptr<Packet>> contents{};
 
 		void ParseNextChildPacket(std::string &packets);
-		void ParsePacket(int versionIn, int typeIDIn, std::string &contents);
 		void ParseContents(std::string &contents);
 
-		unsigned long long int SumOperation();
-		unsigned long long int ProductOperation();
-		unsigned long long int MinimumOperation();
-		unsigned long long int MaximumOperation();
-		unsigned long long int GreaterThanOperation();
-		unsigned long long int LessThanOperation();
-		unsigned long long int EqualToOperation();
+		ULLINT SumOperation() const;
+		ULLINT ProductOperation() const;
+		ULLINT MinimumOperation() const;
+		ULLINT MaximumOperation() const;
+		ULLINT GreaterThanOperation() const;
+		ULLINT LessThanOperation() const;
+		ULLINT EqualToOperation() const;
 
 		static const int sumID{ 0 };
 		static const int productID{ 1 };
@@ -54,10 +70,11 @@ namespace Packet
 		static const int lessThanID{ 6 };
 		static const int equalToOperation{ 7 };
 	public:
-		OperatorPacket(std::string completePacket);
-		OperatorPacket(int versionIn, int typeIDIn, std::string &contents) { ParsePacket(versionIn, typeIDIn, contents); }
-		~OperatorPacket();
-		unsigned long long int Value();
-		int SumOfVersions();
+		static OperatorPacket CreateOperatorPacket(std::string& completePacket);
+		OperatorPacket(int versionIn, int typeIDIn, std::string& contents);
+		~OperatorPacket() override = default;
+
+		ULLINT Value() const override;
+		int SumOfVersions() const override;
 	};
 }

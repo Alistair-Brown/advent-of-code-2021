@@ -11,6 +11,7 @@
 #include <regex>
 #include <deque>
 #include <chrono>
+#include "aoc_common_types.h"
 
 namespace Parsing
 {
@@ -27,8 +28,14 @@ namespace Parsing
 		std::string interGroupDelimiter);
 	int ParseIntFromConsole();
 	int ConvertStringToInt(std::string stringToConvert);
+
+	//
+	// Anything below this point is known to be used in the refactored project. Anything
+	// above this point can probably be deleted once I'm done refactoring.
+	//
+
 	std::string ConvertHexStringToBinary(std::string hexString);
-	unsigned long long int ConvertBinaryToInt(std::string binaryString);
+	ULLINT ConvertBinaryToInt(std::string binaryString);
 
 	const std::string comma = ",";
 	const std::string space = " ";

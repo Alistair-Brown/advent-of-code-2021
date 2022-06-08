@@ -40,84 +40,6 @@ int Parsing::ConvertStringToInt(std::string stringToConvert)
 	return std::strtol(stringToConvert.c_str(), nullptr, 10);
 }
 
-std::string Parsing::ConvertHexStringToBinary(std::string hexString)
-{
-	std::string binaryString{};
-
-	for (char character : hexString)
-	{
-		switch (character)
-		{
-		case '0':
-			binaryString += binaryZero;
-			break;
-		case '1':
-			binaryString += binaryOne;
-			break;
-		case '2':
-			binaryString += binaryTwo;
-			break;
-		case '3':
-			binaryString += binaryThree;
-			break;
-		case '4':
-			binaryString += binaryFour;
-			break;
-		case '5':
-			binaryString += binaryFive;
-			break;
-		case '6':
-			binaryString += binarySix;
-			break;
-		case '7':
-			binaryString += binarySeven;
-			break;
-		case '8':
-			binaryString += binaryEight;
-			break;
-		case '9':
-			binaryString += binaryNine;
-			break;
-		case 'A':
-			binaryString += binaryA;
-			break;
-		case 'B':
-			binaryString += binaryB;
-			break;
-		case 'C':
-			binaryString += binaryC;
-			break;
-		case 'D':
-			binaryString += binaryD;
-			break;
-		case 'E':
-			binaryString += binaryE;
-			break;
-		case 'F':
-			binaryString += binaryF;
-			break;
-		default:
-			assert(false);
-			break;
-		}
-	}
-
-	return binaryString;
-}
-
-unsigned long long int Parsing::ConvertBinaryToInt(std::string binaryString)
-{
-	unsigned long long int currentBitValue = pow(2, binaryString.size() - 1);
-	unsigned long long int totalValue{ 0 };
-
-	for (char bit : binaryString)
-	{
-		if (bit == '1') { totalValue += currentBitValue; }
-		currentBitValue /= 2;
-	}
-	return totalValue;
-}
-
 std::vector<int> Parsing::ParseLineOfInts(std::string delimiter)
 {
 	std::vector<int> parsedInts;
@@ -349,3 +271,88 @@ std::vector<std::vector<int>> Parsing::ParseWhitespacelessGridOfDigits(std::ifst
 	return gridOfInts;
 }
 
+// Given string representing a hex number, return a string representing the equivalent
+// binary. e.g. "3A2" would return "001110100010".
+std::string Parsing::ConvertHexStringToBinary(std::string hexString)
+{
+	std::string binaryString{};
+
+	for (char character : hexString)
+	{
+		switch (character)
+		{
+		case '0':
+			binaryString += binaryZero;
+			break;
+		case '1':
+			binaryString += binaryOne;
+			break;
+		case '2':
+			binaryString += binaryTwo;
+			break;
+		case '3':
+			binaryString += binaryThree;
+			break;
+		case '4':
+			binaryString += binaryFour;
+			break;
+		case '5':
+			binaryString += binaryFive;
+			break;
+		case '6':
+			binaryString += binarySix;
+			break;
+		case '7':
+			binaryString += binarySeven;
+			break;
+		case '8':
+			binaryString += binaryEight;
+			break;
+		case '9':
+			binaryString += binaryNine;
+			break;
+		case 'A':
+		case 'a':
+			binaryString += binaryA;
+			break;
+		case 'B':
+		case 'b':
+			binaryString += binaryB;
+			break;
+		case 'C':
+		case 'c':
+			binaryString += binaryC;
+			break;
+		case 'D':
+		case 'd':
+			binaryString += binaryD;
+			break;
+		case 'E':
+		case 'e':
+			binaryString += binaryE;
+			break;
+		case 'F':
+		case 'f':
+			binaryString += binaryF;
+			break;
+		default:
+			assert(false);
+			break;
+		}
+	}
+
+	return binaryString;
+}
+
+ULLINT Parsing::ConvertBinaryToInt(std::string binaryString)
+{
+	ULLINT currentBitValue = pow(2, binaryString.size() - 1);
+	ULLINT totalValue{ 0 };
+
+	for (char bit : binaryString)
+	{
+		if (bit == '1') { totalValue += currentBitValue; }
+		currentBitValue /= 2;
+	}
+	return totalValue;
+}
