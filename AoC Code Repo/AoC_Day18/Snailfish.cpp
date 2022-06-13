@@ -61,13 +61,18 @@ std::pair<std::string, std::string> Snail::SplitStringIntoSnailfishPair(std::str
 	return { leftPortion, rightPortion };
 }
 
-Snail::SnailfishNumber *Snail::AddSnailfishNumbers(SnailfishNumber *numberOne, SnailfishNumber *numberTwo)
+std::unique_ptr<Snail::SnailfishNumber> Snail::AddSnailfishNumbers(
+	std::unique_ptr<Snail::SnailfishNumber> numberOne,
+	std::unique_ptr<Snail::SnailfishNumber> numberTwo)
 {
-	Snail::SnailfishNumber *newSnailfishNumber = new SnailfishNumber({ (Number *)numberOne, (Number *)numberTwo });
+	std::unique_ptr<SnailfishNumber> newSnailfishNumber = 
+		std::make_unique<SnailfishNumber>( 
+			std::pair<std::unique_ptr<SnailfishNumber>, std::unique_ptr<SnailfishNumber>>{
+		std::move(numberOne), std::move(numberTwo) });
 
 	while (true)
 	{
-		Number *dummyNumPtr = nullptr;
+		std::unique_ptr<Number> dummyNumPtr{};
 		std::pair<int, int> dummyPair{ 0,0 };
 		if (newSnailfishNumber->MaybeExplode(1, dummyPair)) { continue; }
 		else if (newSnailfishNumber->MaybeSplit(dummyNumPtr)) { continue; }
@@ -80,28 +85,23 @@ Snail::SnailfishNumber::SnailfishNumber(std::pair<std::string, std::string> numb
 {
 	if (numberPairIn.first.size() == 1)
 	{
-		numberPair.first = (Number *) new RegularNumber(Parsing::ConvertStringToInt(numberPairIn.first));
+		numberPair.first = std::make_unique<RegularNumber>(Parsing::ConvertStringToInt(numberPairIn.first));
 	}
 	else
 	{
-		numberPair.first = (Number *) new SnailfishNumber(SplitStringIntoSnailfishPair(numberPairIn.first));
+		numberPair.first = std::make_unique<SnailfishNumber>(SplitStringIntoSnailfishPair(numberPairIn.first));
 	}
 
 	if (numberPairIn.second.size() == 1)
 	{
-		numberPair.second = (Number *) new RegularNumber(Parsing::ConvertStringToInt(numberPairIn.second));
+		numberPair.second = std::make_unique<RegularNumber>(Parsing::ConvertStringToInt(numberPairIn.second));
 	}
 	else
 	{
-		numberPair.second = (Number *) new SnailfishNumber(SplitStringIntoSnailfishPair(numberPairIn.second));
+		numberPair.second = std::make_unique<SnailfishNumber>(SplitStringIntoSnailfishPair(numberPairIn.second));
 	}
 }
 
-Snail::SnailfishNumber::~SnailfishNumber()
-{
-	delete numberPair.first;
-	delete numberPair.second;
-}
 
 int Snail::SnailfishNumber::Magnitude()
 {
@@ -132,8 +132,7 @@ bool Snail::SnailfishNumber::MaybeExplode(int nestDepth, std::pair<int, int>& pa
 	{
 		if (nestDepth == 4)
 		{
-			delete numberPair.first;
-			numberPair.first = (Number *) new RegularNumber(0);
+			numberPair.first = std::make_unique<RegularNumber>(0);
 		}
 		numberPair.second->IncreaseLeftValue(pairToExplode.second);
 		exploded = true;
@@ -143,8 +142,7 @@ bool Snail::SnailfishNumber::MaybeExplode(int nestDepth, std::pair<int, int>& pa
 	{
 		if (nestDepth == 4)
 		{
-			delete numberPair.second;
-			numberPair.second = (Number *) new RegularNumber(0);
+			numberPair.second = std::make_unique<RegularNumber>(0);
 		}
 		numberPair.first->IncreaseRightValue(pairToExplode.first);
 		exploded = true;
@@ -153,7 +151,7 @@ bool Snail::SnailfishNumber::MaybeExplode(int nestDepth, std::pair<int, int>& pa
 	return exploded;
 }
 
-bool Snail::SnailfishNumber::MaybeSplit(Number *& newNumber)
+bool Snail::SnailfishNumber::MaybeSplit(std::unique_ptr<Number>& newNumber)
 {
 	bool split{ false };
 
@@ -163,30 +161,21 @@ bool Snail::SnailfishNumber::MaybeSplit(Number *& newNumber)
 	if (numberPair.first->MaybeSplit(newNumber))
 	{
 		split = true;
-		if (newNumber != nullptr)
+		if (newNumber)
 		{
-			delete numberPair.first;
-			numberPair.first = newNumber;
-			newNumber = nullptr;
+			numberPair.first = std::move(newNumber);
 		}
 	}
 	else if (numberPair.second->MaybeSplit(newNumber))
 	{
 		split = true;
-		if (newNumber != nullptr)
+		if (newNumber)
 		{
-			delete numberPair.second;
-			numberPair.second = newNumber;
-			newNumber = nullptr;
+			numberPair.second = std::move(newNumber);
 		}
 	}
 
 	return split;
-}
-
-Snail::RegularNumber::~RegularNumber()
-{
-	std::cout << "Hit regular destructor" << std::endl;
 }
 
 bool Snail::RegularNumber::MaybeExplode(int depth, std::pair<int, int>& pairToExplode)
@@ -195,17 +184,19 @@ bool Snail::RegularNumber::MaybeExplode(int depth, std::pair<int, int>& pairToEx
 	return false;
 }
 
-bool Snail::RegularNumber::MaybeSplit(Number *& newNumber)
+bool Snail::RegularNumber::MaybeSplit(std::unique_ptr<Number> &newNumber)
 {
-	assert(newNumber == nullptr);
+	assert(!newNumber);
 	bool split{ false };
 	if (value > 9)
 	{
 		split = true;
 		int oddComponent = value % 2;
-		Number *leftNumber = (Number *)new RegularNumber(value / 2);
-		Number *rightNumber = (Number *)new RegularNumber((value / 2) + oddComponent);
-		newNumber = (Number *)new SnailfishNumber({ leftNumber, rightNumber });
+		std::unique_ptr<Number> leftNumber = std::make_unique<RegularNumber>(value / 2);
+		std::unique_ptr<Number> rightNumber = std::make_unique<RegularNumber>((value / 2) + oddComponent);
+		newNumber = std::make_unique<SnailfishNumber>(
+			std::pair<std::unique_ptr<Number>, std::unique_ptr<Number>>(
+				std::move(leftNumber), std::move(rightNumber)));
 	}
 	return split;
 }

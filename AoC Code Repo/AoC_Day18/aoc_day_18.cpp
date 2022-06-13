@@ -9,34 +9,35 @@ PuzzleAnswerPair PuzzleSolvers::AocDayEighteenSolver(std::ifstream& puzzleInputF
 
 	std::vector<std::string> snailNumbersAsString;
 	snailNumbersAsString.push_back(firstNumAsString);
-	Snail::SnailfishNumber *currentSnailNum = new Snail::SnailfishNumber(Snail::SplitStringIntoSnailfishPair(firstNumAsString));
-	Snail::SnailfishNumber *nextSnailNum;
+	std::unique_ptr<Snail::SnailfishNumber> currentSnailNum =
+		std::make_unique<Snail::SnailfishNumber>(Snail::SplitStringIntoSnailfishPair(firstNumAsString));
+	std::unique_ptr<Snail::SnailfishNumber> nextSnailNum;
 
 	std::vector<std::string> inputLines = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
 	for (std::string nextNumAsString : inputLines)
 	{
 		if (nextNumAsString.size() == 0) { break; }
 		snailNumbersAsString.push_back(nextNumAsString);
-		nextSnailNum = new Snail::SnailfishNumber(Snail::SplitStringIntoSnailfishPair(nextNumAsString));
-		currentSnailNum = Snail::AddSnailfishNumbers(currentSnailNum, nextSnailNum);
+		nextSnailNum = std::make_unique<Snail::SnailfishNumber>(
+			Snail::SplitStringIntoSnailfishPair(nextNumAsString));
+		currentSnailNum = Snail::AddSnailfishNumbers(std::move(currentSnailNum), std::move(nextSnailNum));
 	}
 
 	int partOne = currentSnailNum->Magnitude();
 
-	Snail::SnailfishNumber *numberOne;
-	Snail::SnailfishNumber *numberTwo;
-	Snail::SnailfishNumber *sumOfJustTwo;
+	std::unique_ptr<Snail::SnailfishNumber> numberOne;
+	std::unique_ptr<Snail::SnailfishNumber> numberTwo;
+	std::unique_ptr<Snail::SnailfishNumber> sumOfJustTwo;
 	int maxMagnitude = 0;
 	for (int ii = 0; ii < snailNumbersAsString.size(); ii++)
 	{
 		for (int jj = ii + 1; jj < snailNumbersAsString.size(); jj++)
 		{
-			numberOne = new Snail::SnailfishNumber(Snail::SplitStringIntoSnailfishPair(snailNumbersAsString[ii]));
-			numberTwo = new Snail::SnailfishNumber(Snail::SplitStringIntoSnailfishPair(snailNumbersAsString[jj]));
-			sumOfJustTwo = Snail::AddSnailfishNumbers(numberOne, numberTwo);
+			numberOne = std::make_unique<Snail::SnailfishNumber>(Snail::SplitStringIntoSnailfishPair(snailNumbersAsString[ii]));
+			numberTwo = std::make_unique<Snail::SnailfishNumber>(Snail::SplitStringIntoSnailfishPair(snailNumbersAsString[jj]));
+			sumOfJustTwo = Snail::AddSnailfishNumbers(std::move(numberOne), std::move(numberTwo));
 			int magnitude = sumOfJustTwo->Magnitude();
 			if (magnitude > maxMagnitude) { maxMagnitude = magnitude; }
-			delete sumOfJustTwo;
 		}
 	}
 
