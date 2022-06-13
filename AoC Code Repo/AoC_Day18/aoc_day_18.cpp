@@ -1,28 +1,27 @@
 #include "Snailfish.h"
 #include <iostream>
+#include "puzzle_solvers.h"
 
-int main()
+PuzzleAnswerPair PuzzleSolvers::AocDayEighteenSolver(std::ifstream& puzzleInputFile)
 {
-	std::cout << "Enter snailfish number" << std::endl;
-
-	std::string nextNumAsString;
-	std::getline(std::cin, nextNumAsString);
+	std::string firstNumAsString{};
+	std::getline(puzzleInputFile, firstNumAsString);
 
 	std::vector<std::string> snailNumbersAsString;
-	snailNumbersAsString.push_back(nextNumAsString);
-	Snail::SnailfishNumber *currentSnailNum = new Snail::SnailfishNumber(Snail::SplitStringIntoSnailfishPair(nextNumAsString));
+	snailNumbersAsString.push_back(firstNumAsString);
+	Snail::SnailfishNumber *currentSnailNum = new Snail::SnailfishNumber(Snail::SplitStringIntoSnailfishPair(firstNumAsString));
 	Snail::SnailfishNumber *nextSnailNum;
 
-	while (true)
+	std::vector<std::string> inputLines = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
+	for (std::string nextNumAsString : inputLines)
 	{
-		std::getline(std::cin, nextNumAsString);
 		if (nextNumAsString.size() == 0) { break; }
 		snailNumbersAsString.push_back(nextNumAsString);
 		nextSnailNum = new Snail::SnailfishNumber(Snail::SplitStringIntoSnailfishPair(nextNumAsString));
 		currentSnailNum = Snail::AddSnailfishNumbers(currentSnailNum, nextSnailNum);
 	}
 
-	std::cout << currentSnailNum->Magnitude() << std::endl;
+	int partOne = currentSnailNum->Magnitude();
 
 	Snail::SnailfishNumber *numberOne;
 	Snail::SnailfishNumber *numberTwo;
@@ -41,5 +40,5 @@ int main()
 		}
 	}
 
-	std::cout << "Max magnitude : " << maxMagnitude << std::endl;
+	return PuzzleAnswerPair{ std::to_string(partOne), std::to_string(maxMagnitude) };
 }
