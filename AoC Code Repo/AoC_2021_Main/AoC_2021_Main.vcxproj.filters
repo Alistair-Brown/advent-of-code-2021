@@ -67,6 +67,9 @@
     <Filter Include="Day 18">
       <UniqueIdentifier>{6e66067f-3963-4c19-86ef-bff8f97083cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 20">
+      <UniqueIdentifier>{b3f551d7-3b94-41e7-806f-4f419e48147f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -183,6 +186,12 @@
     <ClCompile Include="..\AoC_Day18\Snailfish.cpp">
       <Filter>Day 18</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day20\aoc_day_20.cpp">
+      <Filter>Day 20</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day20\ImageEnhancement.cpp">
+      <Filter>Day 20</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -253,6 +262,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day18\Snailfish.h">
       <Filter>Day 18</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day20\ImageEnhancement.h">
+      <Filter>Day 20</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
