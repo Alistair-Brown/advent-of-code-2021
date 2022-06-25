@@ -3,69 +3,82 @@
 #include <vector>
 #include <map>
 
+// Dirac dice is played on a circular board with spaces numbered 1 to 10 inclusive, in order. Each
+// player has a pawn on this board, and they take turns to roll a dice 3 times, and then move their
+// pawn a number of spaces equal to the sum of the rolls. Their score is then increased by the number
+// of the space they land on. A game continues until one player has reached the required score to win,
+// at which point the game ends immediately.
 namespace Dirac
 {
+	const unsigned int SPACES_ON_DIRAC_BOARD = 10;
+	const unsigned int DICE_ROLLS_PER_TURN = 3;
+
+	// A deterministic dice is guaranteed to initially roll a 1, then a 2, then a 3, and so
+	// on, up until it reaches its maximum rollable number, at which point it will wrap back
+	// to 1 again. This deterministic dice also keeps track of the total number of times it has
+	// been rolled.
 	class DeterministicDice
 	{
 	private:
-		int maxRollableNumber;
-		int nextNumberToRoll{ 1 };
-		int numberOfTimesRolled{ 0 };
+		unsigned int maxRollableNumber;
+		unsigned int nextNumberToRoll{ 1 };
+		unsigned int numberOfTimesRolled{ 0 };
 	public:
-		DeterministicDice(int maxRollableNumber) : maxRollableNumber{ maxRollableNumber } {};
-		int NumberOfTimesRolled() { return numberOfTimesRolled; }
-		int SumOfNextNRolls(int numberOfRolls);
+		DeterministicDice(unsigned int maxRollableNumber) : maxRollableNumber{ maxRollableNumber } {};
+		unsigned int NumberOfTimesRolled() { return numberOfTimesRolled; }
+		unsigned int SumOfNextNRolls(unsigned int numberOfRolls);
 	};
 
+	// A deterministic game of dirac dice is played with a deterministic dice, for which any given
+	// roll is pre-determined. This class will play a game of Dirac dice (following rules in namespace
+	// header comment) with such a dice, reporting back the final scores once a player has won.
 	class DeterministicGame
 	{
 	private:
-		int maximumPosition;
-		int scoreToWin;
-		int diceRollsPerMove;
+		unsigned int scoreToWin;
 		DeterministicDice &dice;
 
-		int playerOnePosition;
-		int playerTwoPosition;
-		int playerOneScore{ 0 };
-		int playerTwoScore{ 0 };
+		unsigned int playerOnePosition;
+		unsigned int playerTwoPosition;
+		bool gamePlayed{ false };
+		unsigned int playerOneScore{ 0 };
+		unsigned int playerTwoScore{ 0 };
 
-		void UpdatePlayerScoreAndPosition(int diceRolls, int &playerPos, int &playerScore);
+		void PlayGame();
+		void UpdatePlayerScoreAndPosition(
+			unsigned int spacesToMove,
+			unsigned int &playerPos,
+			unsigned int &playerScore);
 	public:
 		DeterministicGame(DeterministicDice &dice,
-			  	  int diceRolls,
-			  	  int maxPos,
-				  int scoreToWin,
-				  int playerOneStartingPosition,
-				  int playerTwoStartingPosition) :
+				unsigned int scoreToWin,
+				unsigned int playerOneStartingPosition,
+				unsigned int playerTwoStartingPosition) :
 			dice{ dice },
-			diceRollsPerMove {diceRolls},
-			maximumPosition{ maxPos },
 			scoreToWin{ scoreToWin },
 			playerOnePosition{ playerOneStartingPosition },
 			playerTwoPosition{ playerTwoStartingPosition }{};
-		std::pair<int, int> FinalScores();
+
+		std::pair<unsigned int, unsigned int> FinalScores();
 	};
 
 	class DiracDice
 	{
 	private:
 		int maxRollableValue;
-		int rollsPerTurn;
 		std::vector<int> possibleSumsPerTurn;
 
 		std::vector<int> PossibleSumsForNRolls(int numRolls);
 	public:
-		DiracDice(int maxVal, int rolls);
+		DiracDice(int maxVal);
 		std::vector<int> PossibleSumsPerTurn() { return possibleSumsPerTurn; }
 	};
 
 	class DiracGame
 	{
 	private:
-		int playerOneStartPos;
-		int playerTwoStartPos;
-		int maximumPosition;
+		unsigned int playerOneStartPos;
+		unsigned int playerTwoStartPos;
 		int scoreToWin;
 		DiracDice dice;
 		// The pair used as a key holds the current position, and the required score.
@@ -84,10 +97,9 @@ namespace Dirac
 		std::map<int, unsigned long long int> NumberOfWaysToAchieveScore(int currentPosition, int requiredScore, bool exact);
 		unsigned long long NumberOfWaysToNotReachScoreInTurns(int currentPosition, int scoreToMiss, int turnLimit);
 	public:
-		DiracGame(int maxPos, int scoreToWin, int diceRolls, int diceMaxVal, int playerOnePos, int playerTwoPos) :
-			maximumPosition{ maxPos },
+		DiracGame(int scoreToWin, int diceMaxVal, unsigned int playerOnePos, unsigned int playerTwoPos) :
 			scoreToWin{ scoreToWin },
-			dice{ diceMaxVal, diceRolls },
+			dice{ diceMaxVal },
 			playerOneStartPos{playerOnePos},
 			playerTwoStartPos{ playerTwoPos }{};
 		unsigned long long int NumberOfUniversesBestPlayerWinsIn();

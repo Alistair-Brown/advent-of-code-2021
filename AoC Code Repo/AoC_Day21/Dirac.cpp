@@ -1,9 +1,14 @@
 #include "Dirac.h"
 
-int Dirac::DeterministicDice::SumOfNextNRolls(int numberOfRolls)
+// Roll the deterministic dice the required number of times and return the sum of those
+// rolls.
+// The Deterministic dice simply returns the next number in an incrementing sequence
+// with each roll, wrapping back to 1 once it reaches its maximum value.
+// The Dice keeps track of how many times it has been rolled.
+unsigned int Dirac::DeterministicDice::SumOfNextNRolls(unsigned int numberOfRolls)
 {
-	int sumOfRolls{ 0 };
-	for (int ii = 0; ii < numberOfRolls; ii++)
+	unsigned int sumOfRolls{ 0 };
+	for (unsigned int ii = 0; ii < numberOfRolls; ii++)
 	{
 		sumOfRolls += nextNumberToRoll;
 		numberOfTimesRolled++;
@@ -13,32 +18,53 @@ int Dirac::DeterministicDice::SumOfNextNRolls(int numberOfRolls)
 	return sumOfRolls;
 }
 
-void Dirac::DeterministicGame::UpdatePlayerScoreAndPosition(int diceRolls, int & playerPos, int & playerScore)
+// Return the final scores of the two players after a fully deterministic game of Dirac
+// Dice. If the game has not yet been played, play it first to determine those scores.
+std::pair<unsigned int, unsigned int> Dirac::DeterministicGame::FinalScores()
 {
-	playerPos += diceRolls;
-
-	while (playerPos > maximumPosition)
+	if (!gamePlayed)
 	{
-		playerPos -= maximumPosition;
-	}
-	playerScore += playerPos;
-}
-
-std::pair<int, int> Dirac::DeterministicGame::FinalScores()
-{
-	int nextDiceRoll;
-	while (true)
-	{
-		nextDiceRoll = dice.SumOfNextNRolls(diceRollsPerMove);
-		UpdatePlayerScoreAndPosition(nextDiceRoll, playerOnePosition, playerOneScore);
-		if (playerOneScore >= scoreToWin) { break; }
-
-		nextDiceRoll = dice.SumOfNextNRolls(diceRollsPerMove);
-		UpdatePlayerScoreAndPosition(nextDiceRoll, playerTwoPosition, playerTwoScore);
-		if (playerTwoScore >= scoreToWin) { break; }
+		PlayGame();
 	}
 
 	return { playerOneScore, playerTwoScore };
+}
+
+// Play a deterministic game of Dirac Dice. Do this by taking turns for each player to roll
+// the deterministic dice the permitted number of times, and move their piece to increase their
+// scode as per the rules of the game. The game ends immediately when either player reaches
+// the required score to win.
+void Dirac::DeterministicGame::PlayGame()
+{
+	unsigned int nextDiceRoll;
+	while (true)
+	{
+		nextDiceRoll = dice.SumOfNextNRolls(DICE_ROLLS_PER_TURN);
+		UpdatePlayerScoreAndPosition(nextDiceRoll, playerOnePosition, playerOneScore);
+		if (playerOneScore >= scoreToWin) { break; }
+
+		nextDiceRoll = dice.SumOfNextNRolls(DICE_ROLLS_PER_TURN);
+		UpdatePlayerScoreAndPosition(nextDiceRoll, playerTwoPosition, playerTwoScore);
+		if (playerTwoScore >= scoreToWin) { break; }
+	}
+	gamePlayed = true;
+}
+
+// Move a player the required number of spaces around the Dirac board, accounting the circular
+// nature of the board when handling wrapping past the maximum position. The player's score is
+// incremented by the number of the position they land on.
+void Dirac::DeterministicGame::UpdatePlayerScoreAndPosition(
+	unsigned int spacesToMove,
+	unsigned int& playerPos,
+	unsigned int& playerScore)
+{
+	playerPos += spacesToMove;
+
+	while (playerPos > SPACES_ON_DIRAC_BOARD)
+	{
+		playerPos -= SPACES_ON_DIRAC_BOARD;
+	}
+	playerScore += playerPos;
 }
 
 std::vector<int> Dirac::DiracDice::PossibleSumsForNRolls(int numRolls)
@@ -66,12 +92,11 @@ std::vector<int> Dirac::DiracDice::PossibleSumsForNRolls(int numRolls)
 	return possibleNumsToReturn;
 }
 
-Dirac::DiracDice::DiracDice(int maxVal, int rolls)
+Dirac::DiracDice::DiracDice(int maxVal)
 {
 	maxRollableValue = maxVal;
-	rollsPerTurn = rolls;
 
-	possibleSumsPerTurn = PossibleSumsForNRolls(rolls);
+	possibleSumsPerTurn = PossibleSumsForNRolls(DICE_ROLLS_PER_TURN);
 }
 
 void Dirac::DiracGame::IncreasePossibilitiesForTurn(
@@ -93,9 +118,9 @@ int Dirac::DiracGame::ScoreFromRoll(int currentPosition, int roll)
 {
 	int newPosition = currentPosition + roll;
 
-	while (newPosition > maximumPosition)
+	while (newPosition > SPACES_ON_DIRAC_BOARD)
 	{
-		newPosition -= maximumPosition;
+		newPosition -= SPACES_ON_DIRAC_BOARD;
 	}
 	return newPosition;
 }
