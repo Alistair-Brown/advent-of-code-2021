@@ -70,6 +70,9 @@
     <Filter Include="Day 20">
       <UniqueIdentifier>{b3f551d7-3b94-41e7-806f-4f419e48147f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 21">
+      <UniqueIdentifier>{393f4c08-1c66-461d-a28b-7d2939658e3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -192,6 +195,12 @@
     <ClCompile Include="..\AoC_Day20\ImageEnhancement.cpp">
       <Filter>Day 20</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day21\aoc_day_21.cpp">
+      <Filter>Day 21</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day21\Dirac.cpp">
+      <Filter>Day 21</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -265,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day20\ImageEnhancement.h">
       <Filter>Day 20</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day21\Dirac.h">
+      <Filter>Day 21</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

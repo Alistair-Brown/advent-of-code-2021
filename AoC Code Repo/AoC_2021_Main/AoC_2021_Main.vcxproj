@@ -163,6 +163,8 @@
     <ClCompile Include="..\AoC_Day18\Snailfish.cpp" />
     <ClCompile Include="..\AoC_Day20\aoc_day_20.cpp" />
     <ClCompile Include="..\AoC_Day20\ImageEnhancement.cpp" />
+    <ClCompile Include="..\AoC_Day21\aoc_day_21.cpp" />
+    <ClCompile Include="..\AoC_Day21\Dirac.cpp" />
     <ClCompile Include="AoC_2021_main.cpp" />
     <ClCompile Include="input_retrieval\input_retrieval.cpp" />
   </ItemGroup>
@@ -189,6 +191,7 @@
     <ClInclude Include="..\AoC_Day17\ProbeLauncher.h" />
     <ClInclude Include="..\AoC_Day18\Snailfish.h" />
     <ClInclude Include="..\AoC_Day20\ImageEnhancement.h" />
+    <ClInclude Include="..\AoC_Day21\Dirac.h" />
     <ClInclude Include="input_retrieval\input_retrieval.h" />
     <ClInclude Include="puzzle_solvers\puzzle_solvers.h" />
   </ItemGroup>
