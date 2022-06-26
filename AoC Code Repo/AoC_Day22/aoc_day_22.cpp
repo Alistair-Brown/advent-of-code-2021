@@ -8,14 +8,13 @@
 
 PuzzleAnswerPair PuzzleSolvers::AocDayTwentyTwoSolver(std::ifstream& puzzleInputFile)
 {
-	Reactor::InitializationZone initializationZone{ false, {-50, 50}, {-50, 50}, {-50, 50} };
-	std::vector<std::pair<bool, Reactor::InstructionVolume>> instructions;
-
 	std::vector<std::string> inputLines = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
+	std::vector<std::pair<bool, Reactor::InstructionVolume>> instructions;
 	for (std::string &instruction : inputLines)
 	{
 		std::regex instructionPattern{
-			"([a-z]+) x=(-{0,1}[0-9]+)..(-{0,1}[0-9]+),y=(-{0,1}[0-9]+)..(-{0,1}[0-9]+),z=(-{0,1}[0-9]+)..(-{0,1}[0-9]+)" };
+			"([a-z]+) x=(-{0,1}[0-9]+)..(-{0,1}[0-9]+),y=(-{0,1}[0-9]+)..(-{0,1}[0-9]+),z=(-{0,1}[0-9]+)..(-{0,1}[0-9]+)"
+		};
 		std::string onOrOff;
 		std::pair<int, int> xRange;
 		std::pair<int, int> yRange;
@@ -34,15 +33,14 @@ PuzzleAnswerPair PuzzleSolvers::AocDayTwentyTwoSolver(std::ifstream& puzzleInput
 		assert((onOrOff == "on") || (onOrOff == "off"));
 		bool settingIsOn = (onOrOff == "on");
 
-		initializationZone.SetCubesInRange(settingIsOn, xRange, yRange, zRange);
-
 		instructions.push_back({ settingIsOn, { xRange, yRange, zRange } });
 	}
 
+	Reactor::CompleteReactor initializationZone{ instructions, {-50,50}, {-50,50}, {-50,50} };
 	Reactor::CompleteReactor completeReactor{ instructions };
 
 	return PuzzleAnswerPair{
-		std::to_string(initializationZone.GetNumberOfOnCubes()),
+		std::to_string(initializationZone.NumberOfOnCubes()),
 		std::to_string(completeReactor.NumberOfOnCubes())
 	};
 }

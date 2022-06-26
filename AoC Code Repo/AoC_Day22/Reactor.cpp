@@ -1,86 +1,7 @@
 #include "Reactor.h"
 #include <cassert>
-
-// Size here is 
-Reactor::InitializationZone::InitializationZone(
-	bool initialSetting,
-	std::pair<int, int> xRange,
-	std::pair<int, int> yRange,
-	std::pair<int, int> zRange)
-{
-	// Midpoint tracking will be screwed if we don't have a range going into the negative.
-	assert((xRange.first < 0) && (yRange.first < 0) && (zRange.first < 0));
-
-	// Set up vector of bools for the 1D z-direction, duplicate that into a 2D plane in the y-direction,
-	// then duplicate that in the z direction to create the whole cube.
-	int zMidpointTracker{ 0 };
-	std::vector<bool> zAxisOnly;
-	for (int zz = zRange.first; zz <= zRange.second; zz++)
-	{
-		zAxisOnly.push_back(initialSetting);
-		if (zz == 0) { zMidpoint = zMidpointTracker; }
-		zMidpointTracker++;
-	}
-	int yMidpointTracker{ 0 };
-	std::vector<std::vector<bool>> yzPlane;
-	for (int yy = yRange.first; yy <= yRange.second; yy++)
-	{
-		yzPlane.push_back(zAxisOnly);
-		if (yy == 0) { yMidpoint = yMidpointTracker; }
-		yMidpointTracker++;
-	}
-	int xMidpointTracker{ 0 };
-	for (int xx = xRange.first; xx <= xRange.second; xx++)
-	{
-		onOrOffCubes.push_back(yzPlane);
-		if (xx == 0) { xMidpoint = xMidpointTracker; }
-		xMidpointTracker++;
-	}
-}
-
-void Reactor::InitializationZone::SetCubesInRange(
-	bool newSetting,
-	std::pair<int, int> xRange,
-	std::pair<int, int> yRange,
-	std::pair<int, int> zRange)
-{
-	// When accessing 0-indexed vectors, use our knowledge of what the true
-	// 0th position of the vector is to offset our indices.
-	// Careful to only access cells within the range of the initialisation zone.
-	for (int xx = xRange.first + xMidpoint; xx <= xRange.second + xMidpoint; xx++)
-	{
-		if (xx < 0) { continue; }
-		else if (xx >= (int)onOrOffCubes.size()) { break; }
-		for (int yy = yRange.first + yMidpoint; yy <= yRange.second + yMidpoint; yy++)
-		{
-			if (yy < 0) { continue; }
-			else if (yy >= (int)onOrOffCubes[0].size()) { break; }
-			for (int zz = zRange.first + zMidpoint; zz <= zRange.second + zMidpoint; zz++)
-			{
-				if (zz < 0) { continue; }
-				else if (zz >= (int)onOrOffCubes[0][0].size()) { break; }
-
-				onOrOffCubes[xx][yy][zz] = newSetting;
-			}
-		}
-	}
-}
-
-int Reactor::InitializationZone::GetNumberOfOnCubes()
-{
-	int numberOfOnCubes{ 0 };
-	for (std::vector<std::vector<bool>> plane : onOrOffCubes)
-	{
-		for (std::vector<bool> axis : plane)
-		{
-			for (bool cube : axis)
-			{
-				if (cube) { numberOfOnCubes++; }
-			}
-		}
-	}
-	return numberOfOnCubes;
-}
+#include <algorithm>
+#include <iterator>
 
 unsigned long long int Reactor::CompleteReactor::NumberOfNonOverlappingCubes(InstructionVolume mainVolume, std::vector<InstructionVolume> potentialOverlappingVolumes)
 {
@@ -112,12 +33,10 @@ unsigned long long int Reactor::CompleteReactor::NumberOfNonOverlappingCubes(Ins
 	return numberOfNonOverlappingCubes;
 }
 
-Reactor::CompleteReactor::CompleteReactor(std::vector<std::pair<bool, InstructionVolume>> instructionsInOriginalOrder)
+void Reactor::CompleteReactor::ApplyInstructions(std::vector<std::pair<bool, InstructionVolume>> instructionsInOrder)
 {
 	std::vector<InstructionVolume> subsequentInstructions;
-	numberOfOnCubes = 0;
-
-	for (std::vector<std::pair<bool, InstructionVolume>>::iterator instructionVolumeItr = instructionsInOriginalOrder.end(); ; )
+	for (std::vector<std::pair<bool, InstructionVolume>>::iterator instructionVolumeItr = instructionsInOrder.end(); ; )
 	{
 		instructionVolumeItr--;
 
@@ -133,8 +52,46 @@ Reactor::CompleteReactor::CompleteReactor(std::vector<std::pair<bool, Instructio
 		// ones we've already dealt with are technically the subsequent instructions.
 		subsequentInstructions.push_back(instructionVolumeItr->second);
 
-		if (instructionVolumeItr == instructionsInOriginalOrder.begin()) { break; }
+		if (instructionVolumeItr == instructionsInOrder.begin()) { break; }
 	}
+}
+
+Reactor::CompleteReactor::CompleteReactor(std::vector<std::pair<bool, InstructionVolume>> instructionsInOriginalOrder)
+{
+	numberOfOnCubes = 0;
+	ApplyInstructions(instructionsInOriginalOrder);
+}
+
+Reactor::CompleteReactor::CompleteReactor(
+	std::vector<std::pair<bool, InstructionVolume>> instructionsInOriginalOrder,
+	std::pair<int, int> xLimits,
+	std::pair<int, int> yLimits,
+	std::pair<int, int> zLimits
+)
+{
+	numberOfOnCubes = 0;
+	std::vector<std::pair<bool, InstructionVolume>> filteredInstructions;
+	
+	auto instructionInRange = [xLimits, yLimits, zLimits](std::pair<bool, InstructionVolume> instructionPair) noexcept -> bool
+	{
+		return (
+			instructionPair.second.xRange.first >= xLimits.first &&
+			instructionPair.second.xRange.second <= xLimits.second &&
+			instructionPair.second.yRange.first >= yLimits.first &&
+			instructionPair.second.yRange.second <= yLimits.second &&
+			instructionPair.second.zRange.first >= zLimits.first &&
+			instructionPair.second.zRange.second <= zLimits.second
+			);
+	};
+
+	std::copy_if(
+		instructionsInOriginalOrder.begin(),
+		instructionsInOriginalOrder.end(),
+		std::back_inserter(filteredInstructions),
+		instructionInRange
+	);
+
+	ApplyInstructions(filteredInstructions);
 }
 
 // Converts a volume into just the portion of it that overlaps with 'this' volume.
