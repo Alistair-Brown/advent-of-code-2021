@@ -2,6 +2,7 @@
 #include <utility>
 #include <vector>
 #include <map>
+#include "aoc_common_types.h"
 
 // Dirac dice is played on a circular board with spaces numbered 1 to 10 inclusive, in order. Each
 // player has a pawn on this board, and they take turns to roll a dice 3 times, and then move their
@@ -62,46 +63,66 @@ namespace Dirac
 		std::pair<unsigned int, unsigned int> FinalScores();
 	};
 
+	// The Dirac dice can provide a vector containing each of the possible values that
+	// could result from it on a given turn. The dice is rolled 3 times on a turn (namespace
+	// constant DICE_ROLLS_PER_TURN) and takes its maximum rollable value from the maxVal
+	// construction parameter.
 	class DiracDice
 	{
 	private:
-		int maxRollableValue;
-		std::vector<int> possibleSumsPerTurn;
+		unsigned int maxRollableValue;
+		std::vector<unsigned int> possibleSumsPerTurn;
 
-		std::vector<int> PossibleSumsForNRolls(int numRolls);
+		std::vector<unsigned int> PossibleSumsForNRolls(unsigned int numRolls);
 	public:
-		DiracDice(int maxVal);
-		std::vector<int> PossibleSumsPerTurn() { return possibleSumsPerTurn; }
+		DiracDice(unsigned int maxVal);
+		std::vector<unsigned int> PossibleSumsPerTurn() { return possibleSumsPerTurn; }
 	};
 
+	// The truly 'Dirac' version of Dirac Dice is played with a dice that splits the universe
+	// into multiple realities each time it is rolled (one reality for each rollable value).
+	// This class is capable of working out which of the 2 players would win in more of these
+	// realities than the other, and return the number of realities in which that player one.
 	class DiracGame
 	{
 	private:
 		unsigned int playerOneStartPos;
 		unsigned int playerTwoStartPos;
-		int scoreToWin;
+		unsigned int scoreToWin;
 		DiracDice dice;
-		// The pair used as a key holds the current position, and the required score.
-		// Then the map stored as a value holds the number of ways to achieve each
-		// possible score (i.e. what gets returned by NumberOfWaysToAchieveScore().
-		// This cache means that NumberOfWaysToAchieveScore will only actually
-		// have to do real work less than 200 times in the whole program.
-		std::map<std::pair<int, int>, std::map<int, unsigned long long int>> cachedWaysToAchieveScores;
-		std::map<std::pair<int, int>, std::map<int, unsigned long long int>> cachedExactWaysToAchieveScores;
 
+		// Much of the legwork of this solution involves asking the question "Given a current
+		// position and a number of remaining required points, how many ways could this point total
+		// be reached?". So we can optimise enormously by caching the result of this query,
+		// so that NumberOfWaysToAchieveScore will only have to do meaningful work around 200 times
+		// in the lifetime of the program.
+		// The pair used as a key holds the current position, and the required score. Then the map
+		// stored as a value holds the number of ways to achieve each possible score in different 
+		// numbers of turns (i.e. what gets returned by NumberOfWaysToAchieveScore()).
+		std::map<std::pair<unsigned int, unsigned int>, std::map<unsigned int, ULLINT>> cachedWaysToAchieveScores;
+		std::map<std::pair<unsigned int, unsigned int>, std::map<unsigned int, ULLINT>> cachedExactWaysToAchieveScores;
+
+		std::map<unsigned int, ULLINT> NumberOfWaysToAchieveScore(
+			unsigned int currentPosition,
+			unsigned int requiredScore,
+			bool exactScore);
+		ULLINT NumberOfWaysToNotReachScoreInTurns(
+			unsigned int currentPosition,
+			unsigned int scoreToMiss,
+			unsigned int turnLimit);
 		void IncreasePossibilitiesForTurn(
-			std::map<int, unsigned long long int> &existingTurnToPossibilityMap,
-			int turnNums,
-			unsigned long long int extraPossibilities);
-		int ScoreFromRoll(int currentPosition, int roll);
-		std::map<int, unsigned long long int> NumberOfWaysToAchieveScore(int currentPosition, int requiredScore, bool exact);
-		unsigned long long NumberOfWaysToNotReachScoreInTurns(int currentPosition, int scoreToMiss, int turnLimit);
+			std::map<unsigned int, ULLINT> &existingTurnToPossibilityMap,
+			unsigned int turnNums,
+			ULLINT extraPossibilities);
+
+		unsigned int PositionAfterRoll(unsigned int currentPosition, unsigned int roll);
+
 	public:
-		DiracGame(int scoreToWin, int diceMaxVal, unsigned int playerOnePos, unsigned int playerTwoPos) :
+		DiracGame(unsigned int scoreToWin, unsigned int diceMaxVal, unsigned int playerOnePos, unsigned int playerTwoPos) :
 			scoreToWin{ scoreToWin },
 			dice{ diceMaxVal },
 			playerOneStartPos{playerOnePos},
 			playerTwoStartPos{ playerTwoPos }{};
-		unsigned long long int NumberOfUniversesBestPlayerWinsIn();
+		ULLINT NumberOfUniversesBestPlayerWinsIn();
 	};
 }
