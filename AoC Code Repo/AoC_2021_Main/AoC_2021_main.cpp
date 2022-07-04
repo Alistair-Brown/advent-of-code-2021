@@ -63,3 +63,11 @@ PuzzleAnswerPair PuzzleSolvers::AocDayNineteenSolver(std::ifstream& puzzleInputF
 {
 	return PuzzleAnswerPair{ "not implemented", "not implemented" };
 }
+PuzzleAnswerPair PuzzleSolvers::AocDayTwentyThreeSolver(std::ifstream& puzzleInputFile)
+{
+	return PuzzleAnswerPair{ "not implemented", "not implemented" };
+}
+PuzzleAnswerPair PuzzleSolvers::AocDayTwentyFourSolver(std::ifstream& puzzleInputFile)
+{
+	return PuzzleAnswerPair{ "not implemented", "not implemented" };
+}
