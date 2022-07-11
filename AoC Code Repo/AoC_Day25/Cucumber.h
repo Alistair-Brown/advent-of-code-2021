@@ -1,57 +1,32 @@
 #pragma once
-#include <utility>
-#include <vector>
-#include <string>
-#include <set>
+#include "grid_utils.h"
+#include <list>
 
 namespace Cucumber
 {
-	enum CucumberDirection {East, South};
-	const char SouthMovingCucumber = 'v';
-	const char EastMovingCucumber = '>';
-	const char EmptySpace = '.';
+	constexpr char EAST_CUCUMBER = '>';
+	constexpr char SOUTH_CUCUMBER = 'v';
+	constexpr char EMPTY_SPACE = '.';
 
-	class Trench;
-
-	class SeaCucumber
-	{
-	private:
-		std::pair<int, int> location;
-		Trench *trench;
-		CucumberDirection movementDirection;
-		// Blocking here refers to cucumbers that *this* cucumber is blocking from moving.
-		std::vector<SeaCucumber *>blockingCucumbers;
-	public:
-		SeaCucumber(std::pair<int, int> location, CucumberDirection direction, Trench *trench) :
-			location{ location },
-			movementDirection{ direction },
-			trench{ trench }{};
-
-		CucumberDirection MovementDirection() { return movementDirection; }
-		std::pair<int, int> Location() { return location; }
-		bool PossibleToMove();
-		void CarryOutMove();
-		void AddBlockingCucumber(SeaCucumber *cucumber) { blockingCucumbers.push_back(cucumber); }
-	};
-
+	// The Trench is initialised with a 2D array of characters where each cell is either
+	// empty ('.'), or contains an East moving ('>') or South moving ('v') cucumber.
+	// It can be queried to find how many time steps it takes before all of the cucumbers
+	// are blocked from further movement.
 	class Trench
 	{
 	private:
-		std::vector<std::vector<SeaCucumber *>>trenchOfCucumbers;
-		std::set<SeaCucumber *>unblockedEastCucumbers;
-		std::set<SeaCucumber *>unblockedSouthCucumbers;
-		std::set<SeaCucumber *>blockedEastCucumbers;
-		std::set<SeaCucumber *>blockedSouthCucumbers;
+		// The trench is represented as a Grid of characters. But to avoid iterating over the whole
+		// grid each step, all we actually need to keep track of is the coordinates of each currently
+		// unblocked cucumber.
+		GridUtils::Grid<char> cucumberGrid;
+		std::list<GridUtils::Coordinate> unblockedEastCucumbers;
+		std::list<GridUtils::Coordinate> unblockedSouthCucumbers;
 
-		bool CarryOutSingleMovementTurn();
+		unsigned int stepsUntilAllBlocked{ 0 };
+		void CarryOutSingleMovementStep();
+		void PrintTrenchToScreen();
 	public:
-		Trench(std::vector<std::string> trenchLayout);
-		~Trench();
-
-		std::pair<int, int> PossibleToMove(std::pair<int, int> currentLocation, CucumberDirection direction);
-		unsigned long long int MoveUntilAllBlocked();
-		void CucumberHasMovedToLocation(SeaCucumber *cucumber, std::pair<int, int> newLocation, std::pair<int, int> oldLocation);
-		void CucumberHasBecomeUnblocked(SeaCucumber *cucumber);
-		void CucumberHasBecomeBlocked(SeaCucumber *cucumber);
+		Trench(std::vector<std::vector<char>> gridIn);
+		unsigned int StepsUntilAllBlocked();
 	};
 }

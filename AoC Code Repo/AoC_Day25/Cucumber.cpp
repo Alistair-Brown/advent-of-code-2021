@@ -1,289 +1,150 @@
 #include "Cucumber.h"
 #include <cassert>
+#include <iostream>
 
-// Returns true if at least one cucumber moved
-bool Cucumber::Trench::CarryOutSingleMovementTurn()
+// Constructor for the Trench. First initialise a GridUtils::Grid based on the 2D vector
+// of characters representing the initial state of the trench. Then scan the grid to find
+// the coordinates of cucumbers that will be unblocked on step 1.
+Cucumber::Trench::Trench(std::vector<std::vector<char>> gridIn) : cucumberGrid { gridIn }
 {
-	// We first work out which cucumbers can move, and then move that whole direction
-	// at once, so need a couple of intermediate structures, one to hold cucumbers which
-	// are about to move, and another to be a snapshot of the unblocked cucumbers in a direction,
-	// since the actual unblocked set may change as cucumbers discover they are actually blocked
-	// while working out if they can move.
-	std::vector<SeaCucumber *>cucumbersToMove;
-	std::set<SeaCucumber *>unblockedCucumbers = unblockedEastCucumbers;
-	bool atLeastOneCucumberHasMoved{ false };
-	for (SeaCucumber *cucumber : unblockedCucumbers)
+	for (GridUtils::Grid<char>::GridCell const &cell : cucumberGrid)
 	{
-		if (cucumber->PossibleToMove())
+		// Because East-moving cucumbers move first each step, the only requirement for an
+		// East-moving cucumber to be unblocked is that the space in front of it is empty.
+		// But for a South-facing cucumber to be unblocked, we also need to check that an
+		// East-cucumber will not move into that space before it gets a chance to move.
+		if ((cell.value == EAST_CUCUMBER) &&
+			(cell.RightOrWrap().value == EMPTY_SPACE))
 		{
-			atLeastOneCucumberHasMoved = true;
-			cucumbersToMove.push_back(cucumber);
+			unblockedEastCucumbers.push_back(cell.GetCoordinate());
 		}
-	}
-	for (SeaCucumber *cucumber : cucumbersToMove)
-	{
-		cucumber->CarryOutMove();
-	}
-
-	unblockedCucumbers = unblockedSouthCucumbers;
-	cucumbersToMove.clear();
-	for (SeaCucumber *cucumber : unblockedCucumbers)
-	{
-		if (cucumber->PossibleToMove())
+		else if ((cell.value == SOUTH_CUCUMBER) &&
+			(cell.DownOrWrap().value == EMPTY_SPACE) &&
+			(cell.DownOrWrap().LeftOrWrap().value != EAST_CUCUMBER))
 		{
-			atLeastOneCucumberHasMoved = true;
-			cucumbersToMove.push_back(cucumber);
-		}
-	}
-	for (SeaCucumber *cucumber : cucumbersToMove)
-	{
-		cucumber->CarryOutMove();
-	}
-
-	return atLeastOneCucumberHasMoved;
-}
-
-Cucumber::Trench::Trench(std::vector<std::string> trenchLayout)
-{
-	// Initialise the trench with null pointers
-	trenchOfCucumbers = std::vector<std::vector<SeaCucumber *>>(trenchLayout.size(), { trenchLayout[0].size(), nullptr });
-
-	// As we iterate over our input to find each cucumber, we need to know whether a cucumber should
-	// go on the blocked or unblocked list. And we need to know whether that cucmber is blocking another,
-	// so that we can unblock that other cucumber once the current cucumber moves.
-	for (unsigned int row = 0; row < trenchLayout.size(); row++)
-	{
-		for (unsigned int column = 0; column < trenchLayout[0].size(); column++)
-		{
-			char gridElement = trenchLayout[row][column];
-			assert((gridElement == SouthMovingCucumber) ||
-				(gridElement == EastMovingCucumber) ||
-				(gridElement == EmptySpace));
-
-			if (gridElement != EmptySpace)
-			{
-				SeaCucumber *thisCucumber;
-				char spaceToMoveTo;
-				SeaCucumber *cucumberNorth;
-				SeaCucumber *cucumberWest;
-
-				if (gridElement == SouthMovingCucumber)
-				{
-					thisCucumber = new SeaCucumber({ row, column }, CucumberDirection::South, this);
-
-					spaceToMoveTo = (row == (trenchLayout.size() - 1)) ?
-						trenchLayout[0][column] : trenchLayout[row + 1][column];
-					cucumberWest = (column == 0) ?
-						trenchOfCucumbers[row][trenchLayout[0].size() - 1] :
-						trenchOfCucumbers[row][column - 1];
-					cucumberNorth = (row == 0) ?
-						trenchOfCucumbers[trenchLayout.size() - 1][column] :
-						trenchOfCucumbers[row - 1][column];
-
-					if (spaceToMoveTo == EmptySpace)
-					{
-						unblockedSouthCucumbers.insert(thisCucumber);
-					}
-					else
-					{
-						blockedSouthCucumbers.insert(thisCucumber);
-
-						// If we're wrapping from bottom to top, the blocking cucumber won't
-						// have known it was blocking when it was instantiated, so tell it
-						// now.
-						if (row == trenchOfCucumbers.size() - 1)
-						{
-							trenchOfCucumbers[0][column]->AddBlockingCucumber(thisCucumber);
-						}
-					}
-				}
-				else
-				{
-					thisCucumber = new SeaCucumber({ row, column }, CucumberDirection::East, this);
-
-					spaceToMoveTo = (column == (trenchLayout[0].size() - 1)) ?
-						trenchLayout[row][0] : trenchLayout[row][column + 1];
-					cucumberWest = (column == 0) ?
-						trenchOfCucumbers[row][trenchLayout[0].size() - 1] :
-						trenchOfCucumbers[row][column - 1];
-					cucumberNorth = (row == 0) ?
-						trenchOfCucumbers[trenchLayout.size() - 1][column] :
-						trenchOfCucumbers[row - 1][column];
-
-					if (spaceToMoveTo == EmptySpace)
-					{
-						unblockedEastCucumbers.insert(thisCucumber);
-					}
-					else
-					{
-						blockedEastCucumbers.insert(thisCucumber);
-
-						// If we're wrapping from right to left, the blocking cucumber won't
-						// have known it was blocking when it was instantiated, so tell it
-						// now.
-						if (column == trenchOfCucumbers[0].size() - 1)
-						{
-							trenchOfCucumbers[row][0]->AddBlockingCucumber(thisCucumber);
-						}
-					}
-				}
-
-				trenchOfCucumbers[row][column] = thisCucumber;
-				if ((cucumberNorth != nullptr) && (cucumberNorth->MovementDirection() == CucumberDirection::South))
-				{
-					thisCucumber->AddBlockingCucumber(cucumberNorth);
-				}
-				if ((cucumberWest != nullptr) && (cucumberWest->MovementDirection() == CucumberDirection::East))
-				{
-					thisCucumber->AddBlockingCucumber(cucumberWest);
-				}
-			}
+			unblockedSouthCucumbers.push_back(cell.GetCoordinate());
 		}
 	}
 }
 
-Cucumber::Trench::~Trench()
+// Carry out movement steps until all cucumbers are unable to move. The final step number
+// to return is the first on which no cucumbers can move, rather than the last in which
+// movement takes place.
+unsigned int Cucumber::Trench::StepsUntilAllBlocked()
 {
-	for (std::vector<SeaCucumber *>trenchRow : trenchOfCucumbers)
+	// Only carry out the movement steps if we haven't already found the result of this
+	// function from a previous query (in which case it will be non-zero).
+	if (stepsUntilAllBlocked == 0)
 	{
-		for (SeaCucumber *cucumber : trenchRow)
+		while ((unblockedEastCucumbers.size() > 0) || (unblockedSouthCucumbers.size() > 0))
 		{
-			delete cucumber;
+			CarryOutSingleMovementStep();
+			stepsUntilAllBlocked++;
+		}
+		stepsUntilAllBlocked++;
+	}
+	return stepsUntilAllBlocked;
+}
+
+// Carry out a single movement step.
+// The trench should already have a list of the coordinates of currently unblocked
+// East- and South-moving cucumbers which we can work through rather than actually
+// iterating over the grid. With each cucumber that moves though we need to both check
+// if it will still be able to move next step, and whether it's own movement frees up
+// any other cucumbers to move, and update the lists of unblocked cucumbers accordingly.
+void Cucumber::Trench::CarryOutSingleMovementStep()
+{
+	// To avoid editing a list that we're actively iterating over, we will create new lists
+	// for each direction as we go, and then replace the lists wholesale afterwards.
+	std::list<GridUtils::Coordinate> newUnblockedEastCucumbers{};
+	std::list<GridUtils::Coordinate> newUnblockedSouthCucumbers{};
+
+	// East-moving cucumbers move first, so work through all of our East-moving cucumbers
+	// before the South-moving ones.
+	for (GridUtils::Coordinate eastCucumberOriginalPos : unblockedEastCucumbers)
+	{
+		// 'Move' our cucumber by resetting it's old position to be an empty space, and putting
+		// an East Cucumber character in its new location.
+		GridUtils::Coordinate eastCucumberNewPos = cucumberGrid[eastCucumberOriginalPos].RightOrWrap().GetCoordinate();
+		assert(cucumberGrid[eastCucumberNewPos].value == EMPTY_SPACE);
+		cucumberGrid[eastCucumberOriginalPos].value = EMPTY_SPACE;
+		cucumberGrid[eastCucumberNewPos].value = EAST_CUCUMBER;
+
+		// If there is now room for another cucumber to move into the space that this one just
+		// vacated, update our lists accordingly. If there are two cucumbers able to move into
+		// that space, the South-moving one gets dibs, since South-moving cucumbers are yet
+		// to move this step.
+		if (cucumberGrid[eastCucumberOriginalPos].UpOrWrap().value == SOUTH_CUCUMBER)
+		{
+			unblockedSouthCucumbers.push_back(cucumberGrid[eastCucumberOriginalPos].UpOrWrap().GetCoordinate());
+		}
+		else if (cucumberGrid[eastCucumberOriginalPos].LeftOrWrap().value == EAST_CUCUMBER)
+		{
+			newUnblockedEastCucumbers.push_back(cucumberGrid[eastCucumberOriginalPos].LeftOrWrap().GetCoordinate());
+		}
+
+		// If there is also a space in front of this cucumber's new position, and a South-moving
+		// cucumber is not about to move into it, place this cucumber on the new list of
+		// unblocked East-moving cucumbers ready for the next step.
+		GridUtils::Coordinate nextPotentialCoordinate = cucumberGrid[eastCucumberNewPos].RightOrWrap().GetCoordinate();
+		if ((cucumberGrid[nextPotentialCoordinate].value == EMPTY_SPACE) &&
+		    (cucumberGrid[nextPotentialCoordinate].UpOrWrap().value != SOUTH_CUCUMBER))
+		{
+			newUnblockedEastCucumbers.push_back(eastCucumberNewPos);
 		}
 	}
+	unblockedEastCucumbers = newUnblockedEastCucumbers;
 
-}
+	// East-moving cucumbers are now all done, with the list of unblocked South-moving cucumbers
+	// updated to reflect any South-moving cucumbers that can now move. So proceed with the
+	// South-moving cucumbers' half of this movement step.
+	for (GridUtils::Coordinate southCucumberOriginalPos : unblockedSouthCucumbers)
+	{
+		// 'Move' our cucumber by resetting it's old position to be an empty space, and putting
+		// a South Cucumber character in its new location.
+		GridUtils::Coordinate southCucumberNewPos = cucumberGrid[southCucumberOriginalPos].DownOrWrap().GetCoordinate();
+		assert(cucumberGrid[southCucumberNewPos].value == EMPTY_SPACE);
+		cucumberGrid[southCucumberOriginalPos].value = EMPTY_SPACE;
+		cucumberGrid[southCucumberNewPos].value = SOUTH_CUCUMBER;
 
-// If it's possible to move, return the new location, taking wrapping across the edges of the
-// grid into account. If movement isn't possible, return the current location back.
-std::pair<int, int> Cucumber::Trench::PossibleToMove(std::pair<int, int> currentLocation, CucumberDirection direction)
-{
-	std::pair<int, int> desiredLocation;
-	if (direction == CucumberDirection::East)
-	{
-		desiredLocation = (currentLocation.second == (trenchOfCucumbers[0].size() - 1)) ?
-			std::pair<int,int>{currentLocation.first, 0} :
-			std::pair<int, int>{currentLocation.first, currentLocation.second + 1};
-	}
-	else
-	{
-		desiredLocation = (currentLocation.first == (trenchOfCucumbers.size() - 1)) ?
-			std::pair<int, int>{0, currentLocation.second} :
-			std::pair<int, int>{ currentLocation.first + 1, currentLocation.second };
-	}
-
-	if (trenchOfCucumbers[desiredLocation.first][desiredLocation.second] == nullptr)
-	{
-		return desiredLocation;
-	}
-	else
-	{
-		return currentLocation;
-	}
-}
-
-unsigned long long int Cucumber::Trench::MoveUntilAllBlocked()
-{
-	int numberOfMoves{ 0 };
-
-	while (true)
-	{
-		// The first turn in which no cucumbers move is itself counted as a turn, so
-		// increment before attempting the move.
-		numberOfMoves++;
-		if (!CarryOutSingleMovementTurn())
+		// If there is now room for another cucumber to move into the space that this one just
+		// vacated, update our lists accordingly. If there are two cucumbers able to move into
+		// that space, the East-moving one gets dibs, since East-moving cucumbers will move first
+		// next step.
+		if (cucumberGrid[southCucumberOriginalPos].LeftOrWrap().value == EAST_CUCUMBER)
 		{
-			break;
+			unblockedEastCucumbers.push_back(cucumberGrid[southCucumberOriginalPos].LeftOrWrap().GetCoordinate());
+		}
+		else if (cucumberGrid[southCucumberOriginalPos].UpOrWrap().value == SOUTH_CUCUMBER)
+		{
+			newUnblockedSouthCucumbers.push_back(cucumberGrid[southCucumberOriginalPos].UpOrWrap().GetCoordinate());
+		}
+
+		// If there is also a space in front of this cucumber's new position, and a East-moving
+		// cucumber is not about to move into it, place this cucumber on the new list of
+		// unblocked South-moving cucumbers ready for the next step.
+		GridUtils::Coordinate nextPotentialCoordinate = cucumberGrid[southCucumberNewPos].DownOrWrap().GetCoordinate();
+		if ((cucumberGrid[nextPotentialCoordinate].value == EMPTY_SPACE) &&
+			(cucumberGrid[nextPotentialCoordinate].LeftOrWrap().value != EAST_CUCUMBER))
+		{
+			newUnblockedSouthCucumbers.push_back(southCucumberNewPos);
 		}
 	}
-	
-	return numberOfMoves;
+	unblockedSouthCucumbers = newUnblockedSouthCucumbers;
 }
 
-void Cucumber::Trench::CucumberHasMovedToLocation(
-	SeaCucumber * cucumber,
-	std::pair<int, int> newLocation,
-	std::pair<int, int> oldLocation)
+// Diagnostic helper function to print out the current state of the trench.
+void Cucumber::Trench::PrintTrenchToScreen()
 {
-	assert(trenchOfCucumbers[oldLocation.first][oldLocation.second] == cucumber);
-	assert(trenchOfCucumbers[newLocation.first][newLocation.second] == nullptr);
-
-	trenchOfCucumbers[oldLocation.first][oldLocation.second] = nullptr;
-	trenchOfCucumbers[newLocation.first][newLocation.second] = cucumber;
-}
-
-void Cucumber::Trench::CucumberHasBecomeUnblocked(SeaCucumber * cucumber)
-{
-	if (cucumber->MovementDirection() == CucumberDirection::East)
+	std::cout << '\n';
+	for (unsigned int yy = cucumberGrid.Height() - 1; ; yy--)
 	{
-		assert(blockedEastCucumbers.find(cucumber) != blockedEastCucumbers.end());
-		blockedEastCucumbers.erase(cucumber);
-		unblockedEastCucumbers.insert(cucumber);
+		for (unsigned int xx = 0; xx < cucumberGrid.Width(); xx++)
+		{
+			std::cout << cucumberGrid[{xx, yy}].value;
+		}
+		if (yy == 0) { break; }
+		std::cout << '\n';
 	}
-	else
-	{
-		assert(blockedSouthCucumbers.find(cucumber) != blockedSouthCucumbers.end());
-		blockedSouthCucumbers.erase(cucumber);
-		unblockedSouthCucumbers.insert(cucumber);
-	}
-}
-
-void Cucumber::Trench::CucumberHasBecomeBlocked(SeaCucumber * cucumber)
-{
-	if (cucumber->MovementDirection() == CucumberDirection::East)
-	{
-		assert(unblockedEastCucumbers.find(cucumber) != unblockedEastCucumbers.end());
-		unblockedEastCucumbers.erase(cucumber);
-		blockedEastCucumbers.insert(cucumber);
-
-		SeaCucumber *blockingCucumber = (cucumber->Location().second == (trenchOfCucumbers[0].size() - 1)) ?
-			trenchOfCucumbers[cucumber->Location().first][0] :
-			trenchOfCucumbers[cucumber->Location().first][cucumber->Location().second + 1];
-		assert(blockingCucumber != nullptr);
-		blockingCucumber->AddBlockingCucumber(cucumber);
-	}
-	else
-	{
-		assert(unblockedSouthCucumbers.find(cucumber) != unblockedSouthCucumbers.end());
-		unblockedSouthCucumbers.erase(cucumber);
-		blockedSouthCucumbers.insert(cucumber);
-
-		SeaCucumber *blockingCucumber = (cucumber->Location().first == (trenchOfCucumbers.size() - 1)) ?
-			trenchOfCucumbers[0][cucumber->Location().second] :
-			trenchOfCucumbers[cucumber->Location().first + 1][cucumber->Location().second];
-		assert(blockingCucumber != nullptr);
-		blockingCucumber->AddBlockingCucumber(cucumber);
-	}
-}
-
-bool Cucumber::SeaCucumber::PossibleToMove()
-{
-	bool possibleToMove{ false };
-
-	std::pair<int, int> newLocation = trench->PossibleToMove(location, movementDirection);
-	if (newLocation != location)
-	{
-		possibleToMove = true;
-	}
-	else
-	{
-		trench->CucumberHasBecomeBlocked(this);
-	}
-
-	return possibleToMove;
-}
-
-void Cucumber::SeaCucumber::CarryOutMove()
-{
-	std::pair<int, int> newLocation = trench->PossibleToMove(location, movementDirection);
-	assert(location != newLocation);
-	std::pair<int, int> oldLocation = location;
-	location = newLocation;
-
-	trench->CucumberHasMovedToLocation(this, location, oldLocation);
-	for (SeaCucumber *cucumber : blockingCucumbers)
-	{
-		trench->CucumberHasBecomeUnblocked(cucumber);
-	}
-	blockingCucumbers.clear();
+	std::cout << std::endl;
 }

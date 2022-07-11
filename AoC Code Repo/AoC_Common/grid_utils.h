@@ -168,6 +168,46 @@ namespace GridUtils
 			return  parentGrid[Coordinate(x - 1, y - 1)];
 		}
 
+		// Functions for returning the adjacent cells in a given cardinal direction.
+		// If this cell is on the edge of the grid, these functions will wrap around
+		// to return the cell on the opposite end of the row or column (i.e. if requesting
+		// the cell to the right of the far right cell on a row, we will wrap around to
+		// return the cell on the far left of that row).
+		// Can either return the adjacent cell as read-only value (const version
+		// of the function) or read-write reference (non-const version of function);
+		GridCell UpOrWrap() const {
+			if (IsTopRow()) { return parentGrid[Coordinate(x, 0)]; }
+			else { return parentGrid[Coordinate(x, y + 1)]; }
+		}
+		GridCell& UpOrWrap() {
+			if (IsTopRow()) { return parentGrid[Coordinate(x, 0)]; }
+			else { return parentGrid[Coordinate(x, y + 1)]; }
+		}
+		GridCell DownOrWrap() const {
+			if (IsBottomRow()) { return parentGrid[Coordinate(x, parentGrid.Height() - 1)]; }
+			else { return parentGrid[Coordinate(x, y - 1)]; }
+		}
+		GridCell& DownOrWrap() {
+			if (IsBottomRow()) { return parentGrid[Coordinate(x, parentGrid.Height() - 1)]; }
+			else { return parentGrid[Coordinate(x, y - 1)]; }
+		}
+		GridCell RightOrWrap() const {
+			if (IsRightColumn()) { return parentGrid[Coordinate(0, y)]; }
+			else { return parentGrid[Coordinate(x + 1, y)]; }
+		}
+		GridCell& RightOrWrap() {
+			if (IsRightColumn()) { return parentGrid[Coordinate(0, y)]; }
+			else { return parentGrid[Coordinate(x + 1, y)]; }
+		}
+		GridCell LeftOrWrap() const {
+			if (IsLeftColumn()) { return parentGrid[Coordinate(parentGrid.Width() - 1, y)]; }
+			else { return parentGrid[Coordinate(x - 1, y)]; }
+		}
+		GridCell& LeftOrWrap() {
+			if (IsLeftColumn()) { return parentGrid[Coordinate(parentGrid.Width() - 1, y)]; }
+			else { return parentGrid[Coordinate(x - 1, y)]; }
+		}
+
 		friend bool operator==(const GridCell& cell1, const GridCell& cell2)
 		{
 			return cell1.GetCoordinate() == cell2.GetCoordinate();
