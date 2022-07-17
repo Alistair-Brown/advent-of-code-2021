@@ -161,6 +161,8 @@
     <ClCompile Include="..\AoC_Day17\ProbeLauncher.cpp" />
     <ClCompile Include="..\AoC_Day18\aoc_day_18.cpp" />
     <ClCompile Include="..\AoC_Day18\Snailfish.cpp" />
+    <ClCompile Include="..\AoC_Day19\aoc_day_19.cpp" />
+    <ClCompile Include="..\AoC_Day19\beacon.cpp" />
     <ClCompile Include="..\AoC_Day20\aoc_day_20.cpp" />
     <ClCompile Include="..\AoC_Day20\ImageEnhancement.cpp" />
     <ClCompile Include="..\AoC_Day21\aoc_day_21.cpp" />
@@ -194,6 +196,7 @@
     <ClInclude Include="..\AoC_Day16\packet_parser.h" />
     <ClInclude Include="..\AoC_Day17\ProbeLauncher.h" />
     <ClInclude Include="..\AoC_Day18\Snailfish.h" />
+    <ClInclude Include="..\AoC_Day19\Beacon.h" />
     <ClInclude Include="..\AoC_Day20\ImageEnhancement.h" />
     <ClInclude Include="..\AoC_Day21\Dirac.h" />
     <ClInclude Include="..\AoC_Day22\Reactor.h" />

@@ -49,6 +49,11 @@ int main()
 				normalizedScanners.push_back(overlappingScanner);
 				normalizedScanners[0].AddBeaconsToTotal(overlappingScanner.FullyNormalizedBeaconsInRange());
 				unnormalizedElementsToErase.push_back(ii);
+
+				if (normalizedIterator == 0)
+				{
+					std::cout << "Scanner 0 matched " << ii + 1 << std::endl;
+				}
 			}
 		}
 		// Remove any unnormalized scanners we've now been able to match, remembering that

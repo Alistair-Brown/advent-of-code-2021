@@ -79,6 +79,9 @@
     <Filter Include="Day 25">
       <UniqueIdentifier>{8a98d792-1f1d-424b-b0b2-218c4470231a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 19">
+      <UniqueIdentifier>{6e436b54-1616-4b67-82a0-1e2fa9e17f95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -219,6 +222,12 @@
     <ClCompile Include="..\AoC_Day25\Cucumber.cpp">
       <Filter>Day 25</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day19\aoc_day_19.cpp">
+      <Filter>Day 19</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day19\beacon.cpp">
+      <Filter>Day 19</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -301,6 +310,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day25\Cucumber.h">
       <Filter>Day 25</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day19\Beacon.h">
+      <Filter>Day 19</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
