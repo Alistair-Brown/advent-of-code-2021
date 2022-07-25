@@ -82,6 +82,9 @@
     <Filter Include="Day 19">
       <UniqueIdentifier>{6e436b54-1616-4b67-82a0-1e2fa9e17f95}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 23">
+      <UniqueIdentifier>{72a1415d-d64f-4704-b52a-ae94d7115247}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -228,6 +231,15 @@
     <ClCompile Include="..\AoC_Day19\beacon.cpp">
       <Filter>Day 19</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day23\aoc_day_23.cpp">
+      <Filter>Day 23</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day23\amphipod_burrows.cpp">
+      <Filter>Day 23</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day23\amphipod_constants.cpp">
+      <Filter>Day 23</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -267,9 +279,6 @@
       <Filter>Day 09</Filter>
     </ClInclude>
     <ClInclude Include="..\AoC_Common\grid_utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\AoC_Common\Wrangling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\AoC_Day10\Bracket_Syntax.h">
@@ -313,6 +322,12 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day19\Beacon.h">
       <Filter>Day 19</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day23\amphipod_burrows.h">
+      <Filter>Day 23</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day23\amphipod_constants.h">
+      <Filter>Day 23</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

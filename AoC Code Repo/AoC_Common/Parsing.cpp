@@ -221,6 +221,16 @@ std::string Parsing::ReadSingleStringFromInputFile(std::ifstream& inputFile)
 	return stringFromFile;
 }
 
+// Stream the next line of the input file into a string, and return that string.
+// Makes no assumptions about the position of the read pointer, and will leave the
+// read pointer at the start of the next line.
+std::string Parsing::ReadWholeLineFromInputFile(std::ifstream& inputFile)
+{
+	std::string stringFromFile{};
+	std::getline(inputFile, stringFromFile);
+	return stringFromFile;
+}
+
 // Parse an input file stream into a vector of strings, one per line.
 // This function will assume the get pointer for the input file stream
 // is already in the correct position, and will not close the file once

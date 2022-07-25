@@ -57,12 +57,6 @@ int main()
 	return 0;
 }
 
-// TODO: Delete this once I've actually incorporated number 19, I'm just skipping ahead
-// to day 20 first.
-PuzzleAnswerPair PuzzleSolvers::AocDayTwentyThreeSolver(std::ifstream& puzzleInputFile)
-{
-	return PuzzleAnswerPair{ "not implemented", "not implemented" };
-}
 PuzzleAnswerPair PuzzleSolvers::AocDayTwentyFourSolver(std::ifstream& puzzleInputFile)
 {
 	return PuzzleAnswerPair{ "not implemented", "not implemented" };

@@ -169,6 +169,9 @@
     <ClCompile Include="..\AoC_Day21\Dirac.cpp" />
     <ClCompile Include="..\AoC_Day22\aoc_day_22.cpp" />
     <ClCompile Include="..\AoC_Day22\Reactor.cpp" />
+    <ClCompile Include="..\AoC_Day23\amphipod_burrows.cpp" />
+    <ClCompile Include="..\AoC_Day23\amphipod_constants.cpp" />
+    <ClCompile Include="..\AoC_Day23\aoc_day_23.cpp" />
     <ClCompile Include="..\AoC_Day25\aoc_day_25.cpp" />
     <ClCompile Include="..\AoC_Day25\Cucumber.cpp" />
     <ClCompile Include="AoC_2021_main.cpp" />
@@ -178,7 +181,6 @@
     <ClInclude Include="..\AoC_Common\aoc_common_types.h" />
     <ClInclude Include="..\AoC_Common\grid_utils.h" />
     <ClInclude Include="..\AoC_Common\Parsing.h" />
-    <ClInclude Include="..\AoC_Common\Wrangling.h" />
     <ClInclude Include="..\AoC_Day02\Navigation.h" />
     <ClInclude Include="..\AoC_Day03\Binary.h" />
     <ClInclude Include="..\AoC_Day04\Bingo.h" />
@@ -200,6 +202,8 @@
     <ClInclude Include="..\AoC_Day20\ImageEnhancement.h" />
     <ClInclude Include="..\AoC_Day21\Dirac.h" />
     <ClInclude Include="..\AoC_Day22\Reactor.h" />
+    <ClInclude Include="..\AoC_Day23\amphipod_burrows.h" />
+    <ClInclude Include="..\AoC_Day23\amphipod_constants.h" />
     <ClInclude Include="..\AoC_Day25\Cucumber.h" />
     <ClInclude Include="input_retrieval\input_retrieval.h" />
     <ClInclude Include="puzzle_solvers\puzzle_solvers.h" />
