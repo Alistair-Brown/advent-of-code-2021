@@ -85,6 +85,9 @@
     <Filter Include="Day 23">
       <UniqueIdentifier>{72a1415d-d64f-4704-b52a-ae94d7115247}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Day 24">
+      <UniqueIdentifier>{9cdd9f51-7c98-4838-8b74-c79deef6c9d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AoC_2021_main.cpp">
@@ -240,6 +243,12 @@
     <ClCompile Include="..\AoC_Day23\amphipod_constants.cpp">
       <Filter>Day 23</Filter>
     </ClCompile>
+    <ClCompile Include="..\AoC_Day24\aoc_day_24.cpp">
+      <Filter>Day 24</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AoC_Day24\alu.cpp">
+      <Filter>Day 24</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AoC_Common\aoc_common_types.h">
@@ -328,6 +337,9 @@
     </ClInclude>
     <ClInclude Include="..\AoC_Day23\amphipod_constants.h">
       <Filter>Day 23</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AoC_Day24\alu.h">
+      <Filter>Day 24</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

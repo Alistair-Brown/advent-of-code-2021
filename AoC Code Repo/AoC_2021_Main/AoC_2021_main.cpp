@@ -56,8 +56,3 @@ int main()
 
 	return 0;
 }
-
-PuzzleAnswerPair PuzzleSolvers::AocDayTwentyFourSolver(std::ifstream& puzzleInputFile)
-{
-	return PuzzleAnswerPair{ "not implemented", "not implemented" };
-}

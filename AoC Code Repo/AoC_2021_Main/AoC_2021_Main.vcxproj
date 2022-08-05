@@ -172,6 +172,8 @@
     <ClCompile Include="..\AoC_Day23\amphipod_burrows.cpp" />
     <ClCompile Include="..\AoC_Day23\amphipod_constants.cpp" />
     <ClCompile Include="..\AoC_Day23\aoc_day_23.cpp" />
+    <ClCompile Include="..\AoC_Day24\alu.cpp" />
+    <ClCompile Include="..\AoC_Day24\aoc_day_24.cpp" />
     <ClCompile Include="..\AoC_Day25\aoc_day_25.cpp" />
     <ClCompile Include="..\AoC_Day25\Cucumber.cpp" />
     <ClCompile Include="AoC_2021_main.cpp" />
@@ -204,6 +206,7 @@
     <ClInclude Include="..\AoC_Day22\Reactor.h" />
     <ClInclude Include="..\AoC_Day23\amphipod_burrows.h" />
     <ClInclude Include="..\AoC_Day23\amphipod_constants.h" />
+    <ClInclude Include="..\AoC_Day24\alu.h" />
     <ClInclude Include="..\AoC_Day25\Cucumber.h" />
     <ClInclude Include="input_retrieval\input_retrieval.h" />
     <ClInclude Include="puzzle_solvers\puzzle_solvers.h" />

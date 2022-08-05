@@ -16,3 +16,4 @@ using PuzzleFunc = PuzzleAnswerPair(*)(std::ifstream&);
 // The unsigned long long int is pretty much the primary type of advent of code, so let's
 // save ourselves some typing.
 using ULLINT = unsigned long long int;
+using LLINT = long long int;
