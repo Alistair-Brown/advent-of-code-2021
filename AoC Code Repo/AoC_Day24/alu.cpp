@@ -5,179 +5,146 @@
 #include <iostream>
 #include "aoc_common_types.h"
 
-bool ALU::ALUStage::PerformOperationByDesc(OperationDescriptor operation, LLINT& xVar, LLINT& yVar, LLINT& wVar, LLINT& zVar)
+// The valid inputs for each stage of the ALU can be found by working backwards through the stages.
+// We know that any valid inputs to the final stage are those that leave the z register with the
+// value 0. Having found the valid inputs to that final stage, we can than find all possible inputs
+// to the previous stage that have these as their output (the output to one stage being the input
+// to the next). And so on until we have all valid model numbers, a model number being the 14
+// digits representing the input fed into the w register for each of the 14 stages.
+ALU::ArithmeticLogicUnit::ArithmeticLogicUnit(std::vector<ALUStage> stagesIn)
 {
-	return PerformOperation({
-		operation.opId,
-		GetIntRefFromChar(operation.varToEdit, xVar, yVar, wVar, zVar),
-		GetIntFromChar(operation.editToApply, xVar, yVar, wVar, zVar)
-	});
-}
-
-bool ALU::ALUStage::PerformOperation(Operation operation)
-{
-	if (operation.opId == addOp)
+	stages = stagesIn;
+	stages.rbegin()->CalculateAllowableInputs({ {0, {}} });
+	for (int ii = 12; ii >= 0; ii--)
 	{
-		operation.varToEdit += operation.editFactor;
-	}
-	else if (operation.opId == mulOp)
-	{
-		operation.varToEdit *= operation.editFactor;
-	}
-	else if (operation.opId == divOp)
-	{
-		if (operation.editFactor == 0) { return false; }
-		else { operation.varToEdit /= operation.editFactor; }
-	}
-	else if (operation.opId == modOp)
-	{
-		if ((operation.editFactor <= 0) || (operation.varToEdit < 0)) { return false; }
-		else { operation.varToEdit %= operation.editFactor; }
-	}
-	else if (operation.opId == eqlOp)
-	{
-		operation.varToEdit = (operation.varToEdit == operation.editFactor) ? 1 : 0;
-	}
-	else
-	{
-		assert(false);
-	}
-	return true;
-}
-
-LLINT& ALU::ALUStage::GetIntRefFromChar(char charIn, LLINT& x, LLINT& y, LLINT& w, LLINT& z)
-{
-	switch (charIn)
-	{
-	case 'x':
-			return x;
-			break;
-	case 'y':
-		return y;
-		break;
-	case 'w':
-		return w;
-		break;
-	case 'z':
-		return z;
-		break;
-	default:
-		assert(false);
-		return x;
-		break;
+		stages[ii].CalculateAllowableInputs(stages[ii + 1].AllowableInputs());
 	}
 }
 
-LLINT ALU::ALUStage::GetIntFromChar(std::string charIn, LLINT x, LLINT y, LLINT w, LLINT z)
+// All registers in the ALU start with the value 0. So we take the valid input for
+// the first stage that has a z input of 0, and query the 14 maximum value w inputs
+// that result in a valid model number.
+std::string ALU::ArithmeticLogicUnit::LargestModelNumber() const
 {
-	if (charIn == "x") { return x; }
-	if (charIn == "y") { return y; }
-	if (charIn == "w") { return w; }
-	if (charIn == "z") { return z; }
-	else
+	assert(stages[0].AllowableInputs().contains(0));
+
+	std::string modelNumber{};
+	for (int digit : stages[0].AllowableInputs().at(0).maximumWInputs)
 	{
-		int returnVal = std::atoi(charIn.c_str());
-		return returnVal;
+		char intAsChar = '0' + digit;
+		modelNumber.append(std::string{ intAsChar });
 	}
+	return modelNumber;
 }
 
-bool ALU::ALUStage::RunStage(LLINT& xVar, LLINT& yVar, LLINT& wVar, LLINT& zVar)
+// All registers in the ALU start with the value 0. So we take the valid input for
+// the first stage that has a z input of 0, and query the 14 minimum value w inputs
+// that result in a valid model number.
+std::string ALU::ArithmeticLogicUnit::SmallestModelNumber() const
 {
-	for (OperationDescriptor operationDesc : operations)
+	assert(stages[0].AllowableInputs().contains(0));
+
+	std::string modelNumber{};	
+	for (int digit : stages[0].AllowableInputs().at(0).minimumWInputs)
 	{
-		if (!PerformOperationByDesc(operationDesc, xVar, yVar, wVar, zVar))
+		char intAsChar = '0' + digit;
+		modelNumber.append(std::string{ intAsChar });
+	}
+	return modelNumber;
+}
+
+// This functions relies heavily on having some algebra fun with the operations in a single stage. I won't
+// try and replicate this algebra in the comments, but the essence of this function is:
+//  - Rely on the fact that there are always a series of operations performed on the x register that leave
+//    it with the value 0 or 1 about halfway through the stage
+//  - Use some handworked algebra to check that the xValueAfterModuloOps is consistent with the required
+//    output z value and input w. If not, then this function call doesn't represent a reachable state and
+//    can be ignored (so return an empty vector of allowable z values).
+//  - For a required output z value, given input w value, and value of x after the module operations (0 or 1),
+//    use algebra to find the value of initial z for the stage divided by the stage's zDivValue (one of the
+//    variables unique to each stage).
+//  - Having found the result of integer division of input z by zDivValue, we have a number of possible
+//    input z values. Of those, the ones that are actual valid input values are those that are consistent
+//    with the value of xAfterModuloOps (more handworked algebra) and greater than or equal to 0 (for
+//    validity with one of the module operations in the stage).
+std::vector<LLINT> ALU::ALUStage::InputZToGiveRequiredOutput(LLINT requiredOutputZ, int inputW, int xAterModuloOps)
+{
+	std::vector<LLINT> allowableZ{};
+	if (((requiredOutputZ - ((inputW + yAddValue) * xAterModuloOps)) % ((25 * xAterModuloOps) + 1)) != 0) { return allowableZ; }
+
+	LLINT inputZOverZDiv =
+		(requiredOutputZ - ((inputW + yAddValue) * xAterModuloOps)) / ((25 * xAterModuloOps) + 1);	
+
+	if (inputZOverZDiv >= 0)
+	{
+		for (LLINT possibleZ = inputZOverZDiv * zDivValue; possibleZ < (inputZOverZDiv * zDivValue) + zDivValue; possibleZ++)
 		{
-			return false;
-		}
-	}
+			if (possibleZ < 0) { continue; }
 
-	return true;
-}
+			int actualXValueAfterModuloFun = ((possibleZ % 26) + xAddValue) == inputW ? 0 : 1;
 
-bool ALU::ArithmeticLogicUnit::TryNextLevelDepth(unsigned int depth, std::vector<std::set<LLINT>>& possibleZValues, LLINT currentZ)
-{
-	LLINT xx = 0;
-	LLINT yy = 0;
-
-	if (possibleZValues[depth].contains(currentZ)) { return false; }
-	
-	for (LLINT ww = 9; ww > 0; ww--)
-	{
-		LLINT forwardZ = currentZ;
-
-		// Actually we need to move the z checking higher up, like here or somewhere
-
-		if (aluStages[depth].RunStage(xx, yy, ww, forwardZ))
-		{
-			if (depth == 13) 
+			if (actualXValueAfterModuloFun == xAterModuloOps)
 			{
-				if (forwardZ == 0)
-				{
-					highestPossibleInput.push_front(ww);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else
-			{
-				if (TryNextLevelDepth(depth + 1, possibleZValues, forwardZ))
-				{
-					// Also success, means we hit the bottom and are working back
-					highestPossibleInput.push_front(ww);
-					return true;
-				}
-				else
-				{
-					possibleZValues[depth].insert(currentZ);
-				}
+				allowableZ.push_back(possibleZ);
 			}
 		}
 	}
 
-	return false;
+	return allowableZ;
 }
 
-ALU::ArithmeticLogicUnit::ArithmeticLogicUnit(std::vector<ALUStage> stages)
+// Given a set of allowable outputs to a stage, find the equivalent map of allowable inputs. The final z
+// value of a stage is a function of only the input w and z values (from manual examination of input).
+// The allowable outputs are provided as a map keyed by valid values to leave in the z register at the
+// end of this stage, with the value of each element then providing lists of w inputs to provide to
+// subsequent stages to leave the z register with a final value of 0.
+// The allowable inputs therefore take the form of an equivalent map, where the keys are now the valid
+// values of the z register at the input to this stage, and the lists of w inputs have a single w input
+// prepended to the existing lists representing the w input for this stage for that particular z value.
+void ALU::ALUStage::CalculateAllowableInputs(std::map<LLINT, RemainingWInputs> const& allowableOutputs)
 {
-	aluStages = stages;
+	if (stageCalculationsRun) { return; }
 
-	LLINT myx{ 0 };
-	LLINT myy{ 0 };
-	LLINT myw{ 9 };
-	LLINT myz{ 0 };
+	// Some handworked algebra has shown that we can find the valid z input given a desired z output,
+	// known w input, and value of an 'x modulo coefficient' (the value of the x register after a series
+	// of operations culminating in a comparison with 0 that leave it with the value 0 or 1). So a series
+	// of for loops iterating over each of those factors gives the full set of valid z inputs for this
+	// stage, along with the accompanying w inputs.
+	for (auto &allowableOutput : allowableOutputs)
+	{
+		for (int wIn = 1; wIn <= 9; wIn++)
+		{
+			for (int xModuloCoefficient = 0; xModuloCoefficient <= 1; xModuloCoefficient++)
+			{
+				std::vector<LLINT> inputZs = InputZToGiveRequiredOutput(allowableOutput.first, wIn, xModuloCoefficient);
 
-	stages[0].RunStage(myx, myy, myw, myz);
-	myw = 9;
-	stages[1].RunStage(myx, myy, myw, myz);
-	myw = 2;
-	stages[2].RunStage(myx, myy, myw, myz);
-	myw = 9;
-	stages[3].RunStage(myx, myy, myw, myz);
-	myw = 9;
-	stages[4].RunStage(myx, myy, myw, myz);
-	myw = 5;
-	stages[5].RunStage(myx, myy, myw, myz);
-	myw = 1;
-	stages[6].RunStage(myx, myy, myw, myz);
-	myw = 3;
-	stages[7].RunStage(myx, myy, myw, myz);
-	myw = 8;
-	stages[8].RunStage(myx, myy, myw, myz);
-	myw = 9;
-	stages[9].RunStage(myx, myy, myw, myz);
-	myw = 9;
-	stages[10].RunStage(myx, myy, myw, myz);
-	myw = 9;
-	stages[11].RunStage(myx, myy, myw, myz);
-	myw = 7;
-	stages[12].RunStage(myx, myy, myw, myz);
-	myw = 1;
-	stages[13].RunStage(myx, myy, myw, myz);
+				// If we have found valid input z values (the value of the z register on entry to this
+				// stage), add them to our map of allowable inputs. The new lists of w inputs are simply
+				// the w inputs for the subsequent stages, with whatever w input we are currently checking
+				// prepended to that list.
+				for (LLINT &possibleZ : inputZs)
+				{
+					std::list newMinimumWInputs = allowableOutput.second.minimumWInputs;
+					std::list newMaximumWInputs = allowableOutput.second.maximumWInputs;
+					newMinimumWInputs.push_front(wIn);
+					newMaximumWInputs.push_front(wIn);
 
-	std::vector<std::set<LLINT>> possibleZValues(14);
+					// If we already have an entry in our map for this input z value, only the
+					// maximum w inputs list needs to be updated for that entry, since we work
+					// through the w inputs in increasing value in this function, so we must
+					// have already found a smaller valid w input for this z input.
+					if (allowableInputs.contains(possibleZ))
+					{
+						allowableInputs[possibleZ].maximumWInputs = newMaximumWInputs;
+					}
+					else
+					{
+						allowableInputs[possibleZ] = {newMinimumWInputs, newMaximumWInputs};
+					}
+				}
+			}
+		}
+	}
 
-	TryNextLevelDepth(0, possibleZValues, 0);
+	stageCalculationsRun = true;
 }

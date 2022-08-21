@@ -3,56 +3,54 @@
 #include "alu.h"
 #include <regex>
 
-// Solution operates on the principle that we don't really have 10^14 options to consider
-// we actually just have 14 points at which a new input is inserted, at each of which x, y, w and z
-// have 10000 possible combinations. So I really have 140000 cases to consider. This then gets a
-// lot less when you inspect the input and realise that at the point of each input, the only
-// one of those 4 which will not be overwritten before it's next used is z. So really we just have
-// to start with finding the possible values of w and z after each input which give a z of 0.
-// Then for the step before that we find the possible combinations of w and z which give valid
-// values of w and z as found for the previous step. And so on back to the start. Then at the
-// start we take either the highest or lowest z as required, then the highest or lowest value
-// of w that pair with a valid z for the next round, and so on, to give our 14 digit number.
-
-
-// New proposal, there are more than 1-9 values z can take at each step, it can be as large as
-// it likes, but I should be able to find a range of z values that each input w allows,
-// for each stage, starting with the final one. Plus
-// a modulo with 26 that it must satisfy. And if I do that for each input at each step, I can
-// go back down my original plan. I'll then be able to say does input w 9 give a z that fits the criteria
-// for entering stage 2, and then with z and various other w's (starting large), can we get a z that
-// fits the input criteria for stage 3, etc.
+// For day 24 we must model the submarine's Arithmetic Logic Unit (ALU). Our puzzle input
+// is a series of operations which will be performed by this ALU to manipulate its 4 registers,
+// named w, x, y and z. One of these potential operations involves accepting user input, and there are 14
+// such inputs requested by the series of operations in our puzzle. Each input is a digit between 1-9,
+// such that our input in order could be read like a 14 digit number. We must find the largest and
+// smallest 14 digit numbers that could be used as input to leave the z register with a final value
+// of 0. Solving this in a timely fashion requires us to do some manual inspection of this input
+// which is covered in more details in comments closer to the relevant code.
 PuzzleAnswerPair PuzzleSolvers::AocDayTwentyFourSolver(std::ifstream& puzzleInputFile)
 {
-	// Takes too long to run at the moment, drop out
-	return PuzzleAnswerPair{ "Not implemented", "Not implemented" };
-
+	// The operations performed by this ALU can be broken up into 14 stages, where each stage is the
+	// set of operations performed between each request for input (which is displayed as 'inp w' in
+	// the list of operations, instructing the ALU to read user input and store it in the w register).
+	std::vector<ALU::ALUStage> aluStages;
 	assert(Parsing::ReadWholeLineFromInputFile(puzzleInputFile) == "inp w");
 	std::vector<std::string> inputLines = Parsing::SeparateRemainingInputIntoLines(puzzleInputFile);
-
-	std::vector<ALU::ALUStage> aluStages;
-
-	std::vector<ALU::ALUStage::OperationDescriptor> operations;
-	std::string opId;
-	char paramOne;
-	std::string paramTwo;
-	std::regex matchString{ "^([a-z]+) ([a-z]) ([-]{0,1}[a-z0-9]+)$" };
+	
+	// It turns out that each 'stage' of operations is almost identical, with the only differences
+	// being in 3 particular places: a division of the value in the z register by a certain amount,
+	// an addition of a certain amount to the x register, and an addition of a certain amount to
+	// the y register. So we can just parse out those particular variable values and initialise each
+	// ALU stage accordingly.
+	int zDivValue;
+	int xAddValue;
+	int yAddValue;
+	std::regex matchString{ ALU::regexMatchString };
+	std::string singleStageAsString{};
 	for (std::string inputLine : inputLines)
 	{
 		if (inputLine == "inp w")
 		{
-			aluStages.emplace_back(operations);
-			operations.clear();
+			Parsing::ParseStringIntoElements(singleStageAsString, matchString, zDivValue, xAddValue, yAddValue);
+			aluStages.emplace_back(zDivValue, xAddValue, yAddValue);
+			singleStageAsString.clear();
 		}
 		else
 		{
-			Parsing::ParseStringIntoElements(inputLine, matchString, opId, paramOne, paramTwo);
-			operations.emplace_back(opId, paramOne, paramTwo);
+			singleStageAsString.append(inputLine + "\n");
 		}
 	}
-	aluStages.emplace_back(operations); // Final stage
+	Parsing::ParseStringIntoElements(singleStageAsString, matchString, zDivValue, xAddValue, yAddValue);
+	aluStages.emplace_back(zDivValue, xAddValue, yAddValue);
+	singleStageAsString.clear();
 
-	ALU::ArithmeticLogicUnit myALU{ aluStages };
-
-	return PuzzleAnswerPair{ "Not implemented", "Not implemented" };
+	// Our full ALU is made up of the individual stages in order, and can be queried to return the largest
+	// and smallest valid model numbers (where a model number is the 14 digit number representing the 14
+	// inputs, and a valid model number is one where the z register is left with the value 0 after all
+	// operations have been performed).
+	ALU::ArithmeticLogicUnit arithmeticLogicUnit{ aluStages };
+	return PuzzleAnswerPair{ arithmeticLogicUnit.LargestModelNumber(), arithmeticLogicUnit.SmallestModelNumber() };
 }
