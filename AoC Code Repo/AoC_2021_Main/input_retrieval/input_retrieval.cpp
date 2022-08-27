@@ -24,7 +24,7 @@ std::ifstream InputRetrieval::GetInputStreamForPuzzleInput(unsigned int day)
 		dayString +
 		puzzleInputFileExtension
 	};
-	std::ifstream puzzleInputFile{ fullRelativePathToInput };
+	std::ifstream puzzleInputFile{ fullRelativePathToInput.c_str() };
 
 	if (!puzzleInputFile)
 	{

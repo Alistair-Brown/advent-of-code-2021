@@ -15,27 +15,9 @@
 
 namespace Parsing
 {
-	std::string ParseStringFromConsole();
-	std::string ParseLineFromConsole();
-	std::string ParseStringFromConsoleIgnoringLineBreaks();
-	std::vector<int> ParseLineOfInts(std::string delimiter);
-	std::vector<std::vector<int>> ParseMultipleLinesOfInts(std::string delimiter);
-	std::vector<std::vector<int>> ParseWhitespacelessGridOfDigits();
-	std::vector<std::string> ParseSpaceSeparatedString();
-	std::vector<std::vector<std::string>> ParseGroupsOfString(
-		std::vector<int> groupSizes,
-		std::string intraGroupDelimiter,
-		std::string interGroupDelimiter);
-	int ParseIntFromConsole();
-	int ConvertStringToInt(std::string stringToConvert);
-
-	//
-	// Anything below this point is known to be used in the refactored project. Anything
-	// above this point can probably be deleted once I'm done refactoring.
-	//
-
 	std::string ConvertHexStringToBinary(std::string hexString);
 	ULLINT ConvertBinaryToInt(std::string binaryString);
+	int ConvertStringToInt(std::string stringToConvert);
 
 	const std::string comma = ",";
 	const std::string space = " ";
@@ -184,12 +166,6 @@ namespace Parsing
 		AssignStringsToVars(inputStrings, remainingVariables...);
 	}
 
-	// TODO: While this function is a pretty flexible way of handling arbitrary
-	// parsing requirements, the use of a regex is pretty slow, and so it ends
-	// up significantly impacting the overall computation time for a given puzzle.
-	// (order of a couple of seconds). If I want my output to be really lightning fast
-	// for all puzzles, I'll need to switch this out for something less regex-y.
-	//
 	// Given a string and a regex pattern of matches, extract the match groups
 	// into an arbitrary number of different variables, provided to this function
 	// by reference. Currently the only supported types that we will parse the
